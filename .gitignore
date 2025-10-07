@@ -1,0 +1,8 @@
+# Generated files by Make
+AuriOS.bin
+AuriOS.iso
+iso/
+
+# Generated files by IDEs
+.idea/
+.vscode/
