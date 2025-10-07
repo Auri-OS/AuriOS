@@ -2,7 +2,10 @@
 AuriOS.bin
 AuriOS.iso
 iso/
+src/memory/memory.o
+src/bootloader/loader.o
 
 # Generated files by IDEs
 .idea/
 .vscode/
+
