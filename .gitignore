@@ -2,7 +2,9 @@
 AuriOS.bin
 AuriOS.iso
 iso/
+src/memory/memory.o
 
 # Generated files by IDEs
 .idea/
 .vscode/
+
