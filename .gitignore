@@ -4,6 +4,7 @@ AuriOS.iso
 iso/
 src/memory/memory.o
 src/bootloader/loader.o
+src/bootloader/kernel.elf
 
 # Generated files by IDEs
 .idea/
