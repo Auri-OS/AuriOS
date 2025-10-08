@@ -85,5 +85,5 @@ void terminal_writestring(const char *data) {
 
 void kernel_main() {
     terminal_initialize();
-    terminal_writestring("Hello from AuriOS Kernel !")
+    terminal_writestring("Hello from AuriOS Kernel !");
 }
