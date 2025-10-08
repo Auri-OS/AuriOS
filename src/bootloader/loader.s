@@ -17,7 +17,7 @@ loader:                 ; loader link to link.ld ( connected with the bootloader
     ; Initialisation segment
     xor ax, ax
     mov ds, ax
-    mov es, ax
+    mov es, ax  
     mov fs, ax
     mov gs, ax
     mov ss, ax
