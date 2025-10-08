@@ -46,4 +46,4 @@ Please be respectful and considerate in all interactions.
 
 ---
 
-Thank you for helping make HollowOs better!
+Thank you for helping make AuriOS better!
