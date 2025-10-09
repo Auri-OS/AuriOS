@@ -18,7 +18,7 @@ compile kernel.c to print basic Hello World
 ```bash
 gcc -m32 -ffreestanding -c kernel.c -o kernel.o
 ```
-now move kernel.o to bootloader/
+now move kernel.o to boot/
 and do that : 
 ```bash
 ld -m elf_i386 -T link.ld -o kernel.bin loader.o kernel.o 
