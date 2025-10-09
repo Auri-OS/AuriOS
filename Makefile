@@ -4,7 +4,7 @@ CC = gcc
 AS = nasm
 LD = ld
 CFLAGS = -ffreestanding -O2 -Wall -Wextra -Iincludes
-LDFLAGS = -T src/bootloader/link.ld -nostdlib
+LDFLAGS = -T src/boot/link.ld -nostdlib
 
 OBJS = \
 	src/bootloader/loader.o \
@@ -12,7 +12,7 @@ OBJS = \
 
 all: $(TARGET)
 
-src/bootloader/loader.o: src/bootloader/loader.s
+src/bootloader/loader.o: src/boot/loader.s
 	$(AS) -f elf64 $< -o $@
 
 src/memory/memory.o: src/memory/memory.c
