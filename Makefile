@@ -1,26 +1,37 @@
 TARGET = AuriOS.bin
 ISO = AuriOS.iso
-CC = gcc
+
+CC = i686-elf-gcc
 AS = nasm
-LD = ld
-CFLAGS = -ffreestanding -O2 -Wall -Wextra -Iincludes
+LD = i686-elf-ld
+
+CFLAGS = -ffreestanding -O2 -Wall -Wextra -m32 -Iincludes
 LDFLAGS = -T src/boot/link.ld -nostdlib
 
 OBJS = \
-	src/bootloader/loader.o \
+	src/boot/loader.o \
+	src/kernel/kernel.o \
 	src/memory/memory.o
 
 all: $(TARGET)
 
-src/bootloader/loader.o: src/boot/loader.s
-	$(AS) -f elf64 $< -o $@
+# compile loader (32-bit)
+src/boot/loader.o: src/boot/loader.s
+	$(AS) -f elf32 $< -o $@
 
+# compile kernel file 
+src/kernel/kernel.o: src/kernel/kernel.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Compile memory file
 src/memory/memory.o: src/memory/memory.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
+# Linking final
 $(TARGET): $(OBJS)
 	$(LD) $(LDFLAGS) -o $@ $(OBJS)
 
+# creating ISO file
 iso: $(TARGET)
 	mkdir -p iso/boot/grub
 	cp $(TARGET) iso/boot/
@@ -29,8 +40,10 @@ iso: $(TARGET)
 	echo 'menuentry "AuriOS" { multiboot /boot/$(TARGET) }' >> iso/boot/grub/grub.cfg
 	grub2-mkrescue -o $(ISO) iso
 
+# start QEMU
 run: iso
-	qemu-system-x86_64 -cdrom $(ISO) 
+	qemu-system-i686 -cdrom $(ISO)
 
+# clean
 clean:
 	rm -rf $(TARGET) $(ISO) $(OBJS) iso
