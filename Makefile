@@ -42,7 +42,11 @@ iso: $(TARGET)
 
 # start QEMU
 run: iso
-	qemu-system-i686 -cdrom $(ISO)
+	qemu-system-x86_64 -cdrom $(ISO) -m 512M -boot d -enable-kvm
+
+#start QEMU x32
+run32: iso
+	qemu-system-i386 -cdrom $(ISO) -m 512M -boot d -enable-kvm
 
 # clean
 clean:

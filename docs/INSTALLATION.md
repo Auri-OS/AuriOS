@@ -32,8 +32,13 @@ mkdir build-binutils build-gcc
 ```
 
 it can take several minutes, be patient...
-
 ## Step 3:
+Dependancies : 
+
+```bash
+sudo dnf install texinfo gmp-devel mpfr-devel libmpc-devel
+```
+## Step 4:
 Build Binutils :
 
 ```bash
@@ -42,4 +47,22 @@ cd build-binutils
 make -j$(nproc)
 make install
 cd ..
+```
+
+Build GCC:
+```bash
+cd build-gcc
+../gcc-13.2.0/configure --target=i686-elf --prefix=$HOME/opt/cross --disable-nls --enable-languages=c,c++ --without-headers
+make all-gcc -j$(nproc)
+make all-target-libgcc -j$(nproc)
+make install-gcc
+make install-target-libgcc
+cd ..
+```
+## Step 5:
+Adding Env Var :
+
+```bash
+echo 'export PATH="$HOME/opt/cross/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
 ```
