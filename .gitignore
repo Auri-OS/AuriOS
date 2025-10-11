@@ -3,9 +3,9 @@ AuriOS.bin
 AuriOS.iso
 iso/
 src/memory/memory.o
-src/bootloader/loader.o
-src/bootloader/kernel.elf
-
+src/boot/loader.o
+src/boot/kernel.elf
+src/kernel/kernel.o
 # Generated files by IDEs
 .idea/
 .vscode/
