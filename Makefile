@@ -1,7 +1,11 @@
 TARGET = AuriOS.bin
 ISO = AuriOS.iso
 
+<<<<<<< Updated upstream
 CC = i686-elf-gcc
+=======
+CC = nasm -f -m32
+>>>>>>> Stashed changes
 AS = nasm
 LD = i686-elf-ld
 

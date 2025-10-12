@@ -16,7 +16,7 @@ section .text       ; go to the .text section, recup MAGIC, FLAGS, and CHECKSUM 
 loader:                 ; loader link to link.ld ( connected with the bootloader magic) */
     ; Initialisation segment
     xor ax, ax
-    mov ds, ax
+    mov ds, ax      
     mov es, ax  
     mov fs, ax
     mov gs, ax
@@ -25,7 +25,7 @@ loader:                 ; loader link to link.ld ( connected with the bootloader
     ; Initialisation heap
     mov esp, 0x90000
 
-    ; call kernel.c 
+    ; call kernel.c     */
     call kernel_main
 
 .loop:
