@@ -40,13 +40,24 @@ iso: $(TARGET)
 	echo 'menuentry "AuriOS" { multiboot /boot/$(TARGET) }' >> iso/boot/grub/grub.cfg
 	grub2-mkrescue -o $(ISO) iso
 
+# creating ISO file for ARM
+iso-arm: $(TARGET)
+	mkdir -p iso/boot/grub
+	cp $(TARGET) iso/boot/
+	echo 'set timeout=0' > iso/boot/grub/grub.cfg
+	echo 'set default=0' >> iso/boot/grub/grub.cfg
+	echo 'menuentry "AuriOS" { multiboot /boot/$(TARGET) }' >> iso/boot/grub/grub.cfg
+	x86_64-elf-grub-mkrescue -o $(ISO) iso
+
+
+
 # start QEMU
 run: iso
-	qemu-system-x86_64 -cdrom $(ISO) -m 512M -boot d -enable-kvm
+	qemu-system-x86_64 -cdrom $(ISO) -m 512M -boot d 
 
 #start QEMU x32
 run32: iso
-	qemu-system-i386 -cdrom $(ISO) -m 512M -boot d -enable-kvm
+	qemu-system-i386 -cdrom $(ISO) -m 512M -boot d 
 
 # clean
 clean:
