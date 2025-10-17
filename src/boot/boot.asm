@@ -10,6 +10,7 @@ boot:
 	cmp al, 0 	; is the AL register  a null byte 
 	je halt		; jump to halt 
 	int 0x10	; trigger video services interrupt 
+  mov si, message;
 	jmp .loop 	; loop again
 
 halt:

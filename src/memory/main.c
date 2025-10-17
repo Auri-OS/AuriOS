@@ -1,4 +1,4 @@
-#include <../includes/gdt.h>
+#include <gdt.h>
 
 int main(void){
     gdt_init();

@@ -26,3 +26,18 @@ void *memcpy(void *dest, void *src, int len){
         *d++ = *s++;
     return dest;
 }
+
+void *memccpy(void *dest, str *src, int len, size_t n) {
+  unsigned char *ptr;
+  unsigned char *pr;
+  unsigned char count;
+
+  ptr = (unsigned char *) dest;
+  pr = (unsigned char *) src;
+  count = (int) len;
+
+  while (n-- > 0) {
+    *ptr++ = *pr++;
+  }
+  return (dest);
+}
