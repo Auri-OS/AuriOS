@@ -56,7 +56,7 @@ cd build-gcc
 make all-gcc -j$(nproc)
 make all-target-libgcc -j$(nproc)
 make install-gcc
-make install-target-libgcc
+    make install-target-libgcc
 cd ..
 ```
 ## Step 5:
