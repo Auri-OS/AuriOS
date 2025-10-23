@@ -1,43 +1,50 @@
 #include "../includes/memory.h"
+#include <stddef.h>  // for size_t 
 
 void *memset(void *ptr, int c, size_t size) {
-    char *c_ptr = (char *) ptr;
-    for (size_t i = 0; i < size; i++){
-        c_ptr[i] = (char)c;
+    unsigned char *c_ptr = ptr;
+    for (size_t i = 0; i < size; i++) {
+        c_ptr[i] = (unsigned char)c;
     }
     return ptr;
 }
 
-int memcmp(void *s1, void *s2, int count){
-    char *c1 = s1;
-    char *c2 = s2;
-    while(count-- > 0)
-    {
-        if (*c1++ != *c2++)
-            return c1[-1] < c2[-1] ? -1 : 1;
+// Compare deux zones mémoire
+int memcmp(const void *s1, const void *s2, size_t count) {
+    const unsigned char *c1 = s1;
+    const unsigned char *c2 = s2;
+
+    while (count-- > 0) {
+        if (*c1 != *c2)
+            return (*c1 < *c2) ? -1 : 1;
+        c1++;
+        c2++;
     }
     return 0;
 }
 
-void *memcpy(void *dest, void *src, int len){
-    char *d = dest;
-    char *s = src;
-    while(len--)
+// copy memory zone 
+void *memcpy(void *dest, const void *src, size_t len) {
+    unsigned char *d = dest;
+    const unsigned char *s = src;
+    while (len--) {
         *d++ = *s++;
+    }
     return dest;
 }
 
-void *memccpy(void *dest, str *src, int len, size_t n) {
-  unsigned char *ptr;
-  unsigned char *pr;
-  unsigned char count;
+// Copie jusqu'à n octets ou jusqu'à trouver le caractère c
+void *memccpy(void *dest, const void *src, int c, size_t n) {
+    unsigned char *d = dest;
+    const unsigned char *s = src;
+    unsigned char uc = (unsigned char)c;
 
-  ptr = (unsigned char *) dest;
-  pr = (unsigned char *) src;
-  count = (int) len;
-
-  while (n-- > 0) {
-    *ptr++ = *pr++;
-  }
-  return (dest);
+    while (n--) {
+        *d = *s;
+        if (*s == uc)
+            return d + 1; // Retourne l’adresse après le caractère trouvé
+        d++;
+        s++;
+    }
+    return NULL; 
 }
