@@ -49,3 +49,5 @@ void *memccpy(void *dest, const void *src, int c, size_t n) {
     }
     return NULL;
 };
+
+// when u compile that file compile with the "gcc -c memory.c" prefix cause it was an object file 
