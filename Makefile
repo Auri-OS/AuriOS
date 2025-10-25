@@ -12,7 +12,7 @@ OBJS = \
 	src/boot/loader.o \
 	src/kernel/kernel.o \
 	src/memory/memory.o \
-# 	src/memory/gdt_flush.o \
+	src/memory/gdt_flush.o \
 
 
 all: $(TARGET)

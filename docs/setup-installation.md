@@ -66,3 +66,4 @@ Adding Env Var :
 echo 'export PATH="$HOME/opt/cross/bin:$PATH"' >> ~/.bashrc
 source ~/.bashrc
 ```
+to run the make u must install xorriso 

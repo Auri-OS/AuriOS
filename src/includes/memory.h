@@ -1,13 +1,7 @@
 #ifndef MEMORY_H
 #define MEMORY_H
 
-// Définir size_t correctement pour votre architecture
-#if defined(__x86_64__) || defined(__aarch64__)
-    typedef unsigned long size_t;
-#else
-    typedef unsigned int size_t;
-#endif
-
+#include <stddef.h>  // Standart define of size_t 
 // Set memory zone to a specific value
 void *memset(void *ptr, int c, size_t size);
 
