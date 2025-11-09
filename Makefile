@@ -29,6 +29,10 @@ src/kernel/kernel.o: src/kernel/kernel.c
 src/memory/memory.o: src/memory/memory.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
+# Compile GDT flush assembly file
+src/memory/gdt_flush.o: src/memory/gdt_flush.asm
+	$(AS) -f elf32 $< -o $@
+
 # Linking final
 $(TARGET): $(OBJS)
 	$(LD) $(LDFLAGS) -o $@ $(OBJS)
@@ -40,7 +44,7 @@ iso: $(TARGET)
 	echo 'set timeout=0' > iso/boot/grub/grub.cfg
 	echo 'set default=0' >> iso/boot/grub/grub.cfg
 	echo 'menuentry "AuriOS" { multiboot /boot/$(TARGET) }' >> iso/boot/grub/grub.cfg
-	grub2-mkrescue -o $(ISO) iso
+	grub-mkrescue -o $(ISO) iso
 
 # creating ISO file for ARM
 iso-arm: $(TARGET)
@@ -49,17 +53,17 @@ iso-arm: $(TARGET)
 	echo 'set timeout=0' > iso/boot/grub/grub.cfg
 	echo 'set default=0' >> iso/boot/grub/grub.cfg
 	echo 'menuentry "AuriOS" { multiboot /boot/$(TARGET) }' >> iso/boot/grub/grub.cfg
-	x86_64-elf-grub-mkrescue -o $(ISO) iso
+	grub-mkrescue -o $(ISO) iso
 
 
 
 # start QEMU
 run: iso
-	qemu-system-x86_64 -cdrom $(ISO) -m 512M -boot d 
+	qemu-system-x86_64 -cdrom $(ISO) -m 512M -boot d -vga std
 
 #start QEMU x32
 run32: iso
-	qemu-system-i386 -cdrom $(ISO) -m 512M -boot d 
+	qemu-system-i386 -cdrom $(ISO) -m 512M -boot d -vga std 
 
 # clean
 clean:
