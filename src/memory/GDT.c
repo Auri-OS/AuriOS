@@ -29,7 +29,7 @@ void gdt_init()
     gdt[4] = create_descriptor(0, 0x000FFFFF, GDT_DATA_PL3); // data pl3
 
     gp.limit = sizeof(gdt) - 1;
-    gp.base = (uint64_t)&gdt;
+    gp.base = (uint32_t)&gdt;
 
-    gdt_flush((uint64_t)&gp);
+    gdt_flush((uint32_t)&gp);
 }

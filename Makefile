@@ -5,14 +5,15 @@ CC = i686-elf-gcc
 AS = nasm
 LD = i686-elf-ld
 
-CFLAGS = -ffreestanding -O2 -Wall -Wextra -m32 -Iincludes
+CFLAGS = -ffreestanding -O2 -Wall -Wextra -m32 -Isrc/includes
 LDFLAGS = -T src/boot/link.ld -nostdlib
 
 OBJS = \
-	src/boot/loader.o \
-	src/kernel/kernel.o \
-	src/memory/memory.o \
-	src/memory/gdt_flush.o \
+    src/boot/loader.o \
+    src/kernel/kernel.o \
+    src/memory/memory.o \
+    src/memory/gdt_flush.o \
+    src/memory/GDT.o
 
 
 all: $(TARGET)
@@ -27,6 +28,10 @@ src/kernel/kernel.o: src/kernel/kernel.c
 
 # Compile memory file
 src/memory/memory.o: src/memory/memory.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Compile GDT file
+src/memory/GDT.o: src/memory/GDT.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Compile GDT flush assembly file
@@ -53,9 +58,7 @@ iso-arm: $(TARGET)
 	echo 'set timeout=0' > iso/boot/grub/grub.cfg
 	echo 'set default=0' >> iso/boot/grub/grub.cfg
 	echo 'menuentry "AuriOS" { multiboot /boot/$(TARGET) }' >> iso/boot/grub/grub.cfg
-	grub-mkrescue -o $(ISO) iso
-
-
+	grub2-mkrescue -o $(ISO) iso
 
 # start QEMU
 run: iso
