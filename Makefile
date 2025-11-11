@@ -1,36 +1,65 @@
 TARGET = AuriOS.bin
 ISO = AuriOS.iso
-CC = gcc
+
+CC = i686-elf-gcc
 AS = nasm
-LD = ld
-CFLAGS = -ffreestanding -O2 -Wall -Wextra -Iincludes
-LDFLAGS = -T src/bootloader/link.ld -nostdlib
+LD = i686-elf-ld
+
+CFLAGS = -ffreestanding -O2 -Wall -Wextra -m32 -Isrc/includes
+LDFLAGS = -T src/boot/link.ld -nostdlib
 
 OBJS = \
-	src/bootloader/loader.o \
-	src/memory/memory.o
+    src/boot/loader.o \
+    src/memory/memory.o \
+    src/memory/GDT.o \
+    src/memory/gdt_flush.o \
+    src/kernel/kernel.o
+
 
 all: $(TARGET)
 
-src/bootloader/loader.o: src/bootloader/loader.s
-	$(AS) -f elf64 $< -o $@
+# compile loader (32-bit)
+src/boot/loader.o: src/boot/loader.s
+	$(AS) -f elf32 $< -o $@
 
+# compile kernel file 
+src/kernel/kernel.o: src/kernel/kernel.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Compile memory file
 src/memory/memory.o: src/memory/memory.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
+# Compile GDT file
+src/memory/GDT.o: src/memory/GDT.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Compile GDT flush assembly file
+src/memory/gdt_flush.o: src/memory/gdt_flush.asm
+	$(AS) -f elf32 $< -o $@
+
+# Linking final
 $(TARGET): $(OBJS)
 	$(LD) $(LDFLAGS) -o $@ $(OBJS)
 
+# creating ISO file
 iso: $(TARGET)
 	mkdir -p iso/boot/grub
 	cp $(TARGET) iso/boot/
 	echo 'set timeout=0' > iso/boot/grub/grub.cfg
 	echo 'set default=0' >> iso/boot/grub/grub.cfg
 	echo 'menuentry "AuriOS" { multiboot /boot/$(TARGET) }' >> iso/boot/grub/grub.cfg
-	grub2-mkrescue -o $(ISO) iso
+	grub-mkrescue -o $(ISO) iso
 
+
+# start QEMU
 run: iso
-	qemu-system-x86_64 -cdrom $(ISO) 
+	qemu-system-x86_64 -cdrom $(ISO) -m 512M -boot d -vga std
 
+#start QEMU x32
+run32: iso
+	qemu-system-i386 -cdrom $(ISO) -m 512M -boot d -vga std 
+
+# clean
 clean:
 	rm -rf $(TARGET) $(ISO) $(OBJS) iso
