@@ -1,2 +1,3 @@
-#include <io.h>
-s
+int main(void) {
+    return 0;
+}

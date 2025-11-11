@@ -34,7 +34,7 @@
 /* === Structures === */
 struct __attribute__((packed)) gdt_ptr {
     uint16_t limit;
-    uint64_t base;
+    uint32_t base;
 };
 
 uint64_t create_descriptor(uint32_t base, uint32_t limit, uint16_t flag);

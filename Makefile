@@ -10,10 +10,10 @@ LDFLAGS = -T src/boot/link.ld -nostdlib
 
 OBJS = \
     src/boot/loader.o \
-    src/kernel/kernel.o \
     src/memory/memory.o \
+    src/memory/GDT.o \
     src/memory/gdt_flush.o \
-    src/memory/GDT.o
+    src/kernel/kernel.o
 
 
 all: $(TARGET)
@@ -51,14 +51,6 @@ iso: $(TARGET)
 	echo 'menuentry "AuriOS" { multiboot /boot/$(TARGET) }' >> iso/boot/grub/grub.cfg
 	grub-mkrescue -o $(ISO) iso
 
-# creating ISO file for ARM
-iso-arm: $(TARGET)
-	mkdir -p iso/boot/grub
-	cp $(TARGET) iso/boot/
-	echo 'set timeout=0' > iso/boot/grub/grub.cfg
-	echo 'set default=0' >> iso/boot/grub/grub.cfg
-	echo 'menuentry "AuriOS" { multiboot /boot/$(TARGET) }' >> iso/boot/grub/grub.cfg
-	grub2-mkrescue -o $(ISO) iso
 
 # start QEMU
 run: iso

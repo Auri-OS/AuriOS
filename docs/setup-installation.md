@@ -4,12 +4,12 @@
 
 for fedora :
 ```bash
-sudo dnf install gcc gcc-c++ binutils make wget tar
+sudo dnf install gcc gcc-c++ binutils make wget tar texinfo gmp-devel mpfr-devel libmpc-devel
 ```
 
 for debian based :
 ```bash
-sudo apt install gcc gcc-c++ binutils make wget tar
+sudo apt install gcc gcc-c++ binutils make wget tar mtools xorriso
 ```
 
 for arch based :
@@ -32,13 +32,8 @@ mkdir build-binutils build-gcc
 ```
 
 it can take several minutes, be patient...
-## Step 3:
-Dependancies : 
 
-```bash
-sudo dnf install texinfo gmp-devel mpfr-devel libmpc-devel
-```
-## Step 4:
+## Step 3:
 Build Binutils :
 
 ```bash
@@ -59,7 +54,7 @@ make install-gcc
     make install-target-libgcc
 cd ..
 ```
-## Step 5:
+## Step 4:
 Adding Env Var :
 
 ```bash

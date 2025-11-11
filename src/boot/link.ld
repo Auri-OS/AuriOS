@@ -3,6 +3,10 @@ ENTRY(loader)
 SECTIONS {
     . = 0x00100000;
 
+    .bootloader ALIGN(0x1000) : {
+        *(.bootloader)
+    }
+    
     .text ALIGN(0x1000) : {
         __text_start = .;
         *(.text)
