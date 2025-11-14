@@ -13,7 +13,7 @@ make
 make iso
 make run32
 ```
-if u want clean every compiled file of the project do 
+if u want clean every compiled file of the project do :
 ```bash
 make clean
 ```
