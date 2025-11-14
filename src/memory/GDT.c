@@ -5,17 +5,17 @@
 uint64_t gdt[GDT_ENTRY_COUNT];
 struct gdt_ptr gp;
 
-extern void gdt_flush(uint64_t);
+extern void gdt_flush(uint32_t);
 
 uint64_t create_descriptor(uint32_t base, uint32_t limit, uint16_t flag)
 {
     uint64_t descriptor;
     descriptor  = (limit & 0x000F0000ULL);
-    descriptor |= ((uint64_t)flag << 8) & 0x00F0FF00ULL;
-    descriptor |= ((uint64_t)(base >> 16) & 0xFF) << 16;
-    descriptor |= ((uint64_t)(base & 0xFF000000));
+    descriptor |= ((uint32_t)flag << 8) & 0x00F0FF00ULL;
+    descriptor |= ((uint32_t)(base >> 16) & 0xFF) << 16;
+    descriptor |= ((uint32_t)(base & 0xFF000000));
     descriptor <<= 32;
-    descriptor |= ((uint64_t)base << 16);
+    descriptor |= ((uint32_t)base << 16);
     descriptor |= (limit & 0x0000FFFF);
     return descriptor;
 }
