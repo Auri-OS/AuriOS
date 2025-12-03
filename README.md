@@ -17,3 +17,5 @@ if u want clean every compiled file of the project do :
 ```bash
 make clean
 ```
+
+dont forget to look at the requirement in /docs to install every package 
