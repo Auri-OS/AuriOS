@@ -16,7 +16,24 @@ OBJS = \
     src/kernel/kernel.o
 
 
-all: $(TARGET)
+# Default target - show help menu
+.DEFAULT_GOAL := help
+
+help:
+	@echo "=== AuriOS Makefile configuration ==="
+	@echo ""
+	@echo "Available targets:"
+	@echo "  make help           - Show this help menu"
+	@echo "  make iso            - Build OS binary and create bootable ISO"
+	@echo "  make run            - Build and run in QEMU (x86_64)"
+	@echo "  make run32          - Build and run in QEMU (i386)"
+	@echo "  make clean          - Remove all build artifacts"
+	@echo ""
+	@echo "Installation (requires sudo):"
+	@echo "  make install-fedora - Install dependencies for Fedora"
+	@echo "  make install-arch   - Install dependencies for Arch Linux"
+	@echo "  make install-debian - Install dependencies for Debian/Ubuntu"
+	@echo ""
 
 # compile loader (32-bit)
 src/boot/loader.o: src/boot/loader.s
@@ -49,7 +66,7 @@ iso: $(TARGET)
 	echo 'set timeout=0' > iso/boot/grub/grub.cfg
 	echo 'set default=0' >> iso/boot/grub/grub.cfg
 	echo 'menuentry "AuriOS" { multiboot /boot/$(TARGET) }' >> iso/boot/grub/grub.cfg
-	grub-mkrescue -o $(ISO) iso
+	grub2-mkrescue -o $(ISO) iso
 
 
 # start QEMU
@@ -63,3 +80,18 @@ run32: iso
 # clean
 clean:
 	rm -rf $(TARGET) $(ISO) $(OBJS) iso
+
+install-fedora:
+	echo "[!] Installing dependencies for Fedora"
+	sudo dnf install gcc gcc-c++ binutils make wget tar texinfo gmp-devel mpfr-devel libmpc-devel nasm qemu-system-x86 grub2-tools-extra mtools xorriso
+	bash docs/install_scripts/install.sh
+	
+install-arch:
+	echo "[!] Installing dependencies for Arch Linux"
+	sudo pacman -S gcc binutils make wget tar nasm qemu-system-x86 grub mtools xorriso
+	bash docs/install_scripts/install.sh
+
+install-debian:
+	echo "[!] Installing dependencies for Debian/Ubuntu"
+	sudo apt install gcc g++ binutils make wget tar mtools xorriso nasm qemu-system-x86 grub-pc-bin
+	bash docs/install_scripts/install.sh

@@ -95,5 +95,5 @@ void kernel_main(void) {
     terminal_initialize();
     terminal_writestring("Hello from AuriOS Kernel!\n");
     terminal_writestring("Test new line 1\n");
-    for (;;); // prevent return
+    for (;;);
 }
