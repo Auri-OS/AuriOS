@@ -1,65 +1,134 @@
-TARGET = AuriOS.bin
-ISO = AuriOS.iso
+# AuriOS Makefile
+# Output directory for final binaries
+OUTPUT_DIR = output
+BUILD_DIR = build
+ISO_DIR = iso
 
+# Final binaries
+KERNEL_BIN = $(OUTPUT_DIR)/AuriOS.bin
+ISO = $(OUTPUT_DIR)/AuriOS.iso
+
+# Toolchain
 CC = i686-elf-gcc
 AS = nasm
 LD = i686-elf-ld
 
-CFLAGS = -ffreestanding -O2 -Wall -Wextra -m32 -Isrc/includes
-LDFLAGS = -T src/boot/link.ld -nostdlib
+# Flags
+CFLAGS = -ffreestanding -O2 -Wall -Wextra -m32 -Isrc/include
+LDFLAGS = -T linker.ld -nostdlib
 
-OBJS = \
-    src/boot/loader.o \
-    src/memory/memory.o \
-    src/memory/GDT.o \
-    src/memory/gdt_flush.o \
-    src/kernel/kernel.o
+# Source files
+C_SOURCES = $(wildcard src/kernel/*.c) $(wildcard src/cpu/*.c) $(wildcard src/lib/*.c)
+S_SOURCES = $(wildcard src/boot/*.s)
+ASM_SOURCES = $(wildcard src/cpu/*.asm)
 
+# Object files (in build directory)
+C_OBJS = $(patsubst src/%.c, $(BUILD_DIR)/%.o, $(C_SOURCES))
+S_OBJS = $(patsubst src/%.s, $(BUILD_DIR)/%.o, $(S_SOURCES))
+ASM_OBJS = $(patsubst src/%.asm, $(BUILD_DIR)/%.o, $(ASM_SOURCES))
 
-all: $(TARGET)
+OBJS = $(S_OBJS) $(ASM_OBJS) $(C_OBJS)
 
-# compile loader (32-bit)
-src/boot/loader.o: src/boot/loader.s
-	$(AS) -f elf32 $< -o $@
+# Default target
+.DEFAULT_GOAL := help
 
-# compile kernel file 
-src/kernel/kernel.o: src/kernel/kernel.c
-	$(CC) $(CFLAGS) -c $< -o $@
+# Phony targets
+.PHONY: all clean help iso run run32 install-fedora install-arch install-debian
 
-# Compile memory file
-src/memory/memory.o: src/memory/memory.c
-	$(CC) $(CFLAGS) -c $< -o $@
+help:
+	@echo "======================= AuriOS Makefile ======================="
+	@echo ""
+	@echo "Available targets:"
+	@echo "  make all            - Build everything"
+	@echo "  make iso            - Build OS binary and create bootable ISO"
+	@echo "  make run            - Build and run in QEMU (x86_64)"
+	@echo "  make run32          - Build and run in QEMU (i386)"
+	@echo "  make clean          - Remove all build artifacts"
+	@echo ""
+	@echo "Installation (requires sudo):"
+	@echo "  make install-fedora - Install dependencies for Fedora"
+	@echo "  make install-arch   - Install dependencies for Arch Linux"
+	@echo "  make install-debian - Install dependencies for Debian/Ubuntu"
+	@echo ""
+	@echo "==============================================================="
 
-# Compile GDT file
-src/memory/GDT.o: src/memory/GDT.c
-	$(CC) $(CFLAGS) -c $< -o $@
+# Create necessary directories
+$(BUILD_DIR) $(OUTPUT_DIR):
+	@mkdir -p $@
+	@mkdir -p $(BUILD_DIR)/boot
+	@mkdir -p $(BUILD_DIR)/kernel
+	@mkdir -p $(BUILD_DIR)/cpu
+	@mkdir -p $(BUILD_DIR)/lib
 
-# Compile GDT flush assembly file
-src/memory/gdt_flush.o: src/memory/gdt_flush.asm
-	$(AS) -f elf32 $< -o $@
+# Compile C source files
+$(BUILD_DIR)/%.o: src/%.c | $(BUILD_DIR)
+	@mkdir -p $(dir $@)
+	@echo "CC $<"
+	@$(CC) $(CFLAGS) -c $< -o $@
 
-# Linking final
-$(TARGET): $(OBJS)
-	$(LD) $(LDFLAGS) -o $@ $(OBJS)
+# Compile assembly files (.s)
+$(BUILD_DIR)/%.o: src/%.s | $(BUILD_DIR)
+	@mkdir -p $(dir $@)
+	@echo "AS $<"
+	@$(AS) -f elf32 $< -o $@
 
-# creating ISO file
-iso: $(TARGET)
-	mkdir -p iso/boot/grub
-	cp $(TARGET) iso/boot/
-	echo 'set timeout=0' > iso/boot/grub/grub.cfg
-	echo 'set default=0' >> iso/boot/grub/grub.cfg
-	echo 'menuentry "AuriOS" { multiboot /boot/$(TARGET) }' >> iso/boot/grub/grub.cfg
-	grub-mkrescue -o $(ISO) iso
+# Compile assembly files (.asm)
+$(BUILD_DIR)/%.o: src/%.asm | $(BUILD_DIR)
+	@mkdir -p $(dir $@)
+	@echo "AS $<"
+	@$(AS) -f elf32 $< -o $@
 
+# Link kernel binary
+$(KERNEL_BIN): $(OBJS) | $(OUTPUT_DIR)
+	@echo "LD $(KERNEL_BIN)"
+	@$(LD) $(LDFLAGS) -o $@ $(OBJS)
+	@echo "Build complete: $(KERNEL_BIN)"
 
-# start QEMU
+# Build all
+all: $(KERNEL_BIN)
+
+# Create bootable ISO
+iso: $(KERNEL_BIN)
+	@echo "Creating ISO..."
+	@mkdir -p $(ISO_DIR)/boot/grub
+	@cp $(KERNEL_BIN) $(ISO_DIR)/boot/
+	@echo 'set timeout=0' > $(ISO_DIR)/boot/grub/grub.cfg
+	@echo 'set default=0' >> $(ISO_DIR)/boot/grub/grub.cfg
+	@echo 'menuentry "AuriOS" {' >> $(ISO_DIR)/boot/grub/grub.cfg
+	@echo '    multiboot /boot/AuriOS.bin' >> $(ISO_DIR)/boot/grub/grub.cfg
+	@echo '    boot' >> $(ISO_DIR)/boot/grub/grub.cfg
+	@echo '}' >> $(ISO_DIR)/boot/grub/grub.cfg
+	@grub2-mkrescue -o $(ISO) $(ISO_DIR) 2>/dev/null || grub-mkrescue -o $(ISO) $(ISO_DIR)
+	@echo "ISO created: $(ISO)"
+
+# Run in QEMU (x86_64)
 run: iso
-	qemu-system-x86_64 -cdrom $(ISO) -m 512M -boot d -vga std
+	@echo "Starting QEMU (x86_64)..."
+	@qemu-system-x86_64 -cdrom $(ISO) -m 512M -boot d -vga std
 
-#start QEMU x32
+# Run in QEMU (i386)
 run32: iso
-	qemu-system-i386 -cdrom $(ISO) -m 512M -boot d -vga std 
+	@echo "Starting QEMU (i386)..."
+	@qemu-system-i386 -cdrom $(ISO) -m 512M -boot d -vga std
 
-# clean
+# Clean build artifacts
 clean:
-	rm -rf $(TARGET) $(ISO) $(OBJS) iso
+	@echo "Cleaning build artifacts..."
+	@rm -rf $(BUILD_DIR) $(OUTPUT_DIR) $(ISO_DIR)
+	@echo "Clean complete."
+
+# Installation targets
+install-fedora:
+	@echo "[!] Installing dependencies for Fedora"
+	sudo dnf install gcc gcc-c++ binutils make wget tar texinfo gmp-devel mpfr-devel libmpc-devel nasm qemu-system-x86 grub2-tools-extra mtools xorriso
+	bash docs/install_scripts/install.sh
+	
+install-arch:
+	@echo "[!] Installing dependencies for Arch Linux"
+	sudo pacman -S gcc binutils make wget tar nasm qemu-system-x86 grub mtools xorriso
+	bash docs/install_scripts/install.sh
+
+install-debian:
+	@echo "[!] Installing dependencies for Debian/Ubuntu"
+	sudo apt install gcc g++ binutils make wget tar mtools xorriso nasm qemu-system-x86 grub-pc-bin
+	bash docs/install_scripts/install.sh

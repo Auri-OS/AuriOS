@@ -1,5 +1,4 @@
-#include "../includes/memory.h"
-#include <stddef.h>
+#include "../include/memory.h"
 
 // Set memory zone to a specific value
 void *memset(void *ptr, int c, size_t size) {
@@ -44,10 +43,8 @@ void *memccpy(void *dest, const void *src, int c, size_t n) {
     while (n--) {
         *d++ = *s;
         if (*s == uc)
-            return d; // Returns address after the found character
+            return d;
         s++;
     }
     return NULL;
-};
-
-// when u compile that file compile with the "gcc -c memory.c" prefix cause it was an object file 
+}
