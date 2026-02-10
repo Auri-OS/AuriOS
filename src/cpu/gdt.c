@@ -1,4 +1,4 @@
-#include "../includes/gdt.h"
+#include "../include/gdt.h"
 
 #define GDT_ENTRY_COUNT 5
 

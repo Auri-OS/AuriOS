@@ -1,13 +1,22 @@
-# Generated files by Make
-AuriOS.bin
-AuriOS.iso
+# Build directories
+build/
+output/
 iso/
-src/memory/memory.o
-src/memory/gdt_flush.o
-src/boot/loader.o
-src/boot/kernel.elf
-src/kernel/kernel.o
-# Generated files by IDEs
+
+# Generated files
+*.o
+*.bin
+*.iso
+*.elf
+
+# IDEs
 .idea/
 .vscode/
+*.swp
+*.swo
+*~
+
+# OS specific
+.DS_Store
+Thumbs.db
 
