@@ -61,6 +61,18 @@ void terminal_write(const char* data, size_t size) {
         terminal_putchar(data[i]);
 }
 
+void terminal_backspace(void) {
+    if (terminal_column > 0) {
+        terminal_column--;
+    }
+    else if (terminal_row > 0) {
+        terminal_row--;
+        terminal_column = 79;
+    }
+    
+    terminal_putentryat(' ', terminal_color, terminal_column, terminal_row);
+}
+
 void terminal_writestring(const char* data) {
     terminal_write(data, strlen(data));
 }
