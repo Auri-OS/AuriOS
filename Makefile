@@ -18,7 +18,7 @@ CFLAGS = -ffreestanding -O2 -Wall -Wextra -m32 -Isrc/include
 LDFLAGS = -T linker.ld -nostdlib
 
 # Source files
-C_SOURCES = $(wildcard src/kernel/*.c) $(wildcard src/cpu/*.c) $(wildcard src/lib/*.c)
+C_SOURCES = $(wildcard src/kernel/*.c) $(wildcard src/cpu/*.c) $(wildcard src/lib/*.c) $(wildcard src/drivers/*.c)
 S_SOURCES = $(wildcard src/boot/*.s)
 ASM_SOURCES = $(wildcard src/cpu/*.asm)
 
