@@ -69,7 +69,6 @@ void terminal_backspace(void) {
         terminal_row--;
         terminal_column = 79;
     }
-    
     terminal_putentryat(' ', terminal_color, terminal_column, terminal_row);
 }
 

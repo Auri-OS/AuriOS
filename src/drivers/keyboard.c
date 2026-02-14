@@ -2,6 +2,7 @@
 #include "../include/isr.h"
 #include "../include/io.h"
 #include "../include/terminal.h"
+#include "../include/shell.h"
 
 static char scancode_to_ascii[128] = {
     0, 0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 0,
@@ -43,17 +44,17 @@ void keyboard_callback(registers_t *regs)
 
     // Backspace
     if (scancode == 0x0E) {
-        terminal_backspace();
+        shell_handle_key('\b');
         return;
     }
-    char c = scancode_to_ascii[scancode];
+    char c ;
 
     if (shift_pressed)
         c = scancode_to_ascii_shift[scancode];
     else
         c = scancode_to_ascii[scancode];
     if (c)
-        terminal_putchar(c);
+        shell_handle_key(c);
 }
 
 void keyboard_init(void)
