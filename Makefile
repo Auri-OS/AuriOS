@@ -33,7 +33,7 @@ OBJS = $(S_OBJS) $(ASM_OBJS) $(C_OBJS)
 .DEFAULT_GOAL := help
 
 # Phony targets
-.PHONY: all clean help iso run run32 install-fedora install-arch install-debian
+.PHONY: all clean help iso run run32 run-mac install-fedora install-arch install-debian
 
 help:
 	@echo "======================= AuriOS Makefile ======================="
@@ -43,6 +43,7 @@ help:
 	@echo "  make iso            - Build OS binary and create bootable ISO"
 	@echo "  make run            - Build and run in QEMU (x86_64)"
 	@echo "  make run32          - Build and run in QEMU (i386)"
+	@echo "  make run-mac        - Build and run on macOS (direct boot)"
 	@echo "  make clean          - Remove all build artifacts"
 	@echo ""
 	@echo "Installation (requires sudo):"
@@ -102,7 +103,7 @@ iso: $(KERNEL_BIN)
 	@echo '    multiboot /boot/AuriOS.bin' >> $(ISO_DIR)/boot/grub/grub.cfg
 	@echo '    boot' >> $(ISO_DIR)/boot/grub/grub.cfg
 	@echo '}' >> $(ISO_DIR)/boot/grub/grub.cfg
-	@grub2-mkrescue -o $(ISO) $(ISO_DIR) 2>/dev/null || grub-mkrescue -o $(ISO) $(ISO_DIR)
+	@grub2-mkrescue -o $(ISO) $(ISO_DIR) 2>/dev/null || grub2-mkrescue -o $(ISO) $(ISO_DIR)
 	@echo "ISO created: $(ISO)"
 
 # Run in QEMU (x86_64)
@@ -114,6 +115,11 @@ run: iso
 run32: iso
 	@echo "Starting QEMU (i386)..."
 	@qemu-system-i386 -cdrom $(ISO) -m 512M -boot d -vga std
+
+# Run kernel directly on macOS (without ISO)
+run-mac: $(KERNEL_BIN)
+	@echo "Starting QEMU on macOS (direct kernel boot)..."
+	@qemu-system-i386 -kernel $(KERNEL_BIN) -m 512M -vga std
 
 # Clean build artifacts
 clean:
@@ -136,3 +142,7 @@ install-debian:
 	@echo "[!] Installing dependencies for Debian/Ubuntu"
 	sudo apt install gcc g++ binutils make wget tar mtools xorriso nasm qemu-system-x86 grub-pc-bin
 	bash docs/install_scripts/install.sh
+# need work
+install-mac:
+	@echo "[!] Installing dependencies for MacOS"
+	brew install qemu i686-elf-gcc nasm
