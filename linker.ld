@@ -36,4 +36,6 @@ SECTIONS {
         *(.comment)
         *(.note*)
     }
+
+    kernel_end = .;
 }

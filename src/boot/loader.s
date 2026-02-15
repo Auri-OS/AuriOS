@@ -2,12 +2,12 @@
 global loader 
 extern kernel_main              ; call  the external function on the kernel.c to print */ 
 
-MAGIC_NUMBER equ 0x1BADB002         ; take the MAGIC_NUMBER of the bootloader */
-FLAGS        equ 0x0
-CHECKSUM     equ -MAGIC_NUMBER 
+MAGIC_NUMBER equ 0x1BADB002
+FLAGS        equ 0x00000003        ; align + meminfo seulement
+CHECKSUM     equ -(MAGIC_NUMBER + FLAGS)
 
 
-section .bootloader       ; go to the .text section, recup MAGIC, FLAGS, and CHECKSUM  */
+section .bootloader
     align 4
     dd MAGIC_NUMBER
     dd FLAGS
