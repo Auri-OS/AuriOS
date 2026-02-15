@@ -16,27 +16,30 @@ static void shell_execute(char *cmd)
     if (strcmp(cmd, "help") == 0) {
         terminal_writestring("\nhelp - show this command\n");
         terminal_writestring("about - show informations about AuriOS\n");
-        terminal_writestring("clear - clear the terminal\n");
+        terminal_writestring("clear - clear the terminal\n\n");
     }
     else if (strcmp(cmd, "clear") == 0) {
-        terminal_writestring("Command executed : clear\n");
+        terminal_clear();
     }
     else if (strcmp(cmd, "about") == 0) {
-        terminal_writestring("        X                 \n");
+        terminal_writestring("\n        X                 \n");
         terminal_writestring("       XXX                kernel@auri-os\n");
         terminal_writestring("      XXXXX               \n");
         terminal_writestring("     X XXXXX              Kernel: AuriKernel\n");
         terminal_writestring("    XXX XXXXX             Version: 0.2\n");
+        terminal_writestring("   XXXXX XXXXX            Release: 2-14-26\n");
         terminal_writestring("  XXXXXX  XXXXX           \n");
         terminal_writestring(" XXXXXX    XXXXX          \n");
         terminal_writestring("XXXXXX      XXXXX         \n\n");
         terminal_writestring("Type 'help' for available commands\n\n");
     }
-    else if (strcmp(cmd, "") == 0){
+    else if (strcmp(cmd, " ") == 0 || strcmp(cmd, "") == 0 ) {
         return;
     }
     else {
-        return;
+        terminal_writestring("command not found: ");
+        terminal_writestring(cmd);
+        terminal_putchar('\n');
     }
 
 }

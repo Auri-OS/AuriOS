@@ -94,7 +94,11 @@ iso: $(KERNEL_BIN)
 	@cp $(KERNEL_BIN) $(ISO_DIR)/boot/
 	@echo 'set timeout=0' > $(ISO_DIR)/boot/grub/grub.cfg
 	@echo 'set default=0' >> $(ISO_DIR)/boot/grub/grub.cfg
+	@echo 'terminal_input console' >> $(ISO_DIR)/boot/grub/grub.cfg
+	@echo 'terminal_output console' >> $(ISO_DIR)/boot/grub/grub.cfg
+	@echo '' >> $(ISO_DIR)/boot/grub/grub.cfg
 	@echo 'menuentry "AuriOS" {' >> $(ISO_DIR)/boot/grub/grub.cfg
+	@echo '    set gfxpayload=text' >> $(ISO_DIR)/boot/grub/grub.cfg
 	@echo '    multiboot /boot/AuriOS.bin' >> $(ISO_DIR)/boot/grub/grub.cfg
 	@echo '    boot' >> $(ISO_DIR)/boot/grub/grub.cfg
 	@echo '}' >> $(ISO_DIR)/boot/grub/grub.cfg
