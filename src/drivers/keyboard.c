@@ -61,6 +61,6 @@ void keyboard_init(void)
 {
     irq_register_handler(1, keyboard_callback);
     uint8_t mask = inb(0x21);
-    mask &= ~(0x02);
+    mask &= ~0x02;
     outb(0x21, mask);
 }

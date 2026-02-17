@@ -14,7 +14,6 @@ void kernel_main(void) {
     terminal_initialize();
     memory_init();
     timer_init(1000);
-    keyboard_init();
 
     asm volatile("sti");
 
@@ -41,7 +40,8 @@ void kernel_main(void) {
     terminal_writestring("                               XXXXXX    XXXXX          \n");
     terminal_writestring("                              XXXXXX      XXXXX         \n\n");
     terminal_writestring("                            Auri-Os - Kernel v0.2\n\n");
-    sleep(1500);
+    sleep(2000);
+    keyboard_init();
     terminal_clear();
     shell_init();
 

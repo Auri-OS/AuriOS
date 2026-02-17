@@ -11,7 +11,7 @@ void shell_init(void) {
     terminal_writestring("kernel@auri-os~$ ");
 }
 
-static void shell_execute(char *cmd)
+static void shell_execute(char* cmd)
 {
     if (strcmp(cmd, "help") == 0) {
         terminal_writestring("\nhelp - show this command\n");
