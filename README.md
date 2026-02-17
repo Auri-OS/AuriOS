@@ -62,6 +62,7 @@ This project demonstrates low-level system programming concepts and serves as a 
 
 ## 🚀 Getting Started
 
+<<<<<<< develop
 ### Prerequisites
 
 Before building AuriOS, ensure you have the following tools installed:
@@ -108,8 +109,17 @@ cd AuriOS
 
 ### 2. Build the Kernel
 
+=======
+```                                                                                                 
+                                                                                                    
+                                                                                                    
+                                                                                          
+## Installation :
+if you are on x86 :
+>>>>>>> v0.2.0
 ```bash
 make all
+<<<<<<< develop
 ```
 
 This will:
@@ -235,3 +245,19 @@ Project Link: [https://github.com/Auri-OS/AuriOS](https://github.com/Auri-OS/Aur
 ⭐ Star this repository if you find it helpful!
 
 </div>
+=======
+make run
+```
+if you are on arm cpu :
+```bash
+make
+make iso
+make run32
+```
+if u want clean every compiled file of the project do :
+```bash
+make clean
+```
+
+dont forget to look at the requirement in /docs to install every package 
+>>>>>>> v0.2.0
