@@ -6,7 +6,7 @@
 static uint32_t tick = 0;
 static uint32_t frequency = 0;
 
-static void timer_callback(registers_t *regs)
+static void timer_callback(registers_t* regs)
 {
     (void)regs;
     tick++;
@@ -24,7 +24,7 @@ void timer_init(uint32_t freq)
     outb(0x40, (uint8_t)((divisor >> 8) & 0xFF));
 
     uint8_t mask = inb(0x21);
-    mask &= ~(0x01);
+    mask &= ~0x01;
     outb(0x21, mask);
 }
 
