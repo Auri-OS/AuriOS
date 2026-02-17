@@ -75,7 +75,7 @@ void terminal_write(const char* data, size_t size) {
     for (size_t i = 0; i < size; i++)
         terminal_putchar(data[i]);
 }
-                     
+
 void terminal_clear(void){
     for (size_t y = 0; y < VGA_HEIGHT; y++) {
         for (size_t x = 0; x < VGA_WIDTH; x++) {
@@ -98,5 +98,7 @@ void terminal_backspace(void) {
 }
 
 void terminal_writestring(const char* data) {
-    terminal_write(data, strlen(data));
+	if (data != NULL) {
+		terminal_write(data, strlen(data));
+	}
 }
