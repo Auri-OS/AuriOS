@@ -98,7 +98,5 @@ void terminal_backspace(void) {
 }
 
 void terminal_writestring(const char* data) {
-	if (data != NULL) {
-		terminal_write(data, strlen(data));
-	}
+	terminal_write(data, strlen(data));
 }

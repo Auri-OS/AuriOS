@@ -13,6 +13,10 @@ void shell_init(void) {
 
 static void shell_execute(char* cmd)
 {
+    int i = 0;
+    while (cmd[i] == ' ') i++;
+    if (cmd[i] == '\0') return;
+
     if (strcmp(cmd, "help") == 0) {
         terminal_writestring("\nhelp - show this command\n");
         terminal_writestring("about - show informations about AuriOS\n");
@@ -32,9 +36,6 @@ static void shell_execute(char* cmd)
         terminal_writestring(" XXXXXX    XXXXX          \n");
         terminal_writestring("XXXXXX      XXXXX         \n\n");
         terminal_writestring("Type 'help' for available commands\n\n");
-    }
-    else if (strcmp(cmd, " ") == 0 || strcmp(cmd, "") == 0 ) {
-        return;
     }
     else {
         terminal_writestring("command not found: ");
