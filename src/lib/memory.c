@@ -1,4 +1,5 @@
 #include "../include/memory.h"
+#include "../include/string.h"
 
 // Set memory zone to a specific value
 void *memset(void *ptr, int c, size_t size) {
@@ -48,3 +49,16 @@ void *memccpy(void *dest, const void *src, int c, size_t n) {
     }
     return NULL;
 }
+
+// Duplicate a string pointer
+char *strdup(char *src)
+{
+	char *ptr;
+	char *cpy;
+
+	ptr = (char *) malloc(sizeof(char) * (strlen(src) + 1));
+	if (ptr == NULL)
+		return NULL;
+	cpy = strcpy(src, ptr);
+	return (cpy);
+} 
