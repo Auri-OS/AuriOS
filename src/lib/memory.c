@@ -1,5 +1,23 @@
 #include "../include/memory.h"
 #include "../include/string.h"
+#include "../include/memory.h"
+#include <stdint.h>
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds="
+#pragma GCC diagnostic pop
+
+typedef struct block_header {
+    size_t size;
+    int free;
+    struct block_header *next;
+} block_header_t;
+
+#define HEADER_SIZE sizeof(block_header_t)
+
+extern char kernel_end;
+static block_header_t *head = NULL;
+
 
 // Set memory zone to a specific value
 void *memset(void *ptr, int c, size_t size) {
@@ -59,6 +77,45 @@ char *strdup(char *src)
 	ptr = (char *) malloc(sizeof(char) * (strlen(src) + 1));
 	if (ptr == NULL)
 		return NULL;
-	cpy = strcpy(src, ptr);
+	cpy = strcpy(*src, ptr);
 	return (cpy);
 } 
+
+// Memory Initialisation
+void memory_init(void)
+{
+    uintptr_t heap_start = (uintptr_t)&kernel_end;
+    head = (block_header_t *)heap_start;
+    head->size = 1024 * 1024;
+    head->free = 1;
+    head->next = NULL;
+}
+
+// Memory Allocation
+void *malloc(size_t size)
+{
+    block_header_t *block = head;
+
+    while (block) {
+        if (block->free && block->size >= size) {
+            block->free = 0;
+            return (void *)((uint8_t *)block + HEADER_SIZE);
+        }
+        block = block->next;
+    }
+
+    return NULL;
+}
+
+// Free allocated mem bloc
+void free(void *ptr)
+{
+    if (!ptr)
+        return;
+
+    block_header_t *block = (block_header_t *)((uint8_t *)ptr - HEADER_SIZE);
+    if (block != 0)
+        block->free = 1;
+    else
+        block->free = 0;
+}
