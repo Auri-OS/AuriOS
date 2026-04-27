@@ -63,6 +63,9 @@ help:
 	@echo "  make install-arch   - Install dependencies for Arch Linux"
 	@echo "  make install-debian - Install dependencies for Debian/Ubuntu"
 	@echo ""
+	@echo "Zig Toolchain (Optional):"
+	@echo "  make install-zig    - Auto-install Zig compiler based on your OS"
+	@echo "  -USE_ZIG=1          - Compile with Zig toolchain"
 	@echo "==============================================================="
 
 # Create necessary directories
@@ -158,3 +161,18 @@ install-debian:
 install-mac:
 	@echo "[!] Installing dependencies for MacOS"
 	brew install qemu i686-elf-gcc nasm
+
+install-zig:
+	@echo "[!] Detecting OS and installing Zig..."
+	@if [ "$$(uname)" = "Darwin" ]; then \
+		brew install zig; \
+	elif [ -f /etc/arch-release ]; then \
+		sudo pacman -S --noconfirm zig; \
+	elif [ -f /etc/fedora-release ]; then \
+		sudo dnf install -y zig; \
+	elif [ -f /etc/debian_version ]; then \
+		echo "[!] Installing Zig via apt (Debian/Ubuntu)..."; \
+		sudo apt-get update && sudo apt-get install -y zig; \
+	else \
+		echo "Unsupported OS for auto-install. Please visit https://ziglang.org"; \
+	fi
