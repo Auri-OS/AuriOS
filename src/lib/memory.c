@@ -3,10 +3,6 @@
 #include "../include/memory.h"
 #include <stdint.h>
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Warray-bounds="
-#pragma GCC diagnostic pop
-
 typedef struct block_header {
     size_t size;
     int free;
@@ -17,6 +13,19 @@ typedef struct block_header {
 
 extern char kernel_end;
 static block_header_t *head = NULL;
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+
+void memory_init(void) {
+    uintptr_t heap_start = (uintptr_t)&kernel_end;
+    head = (block_header_t *)heap_start;
+    head->size = 1024 * 1024;
+    head->free = 1;
+    head->next = NULL;
+}
+
+#pragma GCC diagnostic pop
 
 
 // Set memory zone to a specific value
@@ -71,25 +80,12 @@ void *memccpy(void *dest, const void *src, int c, size_t n) {
 // Duplicate a string pointer
 char *strdup(char *src)
 {
-	char *ptr;
-	char *cpy;
-
-	ptr = (char *) malloc(sizeof(char) * (strlen(src) + 1));
-	if (ptr == NULL)
+	char *cpy = malloc(sizeof(char) * (strlen(src) + 1));
+	if (cpy == NULL)
 		return NULL;
-	cpy = strcpy(*src, ptr);
+	strcpy(cpy, src);
 	return (cpy);
 } 
-
-// Memory Initialisation
-void memory_init(void)
-{
-    uintptr_t heap_start = (uintptr_t)&kernel_end;
-    head = (block_header_t *)heap_start;
-    head->size = 1024 * 1024;
-    head->free = 1;
-    head->next = NULL;
-}
 
 // Memory Allocation
 void *malloc(size_t size)

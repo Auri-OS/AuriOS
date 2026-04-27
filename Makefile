@@ -50,6 +50,7 @@ help:
 	@echo "  make install-fedora - Install dependencies for Fedora"
 	@echo "  make install-arch   - Install dependencies for Arch Linux"
 	@echo "  make install-debian - Install dependencies for Debian/Ubuntu"
+	@echo "  make install-mac    - Install dependencies for Mac (Brew required)"
 	@echo ""
 	@echo "==============================================================="
 
