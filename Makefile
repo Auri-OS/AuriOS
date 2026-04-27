@@ -8,14 +8,26 @@ ISO_DIR = iso
 KERNEL_BIN = $(OUTPUT_DIR)/AuriOS.bin
 ISO = $(OUTPUT_DIR)/AuriOS.iso
 
-# Toolchain
-CC = i686-elf-gcc
-AS = nasm
-LD = i686-elf-ld
+# ==========================================
+# Toolchain Configuration
+# Usage: make              (uses GCC by default)
+#        make USE_ZIG=1    (uses Zig toolchain)
+# ==========================================
+USE_ZIG ?= 0
 
-# Flags
-CFLAGS = -ffreestanding -O2 -Wall -Wextra -m32 -Isrc/include
-LDFLAGS = -T linker.ld -nostdlib
+ifeq ($(USE_ZIG), 1)
+    CC = zig cc -target x86-freestanding-none
+    LD = zig ld.lld
+    CFLAGS = -ffreestanding -O2 -Wall -Wextra -m32 -Isrc/include -fno-pie -fno-stack-protector -mgeneral-regs-only -fno-sanitize=all
+    LDFLAGS = -T linker.ld -nostdlib -z max-page-size=0x1000 --build-id=none
+else
+    CC = i686-elf-gcc
+    LD = i686-elf-ld
+    CFLAGS = -ffreestanding -O2 -Wall -Wextra -m32 -Isrc/include
+    LDFLAGS = -T linker.ld -nostdlib
+endif
+
+AS = nasm
 
 # Source files
 C_SOURCES = $(wildcard src/kernel/*.c) $(wildcard src/cpu/*.c) $(wildcard src/lib/*.c) $(wildcard src/drivers/*.c)
@@ -103,7 +115,7 @@ iso: $(KERNEL_BIN)
 	@echo '    multiboot /boot/AuriOS.bin' >> $(ISO_DIR)/boot/grub/grub.cfg
 	@echo '    boot' >> $(ISO_DIR)/boot/grub/grub.cfg
 	@echo '}' >> $(ISO_DIR)/boot/grub/grub.cfg
-	@grub2-mkrescue -o $(ISO) $(ISO_DIR) 2>/dev/null || grub2-mkrescue -o $(ISO) $(ISO_DIR)
+	@grub-mkrescue -o $(ISO) $(ISO_DIR) 2>/dev/null || grub2-mkrescue -o $(ISO) $(ISO_DIR)
 	@echo "ISO created: $(ISO)"
 
 # Run in QEMU (x86_64)
@@ -119,7 +131,7 @@ run32: iso
 # Run kernel directly on macOS (without ISO)
 run-mac: $(KERNEL_BIN)
 	@echo "Starting QEMU on macOS (direct kernel boot)..."
-	@qemu-system-i386 -kernel $(KERNEL_BIN) -m 512M -vga std
+	@qemu-system-i386 -kernel $(KERNEL_BIN) -m 512M -vga std 
 
 # Clean build artifacts
 clean:
