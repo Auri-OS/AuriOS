@@ -29,6 +29,12 @@ endif
 
 AS = nasm
 
+ifeq ($(shell command -v grub2-mkrescue >/dev/null 2>&1 && echo 1 || echo 0),1)
+	GRUB_MKRESCUE=grub2-mkrescue
+else
+	GRUB_MKRESCUE=grub-mkrescue
+endif
+
 # Source files
 C_SOURCES = $(wildcard src/kernel/*.c) $(wildcard src/cpu/*.c) $(wildcard src/lib/*.c) $(wildcard src/drivers/*.c)
 S_SOURCES = $(wildcard src/boot/*.s)
@@ -62,6 +68,7 @@ help:
 	@echo "  make install-fedora - Install dependencies for Fedora"
 	@echo "  make install-arch   - Install dependencies for Arch Linux"
 	@echo "  make install-debian - Install dependencies for Debian/Ubuntu"
+	@echo "  make install-void   - Install dependencies for Void Linux"
 	@echo "  make install-mac    - Install dependencies for Mac (Brew required)"
 	@echo ""
 	@echo "Zig Toolchain (Optional):"
@@ -119,7 +126,7 @@ iso: $(KERNEL_BIN)
 	@echo '    multiboot /boot/AuriOS.bin' >> $(ISO_DIR)/boot/grub/grub.cfg
 	@echo '    boot' >> $(ISO_DIR)/boot/grub/grub.cfg
 	@echo '}' >> $(ISO_DIR)/boot/grub/grub.cfg
-	@grub-mkrescue -o $(ISO) $(ISO_DIR) 2>/dev/null || grub2-mkrescue -o $(ISO) $(ISO_DIR)
+	@$(GRUB_MKRESCUE) -o $(ISO) $(ISO_DIR)
 	@echo "ISO created: $(ISO)"
 
 # Run in QEMU (x86_64)
@@ -158,6 +165,12 @@ install-debian:
 	@echo "[!] Installing dependencies for Debian/Ubuntu"
 	sudo apt install gcc g++ binutils make wget tar mtools xorriso nasm qemu-system-x86 grub-pc-bin
 	bash docs/install_scripts/install.sh
+
+install-void:
+	@echo "[!] Installing dependencies for Debian/Ubuntu"
+	sudo xbps-install -S gcc binutils make wget tar mtools xorriso nasm qemu grub gmp-devel mpfr-devel libmpc-devel
+	bash docs/install_scripts/install.sh
+
 # need work
 install-mac:
 	@echo "[!] Installing dependencies for MacOS"
@@ -174,6 +187,8 @@ install-zig:
 	elif [ -f /etc/debian_version ]; then \
 		echo "[!] Installing Zig via apt (Debian/Ubuntu)..."; \
 		sudo apt-get update && sudo apt-get install -y zig; \
+	elif [ "$$(uname --n)" = "voidlinux" ]; then \
+		sudo xbps-install -S zig; \
 	else \
 		echo "Unsupported OS for auto-install. Please visit https://ziglang.org"; \
 	fi

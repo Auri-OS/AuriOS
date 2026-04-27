@@ -1,3 +1,4 @@
+SCRIPTS=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 echo "[!] Installing cross compiler for i686-elf"
 mkdir -p ~/opt/cross
 cd ~/opt/cross
@@ -21,5 +22,4 @@ make install-gcc
 make install-target-libgcc
 cd ..
 echo "[!] Cross compiler installed successfully"
-echo 'export PATH="$HOME/opt/cross/bin:$PATH"' >> ~/.bashrc
-source ~/.bashrc
+source "$SCRIPTS/env.sh"

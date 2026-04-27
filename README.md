@@ -90,6 +90,11 @@ make install-arch
 make install-debian
 ```
 
+#### Debian / Ubuntu
+```bash
+make install-void
+```
+
 #### macOS
 ```bash
 brew install i686-elf-gcc nasm qemu xorriso
