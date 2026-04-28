@@ -1,4 +1,3 @@
-SCRIPTS=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 echo "[!] Installing cross compiler for i686-elf"
 mkdir -p ~/opt/cross
 cd ~/opt/cross
