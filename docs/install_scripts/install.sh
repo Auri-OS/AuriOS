@@ -22,4 +22,5 @@ make install-gcc
 make install-target-libgcc
 cd ..
 echo "[!] Cross compiler installed successfully"
-source "$SCRIPTS/env.sh"
+echo 'export PATH="$HOME/opt/cross/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
