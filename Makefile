@@ -155,7 +155,7 @@ install-fedora:
 	@echo "[!] Installing dependencies for Fedora"
 	sudo dnf install gcc gcc-c++ binutils make wget tar texinfo gmp-devel mpfr-devel libmpc-devel nasm qemu-system-x86 grub2-tools-extra mtools xorriso
 	bash docs/install_scripts/install.sh
-	
+
 install-arch:
 	@echo "[!] Installing dependencies for Arch Linux"
 	sudo pacman -S gcc binutils make wget tar nasm qemu-system-x86 grub mtools xorriso
@@ -167,7 +167,7 @@ install-debian:
 	bash docs/install_scripts/install.sh
 
 install-void:
-	@echo "[!] Installing dependencies for Debian/Ubuntu"
+	@echo "[!] Installing dependencies for Void Linux"
 	sudo xbps-install -S gcc binutils make wget tar mtools xorriso nasm qemu grub gmp-devel mpfr-devel libmpc-devel
 	bash docs/install_scripts/install.sh
 
