@@ -11,6 +11,6 @@ int str_is_uppercase(char *str);
 int str_is_lowercase(char *str);
 char *strupcase(char *str);
 char *strlowcase(char *str);
-char strcpy(char *src, char *dest);
+char *strcpy(char *dest, const char *src);
 
 #endif

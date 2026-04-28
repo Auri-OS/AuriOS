@@ -62,6 +62,27 @@ void *memcpy(void *dest, const void *src, size_t len) {
     return dest;
 }
 
+
+// Cpoy memory zone taking into account the overlap
+void *memmove(void *dest, const void *src, size_t n) {
+    unsigned char *d = (unsigned char *)dest;
+    const unsigned char *s = (const unsigned char *)src;
+
+    if (d == s) return dest;
+
+    if (d < s) 
+      return memcpy(dest, src, n);
+    else
+    {
+      d += n;
+      s += n;
+      while (n--) {
+        *(--d) = *(--s);
+      }
+    }
+    return dest;
+}
+
 // Copy up to n bytes or until character c is found
 void *memccpy(void *dest, const void *src, int c, size_t n) {
     unsigned char *d = dest;
@@ -78,7 +99,7 @@ void *memccpy(void *dest, const void *src, int c, size_t n) {
 }
 
 // Duplicate a string pointer
-char *strdup(char *src)
+char *strdup(const char *src)
 {
 	char *cpy = malloc(sizeof(char) * (strlen(src) + 1));
 	if (cpy == NULL)
@@ -112,6 +133,4 @@ void free(void *ptr)
     block_header_t *block = (block_header_t *)((uint8_t *)ptr - HEADER_SIZE);
     if (block != 0)
         block->free = 1;
-    else
-        block->free = 0;
 }
