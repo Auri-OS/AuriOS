@@ -43,6 +43,8 @@ void isr_handler(registers_t *regs)
         terminal_writestring(exception_messages[regs->int_no]);
         terminal_writestring("\n");
 
-        for (;;);
+        for (;;) {
+          asm volatile("cli; hlt");
+        };
     }
 }

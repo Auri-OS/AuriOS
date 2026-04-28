@@ -118,11 +118,12 @@ char *strlowcase(char *str)
 }
 
 // Copy a string from a source to a destination
-char strcpy(char *src, char *dest) {
+char *strcpy(char *dest, const char *src) {
     int i = 0;
     while (src[i] != '\0') {
         dest[i] = src[i];
         i++;
     }
-    return(*dest);
+    dest[i] = 0;
+    return(dest);
 }
