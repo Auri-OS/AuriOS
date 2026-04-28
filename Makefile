@@ -18,7 +18,7 @@ USE_ZIG ?= 0
 ifeq ($(USE_ZIG), 1)
     CC = zig cc -target x86-freestanding-none
     LD = zig ld.lld
-    CFLAGS = -ffreestanding -O2 -Wall -Wextra -m32 -Isrc/include -fno-pie -fno-stack-protector -mgeneral-regs-only -fno-sanitize=all
+    CFLAGS = -ffreestanding -Wall -Wextra -m32 -Isrc/include -fno-pie -fno-stack-protector -mgeneral-regs-only -fno-sanitize=all
     LDFLAGS = -T linker.ld -nostdlib -z max-page-size=0x1000 --build-id=none
 else
     CC = i686-elf-gcc
