@@ -90,7 +90,7 @@ make install-arch
 make install-debian
 ```
 
-#### Debian / Ubuntu
+#### Void Linux
 ```bash
 make install-void
 ```
