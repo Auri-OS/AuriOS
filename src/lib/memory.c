@@ -1,6 +1,5 @@
 #include "../include/memory.h"
 #include "../include/string.h"
-#include "../include/memory.h"
 #include <stdint.h>
 
 typedef struct block_header {
@@ -101,7 +100,7 @@ void *memccpy(void *dest, const void *src, int c, size_t n) {
 // Duplicate a string pointer
 char *strdup(const char *src)
 {
-	char *cpy = malloc(sizeof(char) * (strlen(src) + 1));
+	char *cpy = malloc(strlen(src) + 1);
 	if (cpy == NULL)
 		return NULL;
 	strcpy(cpy, src);
@@ -115,6 +114,14 @@ void *malloc(size_t size)
 
     while (block) {
         if (block->free && block->size >= size) {
+            if (block->size > size + HEADER_SIZE + 16) {
+                block_header_t *new_block = (block_header_t *)((uint8_t *)block + HEADER_SIZE + size);
+                new_block->size = block->size - size - HEADER_SIZE;
+                new_block->free = 1;
+                new_block->next = block->next;
+                block->size = size;
+                block->next = new_block;
+            }
             block->free = 0;
             return (void *)((uint8_t *)block + HEADER_SIZE);
         }
@@ -131,6 +138,18 @@ void free(void *ptr)
         return;
 
     block_header_t *block = (block_header_t *)((uint8_t *)ptr - HEADER_SIZE);
-    if (block != 0)
-        block->free = 1;
+    block->free = 1;
+
+    if (block->next && block->next->free) {
+        block->size += HEADER_SIZE + block->next->size;
+        block->next = block->next->next;
+    }
+
+    block_header_t *prev = head;
+    while (prev && prev->next != block)
+        prev = prev->next;
+    if (prev && prev->free) {
+        prev->size += HEADER_SIZE + block->size;
+        prev->next = block->next;
+    }
 }
