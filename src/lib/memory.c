@@ -100,6 +100,8 @@ void *memccpy(void *dest, const void *src, int c, size_t n) {
 // Duplicate a string pointer
 char *strdup(const char *src)
 {
+	if (src == NULL)
+		return NULL;
 	char *cpy = malloc(strlen(src) + 1);
 	if (cpy == NULL)
 		return NULL;
