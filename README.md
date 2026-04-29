@@ -60,9 +60,20 @@ This project demonstrates low-level system programming concepts and serves as a 
   - QEMU integration for testing
   - ISO generation for bootable media
 
+## ❤️ Contributors
+Thank to all the contributors, you are the flame burning in our heart ❤️
+<div align="left">
+
+| Profile | GitHub | Role |
+|:-------:|:------:|:----:|
+| <img src="https://github.com/im-nymii.png" width="80" height="80" alt="im-nymii" /> | [Nymii](https://github.com/im-nymii) | Founder & Maintainer |
+| <img src="https://github.com/llmaddie.png" width="80" height="80" alt="llmaddie 2" /> | [Maddie](https://github.com/llmaddie) | Co-Founder & Maintainer |
+| <img src="https://github.com/pepedinho.png" width="80" height="80" alt="pepedinho" /> | [pepedinho](https://github.com/pepedinho) | Contributor |
+
+</div>
+
 ## 🚀 Getting Started
 
-<<<<<<< develop
 ### Prerequisites
 
 Before building AuriOS, ensure you have the following tools installed:
@@ -109,17 +120,8 @@ cd AuriOS
 
 ### 2. Build the Kernel
 
-=======
-```                                                                                                 
-                                                                                                    
-                                                                                                    
-                                                                                          
-## Installation :
-if you are on x86 :
->>>>>>> v0.2.0
 ```bash
 make all
-<<<<<<< develop
 ```
 
 This will:
@@ -245,19 +247,3 @@ Project Link: [https://github.com/Auri-OS/AuriOS](https://github.com/Auri-OS/Aur
 ⭐ Star this repository if you find it helpful!
 
 </div>
-=======
-make run
-```
-if you are on arm cpu :
-```bash
-make
-make iso
-make run32
-```
-if u want clean every compiled file of the project do :
-```bash
-make clean
-```
-
-dont forget to look at the requirement in /docs to install every package 
->>>>>>> v0.2.0

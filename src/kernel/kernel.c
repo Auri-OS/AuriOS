@@ -30,6 +30,7 @@ void kernel_main(void) {
     terminal_writestring("System ready.\n\n");
     sleep(1000);
     terminal_clear();
+    terminal_writestring("\x1b[96m");
     terminal_writestring("\n\n\n\n\n\n\n                                      X                 \n");
     terminal_writestring("                                     XXX                \n");
     terminal_writestring("                                    XXXXX               \n");
@@ -39,6 +40,7 @@ void kernel_main(void) {
     terminal_writestring("                                XXXXXX  XXXXX           \n");
     terminal_writestring("                               XXXXXX    XXXXX          \n");
     terminal_writestring("                              XXXXXX      XXXXX         \n\n");
+    terminal_writestring("\x1b[0m");
     terminal_writestring("                            Auri-Os - Kernel v0.2\n\n");
     sleep(2000);
     keyboard_init();

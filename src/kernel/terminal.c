@@ -1,5 +1,7 @@
 #include "../include/terminal.h"
 #include "../include/string.h"
+#include "../include/ansi.h"
+#include <stdint.h>
 
 #define VGA_WIDTH 80
 #define VGA_HEIGHT 25
@@ -50,7 +52,12 @@ static void terminal_scroll(void) {
     }
 }
 
+
 void terminal_putchar(char c) {
+  ansi_process_char((uint8_t)c);
+}
+
+void terminal_putchar_raw(char c) {
     if (c == '\n') {
         terminal_column = 0;
         if (++terminal_row == VGA_HEIGHT) {
@@ -98,7 +105,5 @@ void terminal_backspace(void) {
 }
 
 void terminal_writestring(const char* data) {
-	if (data != NULL) {
-		terminal_write(data, strlen(data));
-	}
+	terminal_write(data, strlen(data));
 }

@@ -8,26 +8,40 @@ ISO_DIR = iso
 KERNEL_BIN = $(OUTPUT_DIR)/AuriOS.bin
 ISO = $(OUTPUT_DIR)/AuriOS.iso
 
-# Toolchain
-CC = i686-elf-gcc
-AS = nasm
-LD = i686-elf-ld
+# ==========================================
+# Toolchain Configuration
+# Usage: make              (uses GCC by default)
+#        make USE_ZIG=1    (uses Zig toolchain)
+# ==========================================
+USE_ZIG ?= 0
 
-# Flags
-CFLAGS = -ffreestanding -O2 -Wall -Wextra -m32 -Isrc/include
-LDFLAGS = -T linker.ld -nostdlib
+ifeq ($(USE_ZIG), 1)
+    CC = zig cc -target x86-freestanding-none
+    LD = zig ld.lld
+    CFLAGS = -ffreestanding -Wall -Wextra -m32 -Isrc/include -fno-pie -fno-stack-protector -mgeneral-regs-only -fno-sanitize=all
+    LDFLAGS = -T linker.ld -nostdlib -z max-page-size=0x1000 --build-id=none
+else
+    CC = i686-elf-gcc
+    LD = i686-elf-ld
+    CFLAGS = -ffreestanding -O2 -Wall -Wextra -m32 -Isrc/include
+    LDFLAGS = -T linker.ld -nostdlib
+endif
+
+AS = nasm
 
 # Source files
 C_SOURCES = $(wildcard src/kernel/*.c) $(wildcard src/cpu/*.c) $(wildcard src/lib/*.c) $(wildcard src/drivers/*.c)
 S_SOURCES = $(wildcard src/boot/*.s)
 ASM_SOURCES = $(wildcard src/cpu/*.asm)
+ZIG_SOURCES = $(wildcard src/kernel/*.zig)
+ZIG_OBJS = $(patsubst src/%.zig, $(BUILD_DIR)/%.o, $(ZIG_SOURCES))
 
 # Object files (in build directory)
 C_OBJS = $(patsubst src/%.c, $(BUILD_DIR)/%.o, $(C_SOURCES))
 S_OBJS = $(patsubst src/%.s, $(BUILD_DIR)/%.o, $(S_SOURCES))
 ASM_OBJS = $(patsubst src/%.asm, $(BUILD_DIR)/%.o, $(ASM_SOURCES))
 
-OBJS = $(S_OBJS) $(ASM_OBJS) $(C_OBJS)
+OBJS = $(S_OBJS) $(ASM_OBJS) $(C_OBJS) $(ZIG_OBJS)
 
 # Default target
 .DEFAULT_GOAL := help
@@ -50,7 +64,11 @@ help:
 	@echo "  make install-fedora - Install dependencies for Fedora"
 	@echo "  make install-arch   - Install dependencies for Arch Linux"
 	@echo "  make install-debian - Install dependencies for Debian/Ubuntu"
+	@echo "  make install-mac    - Install dependencies for Mac (Brew required)"
 	@echo ""
+	@echo "Zig Toolchain (Optional):"
+	@echo "  make install-zig    - Auto-install Zig compiler based on your OS"
+	@echo "  -USE_ZIG=1          - Compile with Zig toolchain"
 	@echo "==============================================================="
 
 # Create necessary directories
@@ -79,6 +97,11 @@ $(BUILD_DIR)/%.o: src/%.asm | $(BUILD_DIR)
 	@echo "AS $<"
 	@$(AS) -f elf32 $< -o $@
 
+$(BUILD_DIR)/%.o: src/%.zig | $(BUILD_DIR)
+	@mkdir -p $(dir $@)
+	@echo "ZIG $<"
+	@zig build-obj $< -femit-bin=$@ -target x86-freestanding-none -O ReleaseSafe
+
 # Link kernel binary
 $(KERNEL_BIN): $(OBJS) | $(OUTPUT_DIR)
 	@echo "LD $(KERNEL_BIN)"
@@ -103,7 +126,7 @@ iso: $(KERNEL_BIN)
 	@echo '    multiboot /boot/AuriOS.bin' >> $(ISO_DIR)/boot/grub/grub.cfg
 	@echo '    boot' >> $(ISO_DIR)/boot/grub/grub.cfg
 	@echo '}' >> $(ISO_DIR)/boot/grub/grub.cfg
-	@grub2-mkrescue -o $(ISO) $(ISO_DIR) 2>/dev/null || grub2-mkrescue -o $(ISO) $(ISO_DIR)
+	@grub-mkrescue -o $(ISO) $(ISO_DIR) 2>/dev/null || grub2-mkrescue -o $(ISO) $(ISO_DIR)
 	@echo "ISO created: $(ISO)"
 
 # Run in QEMU (x86_64)
@@ -119,7 +142,7 @@ run32: iso
 # Run kernel directly on macOS (without ISO)
 run-mac: $(KERNEL_BIN)
 	@echo "Starting QEMU on macOS (direct kernel boot)..."
-	@qemu-system-i386 -kernel $(KERNEL_BIN) -m 512M -vga std
+	@qemu-system-i386 -kernel $(KERNEL_BIN) -m 512M -vga std 
 
 # Clean build artifacts
 clean:
@@ -146,3 +169,18 @@ install-debian:
 install-mac:
 	@echo "[!] Installing dependencies for MacOS"
 	brew install qemu i686-elf-gcc nasm
+
+install-zig:
+	@echo "[!] Detecting OS and installing Zig..."
+	@if [ "$$(uname)" = "Darwin" ]; then \
+		brew install zig; \
+	elif [ -f /etc/arch-release ]; then \
+		sudo pacman -S --noconfirm zig; \
+	elif [ -f /etc/fedora-release ]; then \
+		sudo dnf install -y zig; \
+	elif [ -f /etc/debian_version ]; then \
+		echo "[!] Installing Zig via apt (Debian/Ubuntu)..."; \
+		sudo apt-get update && sudo apt-get install -y zig; \
+	else \
+		echo "Unsupported OS for auto-install. Please visit https://ziglang.org"; \
+	fi
