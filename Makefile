@@ -33,13 +33,15 @@ AS = nasm
 C_SOURCES = $(wildcard src/kernel/*.c) $(wildcard src/cpu/*.c) $(wildcard src/lib/*.c) $(wildcard src/drivers/*.c)
 S_SOURCES = $(wildcard src/boot/*.s)
 ASM_SOURCES = $(wildcard src/cpu/*.asm)
+ZIG_SOURCES = $(wildcard src/kernel/*.zig)
+ZIG_OBJS = $(patsubst src/%.zig, $(BUILD_DIR)/%.o, $(ZIG_SOURCES))
 
 # Object files (in build directory)
 C_OBJS = $(patsubst src/%.c, $(BUILD_DIR)/%.o, $(C_SOURCES))
 S_OBJS = $(patsubst src/%.s, $(BUILD_DIR)/%.o, $(S_SOURCES))
 ASM_OBJS = $(patsubst src/%.asm, $(BUILD_DIR)/%.o, $(ASM_SOURCES))
 
-OBJS = $(S_OBJS) $(ASM_OBJS) $(C_OBJS)
+OBJS = $(S_OBJS) $(ASM_OBJS) $(C_OBJS) $(ZIG_OBJS)
 
 # Default target
 .DEFAULT_GOAL := help
@@ -94,6 +96,11 @@ $(BUILD_DIR)/%.o: src/%.asm | $(BUILD_DIR)
 	@mkdir -p $(dir $@)
 	@echo "AS $<"
 	@$(AS) -f elf32 $< -o $@
+
+$(BUILD_DIR)/%.o: src/%.zig | $(BUILD_DIR)
+	@mkdir -p $(dir $@)
+	@echo "ZIG $<"
+	@zig build-obj $< -femit-bin=$@ -target x86-freestanding-none -O ReleaseSafe
 
 # Link kernel binary
 $(KERNEL_BIN): $(OBJS) | $(OUTPUT_DIR)
