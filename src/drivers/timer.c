@@ -1,6 +1,7 @@
 #include "../include/timer.h"
 #include "../include/isr.h"
 #include "../include/io.h"
+#include "../include/log.h"
 #include <stdint.h>
 
 static uint32_t tick = 0;
@@ -26,6 +27,7 @@ void timer_init(uint32_t freq)
     uint8_t mask = inb(0x21);
     mask &= ~0x01;
     outb(0x21, mask);
+    KINFO("[PIT] Programmable Interval Timer configured");
 }
 
 void sleep(uint32_t ms)

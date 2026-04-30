@@ -1,6 +1,7 @@
 #include "../include/memory.h"
 #include "../include/string.h"
 #include "../include/memory.h"
+#include "../include/log.h"
 #include <stdint.h>
 
 typedef struct block_header {
@@ -23,6 +24,7 @@ void memory_init(void) {
     head->size = 1024 * 1024;
     head->free = 1;
     head->next = NULL;
+    KINFO("[MEM] Initial heap mapped");
 }
 
 #pragma GCC diagnostic pop

@@ -7,5 +7,6 @@ void klog(const char *level, const char *msg);
 #define KWARN(msg) klog("WARN", msg)
 #define KERR(msg) klog("ERROR", msg)
 #define KDEBUG(msg) klog("DEBUG", msg)
+#define KPANIC(msg) klog("PANIC", msg)
 
 #endif
