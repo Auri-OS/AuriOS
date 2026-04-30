@@ -132,12 +132,12 @@ iso: $(KERNEL_BIN)
 # Run in QEMU (x86_64)
 run: iso
 	@echo "Starting QEMU (x86_64)..."
-	@qemu-system-x86_64 -cdrom $(ISO) -m 512M -boot d -vga std
+	@qemu-system-x86_64 -cdrom $(ISO) -m 512M -boot d -vga std -serial stdio
 
 # Run in QEMU (i386)
 run32: iso
 	@echo "Starting QEMU (i386)..."
-	@qemu-system-i386 -cdrom $(ISO) -m 512M -boot d -vga std
+	@qemu-system-i386 -cdrom $(ISO) -m 512M -boot d -vga std -serial stdio
 
 # Run kernel directly on macOS (without ISO)
 run-mac: $(KERNEL_BIN)
