@@ -2,6 +2,7 @@
 build/
 output/
 iso/
+.environment/
 
 # Generated files
 *.o
