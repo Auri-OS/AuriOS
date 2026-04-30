@@ -1,10 +1,24 @@
 const std = @import("std");
 
+extern fn terminal_set_cursor(x: usize, y: usize) void;
+extern fn terminal_clear_until_cursor() void;
+extern fn terminal_clear_after_cursor() void;
 extern fn terminal_putchar_raw(c: u8) void;
 extern fn terminal_setcolor(color: u8) void;
 extern fn terminal_clear() void;
 
 const DEFAULT_COLOR: u8 = 0x07;
+const MAX_PARAMS = 8;
+
+pub fn panic(msg: []const u8, error_return_trace: ?*std.builtin.StackTrace, ret_addr: ?usize) noreturn {
+    _ = msg;
+    _ = error_return_trace;
+    _ = ret_addr;
+
+    while (true) {
+        asm volatile ("cli; hlt");
+    }
+}
 
 const VgaColor = struct {
     fg: u8 = 37,
@@ -38,7 +52,10 @@ const VgaColor = struct {
 const State = union(enum) {
     normal,
     escape,
-    bracket: u16,
+    bracket: struct {
+        params: [MAX_PARAMS]u16,
+        param_index: usize,
+    },
 };
 
 var current_state: State = .normal;
@@ -53,7 +70,7 @@ export fn ansi_process_char(c: u8) void {
         },
         .escape => {
             if (c == '[') {
-                current_state = .{ .bracket = 0 };
+                current_state = .{ .bracket = .{ .params = [_]u16{0} ** MAX_PARAMS, .param_index = 0 } };
             } else {
                 current_state = .normal; // abort
             }
@@ -62,14 +79,32 @@ export fn ansi_process_char(c: u8) void {
             switch (c) {
                 '0'...'9' => {
                     const n = c - '0';
-                    val.* = (val.* * 10) + n;
+                    val.params[val.param_index] = (val.params[val.param_index] * 10) + n;
+                },
+                'J' => {
+                    switch (val.params[0]) {
+                        0 => terminal_clear_after_cursor(),
+                        1 => terminal_clear_until_cursor(),
+                        2 => terminal_clear(),
+                        else => {},
+                    }
+                    current_state = .normal;
+                },
+                'H' => {
+                    const y = if (val.params[0] == 0) 1 else val.params[0];
+                    const x = if (val.params[1] == 0) 1 else val.params[1];
+                    terminal_set_cursor(x - 1, y - 1);
+                    current_state = .normal;
                 },
                 ';' => {
-                    active_color.drain(val.*);
-                    val.* = 0; // reset the accumulator
+                    // active_color.drain(val.params[val.param_index]);
+                    val.param_index = (val.param_index + 1) % MAX_PARAMS;
                 },
                 'm' => {
-                    active_color.drain(val.*);
+                    var i: usize = 0;
+                    while (i <= val.param_index) : (i += 1) {
+                        active_color.drain(val.params[i]);
+                    }
                     const vga_color = active_color.to_vga();
                     terminal_setcolor(vga_color);
                     current_state = .normal;

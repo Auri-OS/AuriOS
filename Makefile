@@ -100,7 +100,7 @@ $(BUILD_DIR)/%.o: src/%.asm | $(BUILD_DIR)
 $(BUILD_DIR)/%.o: src/%.zig | $(BUILD_DIR)
 	@mkdir -p $(dir $@)
 	@echo "ZIG $<"
-	@zig build-obj $< -femit-bin=$@ -target x86-freestanding-none -O ReleaseSafe
+	@zig build-obj $< -femit-bin=$@ -target x86-freestanding-none -O ReleaseSafe -fno-stack-check -mcpu=i386
 
 # Link kernel binary
 $(KERNEL_BIN): $(OBJS) | $(OUTPUT_DIR)
