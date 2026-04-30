@@ -5,8 +5,9 @@
 
 size_t strlen(const char* str);
 int strcmp(const char *s1, const char *s2);
-int	strcat(char *dest, char *src);
-char *strncat(char *dest, char *src, unsigned int nb);
+int	strncmp(const char *s1, const char *s2, unsigned int n);
+char *strcat(char *dest, const char *src);
+char *strncat(char *dest, const char *src, unsigned int nb);
 int str_is_uppercase(char *str);
 int str_is_lowercase(char *str);
 char *strupcase(char *str);
