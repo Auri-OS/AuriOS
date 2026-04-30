@@ -19,7 +19,7 @@ int strcmp(const char *s1, const char *s2)
 }
 
 // Compare the first n byte of two string between them
-int	strncmp(char *s1, char *s2, unsigned int n)
+int	strncmp(const char *s1, const char *s2, unsigned int n)
 {
 	unsigned int i = 0;
 	while (s1[i] == s2[i] && s2[i] != '\0' && i < n - 1)
@@ -32,7 +32,7 @@ int	strncmp(char *s1, char *s2, unsigned int n)
 }
 
 // Catenate string from src to dest
-int	strcat(char *dest, char *src)
+char *strcat(char *dest, const char *src)
 {
 	unsigned int a = 0;
 	unsigned int b = 0;
@@ -44,11 +44,12 @@ int	strcat(char *dest, char *src)
 		dest[a + b] = src[b];
 		b++;
 	}
-	return (*dest);
+	dest[a + b] = '\0';
+	return (dest);
 }
 
 // Catenate the first n bytes from a src string to dest 
-char *strncat(char *dest, char *src, unsigned int nb)
+char *strncat(char *dest, const char *src, unsigned int nb)
 {
 	unsigned int i = 0;
 	unsigned int j = 0;
@@ -71,7 +72,7 @@ int str_is_uppercase(char *str)
 	int	i = 0;
 	while (str[i] != '\0')
 	{
-		if (str[i] < 'A' || (str[i] > 'a' && str[i] < 'z') || str[i] > 'Z')
+		if (str[i] >= 'a' && str[i] <= 'z')
 			return (0);
 		i++;
 	}
@@ -84,7 +85,7 @@ int str_is_lowercase(char *str)
 	int	i = 0;
 	while (str[i] != '\0')
 	{
-		if (str[i] < 'a' || (str[i] > 'A' && str[i] < 'Z') || str[i] > 'z')
+		if (str[i] >= 'A' && str[i] <= 'Z')
 			return (0);
 		i++;
 	}
