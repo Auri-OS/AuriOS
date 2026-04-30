@@ -41,7 +41,8 @@ void kernel_main(void) {
     terminal_writestring("                               XXXXXX    XXXXX          \n");
     terminal_writestring("                              XXXXXX      XXXXX         \n\n");
     terminal_writestring("\x1b[0m");
-    terminal_writestring("                            Auri-Os - Kernel v0.2\n\n");
+    terminal_writestring("                            Auri-Os - Kernel \x1b[97;44mv0.2");
+    terminal_writestring("\x1b[0m\n\n");
     sleep(2000);
     keyboard_init();
     terminal_clear();
