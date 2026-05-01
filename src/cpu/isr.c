@@ -1,5 +1,6 @@
 #include "../include/isr.h"
 #include "../include/terminal.h"
+#include "../include/log.h"
 
 static const char *exception_messages[32] = {
     "Division By Zero",
@@ -42,7 +43,7 @@ void isr_handler(registers_t *regs)
         terminal_writestring("EXCEPTION: ");
         terminal_writestring(exception_messages[regs->int_no]);
         terminal_writestring("\n");
-
+        KPANIC(exception_messages[regs->int_no]);
         for (;;) {
           asm volatile("cli; hlt");
         };

@@ -95,6 +95,8 @@ void animate_logo(void) {
 }
 
 void kernel_main(void) {
+    serial_init();
+    KINFO("[KRN] Starting AuriOS boot sequence...");
     gdt_init();
     pic_remap();
     idt_init();
@@ -122,6 +124,7 @@ void kernel_main(void) {
     keyboard_init();
     terminal_clear();
     shell_init();
+    KINFO("[KRN] Boot sequence complete. System ready.");
 
     for (;;) {
         asm volatile("hlt");
