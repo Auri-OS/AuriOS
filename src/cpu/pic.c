@@ -1,5 +1,6 @@
 #include "../include/pic.h"
 #include "../include/io.h"
+#include "../include/log.h"
 
 #define PIC1_COMMAND 0x20
 #define PIC1_DATA    0x21
@@ -30,4 +31,5 @@ void pic_remap(void)
 
     outb(PIC1_DATA, 0xFF);
     outb(PIC2_DATA, 0xFF);
+    KINFO("[PIC] IRQs remapped to 32-47");
 }

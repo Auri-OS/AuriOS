@@ -1,4 +1,5 @@
 #include "../include/gdt.h"
+#include "../include/log.h"
 
 #define GDT_ENTRY_COUNT 5
 
@@ -32,4 +33,5 @@ void gdt_init()
     gp.base = (uint32_t)&gdt;
 
     gdt_flush((uint32_t)&gp);
+    KINFO("[GDT] Initialized succesfully");
 }
