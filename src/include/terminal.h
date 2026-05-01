@@ -31,5 +31,8 @@ void terminal_write(const char* data, size_t size);
 void terminal_writestring(const char* data);
 void terminal_backspace(void);
 void terminal_clear(void);
+void terminal_clear_until_cursor(void);
+void terminal_clear_after_cursor(void);
+void terminal_set_cursor(size_t x, size_t y);
 
 #endif

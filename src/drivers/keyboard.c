@@ -3,6 +3,7 @@
 #include "../include/io.h"
 #include "../include/terminal.h"
 #include "../include/shell.h"
+#include "../include/log.h"
 
 static char scancode_to_ascii[128] = {
     0, 0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 0,
@@ -63,4 +64,5 @@ void keyboard_init(void)
     uint8_t mask = inb(0x21);
     mask &= ~0x02;
     outb(0x21, mask);
+    KINFO("[KBD] PS/2 Keyboard driver active");
 }

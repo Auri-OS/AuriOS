@@ -1,5 +1,6 @@
 #include "../include/idt.h"
 #include "../include/isr.h"
+#include "../include/log.h"
 
 #define IDT_ENTRY_COUNT 256
 
@@ -79,4 +80,5 @@ void idt_init(void)
     idt_set_gate(47, (uint32_t)irq15, 0x08, 0x8E);
 
     idt_flush((uint32_t)&idtp);
+    KINFO("[IDT] Gates configured and loaded");
 }
