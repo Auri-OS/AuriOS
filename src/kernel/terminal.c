@@ -1,6 +1,7 @@
 #include "../include/terminal.h"
 #include "../include/string.h"
 #include "../include/ansi.h"
+#include <stddef.h>
 #include <stdint.h>
 
 #define VGA_WIDTH 80
@@ -91,6 +92,27 @@ void terminal_clear(void){
     } 
     terminal_row = 0;
     terminal_column = 0;
+}
+
+void terminal_clear_until_cursor(void) {
+    size_t limit = terminal_row * VGA_WIDTH + terminal_column;
+    for (size_t i = 0; i < limit; i++)
+      terminal_buffer[i] = vga_entry(' ', terminal_color);
+}
+
+void terminal_clear_after_cursor(void) {
+    size_t limit = VGA_WIDTH * VGA_HEIGHT;
+    size_t start = terminal_row * VGA_WIDTH + terminal_column;
+    for (size_t i = start; i < limit; i++)
+      terminal_buffer[i] = vga_entry(' ', terminal_color);
+}
+
+void terminal_set_cursor(size_t x, size_t y) {
+  if (x > VGA_WIDTH) x = VGA_WIDTH - 1;
+  if (y > VGA_HEIGHT) y = VGA_HEIGHT - 1;
+
+  terminal_column = x;
+  terminal_row = y;
 }
 
 void terminal_backspace(void) {
