@@ -3,14 +3,14 @@
 # 🌟 AuriOS
 
 ```
-        X       
-       XXX      
-      XXXXX     
-     X XXXXX    
-    XXX XXXXX   
-   XXXXX XXXXX   
-  XXXXXX  XXXXX  
- XXXXXX    XXXXX 
+        X
+       XXX
+      XXXXX
+     X XXXXX
+    XXX XXXXX
+   XXXXX XXXXX
+  XXXXXX  XXXXX
+ XXXXXX    XXXXX
 XXXXXX      XXXXX
 ```
 
@@ -104,7 +104,7 @@ make install-debian
 
 #### macOS
 ```bash
-brew install i686-elf-gcc nasm qemu xorriso
+brew install i686-elf-gcc nasm qemu xorriso zig
 ```
 
 > **Note**: For detailed installation instructions for your platform, see [docs/INSTALLATION.MD](docs/INSTALLATION.MD)
