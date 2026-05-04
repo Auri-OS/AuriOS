@@ -1,0 +1,92 @@
+name: AuriOS CI
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+    paths:
+      - 'src/**'
+      - 'Makefile'
+      - 'linker.ld'
+      - '.github/workflows/ci.yml'
+  pull_request:
+    branches: [ "main", "develop" ]
+  
+  workflow_dispatch:
+
+jobs:
+  build-gcc:
+    name: Build with GCC (i686-elf)
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout 
+        uses: actions/checkout@v4
+
+      - name: restore cross compiler cache 
+        id: cache-toolchain
+        uses: actions/cache@v4
+        with:
+          path: ~/opt/cross
+          key: ${{ runner.os }}-i686-elf-gcc-v1
+          restore-keys: |
+            ${{ runner.os }}-i686-elf-gcc-
+
+      - name: install system deps 
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y nasm xorriso mtools grub-pc-bin grub-common
+
+      - name: zig install
+        uses: goto-bus-stop/setup-zig@v2
+        with:
+          version: 0.16.0
+
+      - name: build cross compiler
+        if: steps.cache-toolchain.outputs.cache-hit != 'true'
+        run: |
+          sudo apt-get install -y gcc g++ binutils make wget tar texinfo libgmp-dev libmpfr-dev libmpc-dev
+          chmod +x docs/install_scripts/install.sh
+          ./docs/install_scripts/install.sh
+
+      - name: create ISO
+        run: |
+          export PATH="$HOME/opt/cross/bin:$PATH"
+          make clean
+          make iso
+
+      - name: upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AuriOS-GCC-ISO
+          path: output/AuriOS.iso
+          retention-days: 5
+
+  build-zig:
+    name: Build with Zig Toolchain
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: install zig 
+        uses: goto-bus-stop/setup-zig@v2
+        with:
+          version: 0.16.0
+
+      - name: install ISO deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y nasm xorriso mtools grub-pc-bin grub-common
+
+      - name: create ISO
+        run: |
+          make clean
+          make USE_ZIG=1 iso
+
+      - name: upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AuriOS-Zig-ISO
+          path: output/AuriOS.iso
+          retention-days: 5
