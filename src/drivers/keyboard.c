@@ -22,6 +22,7 @@ static char scancode_to_ascii_shift[128] = {
 };
 
 static int shift_pressed = 0;
+static int ctrl_pressed = 0;
 
 void keyboard_callback(registers_t *regs)
 {
@@ -39,9 +40,26 @@ void keyboard_callback(registers_t *regs)
         shift_pressed = 0;
         return;
     }
+    // Ctrl captured
+    if (scancode == 0x1D) {
+        ctrl_pressed = 1;
+        return;
+    }
 
+    // Ctrl free
+    if (scancode == 0x9D) {
+        ctrl_pressed = 0;
+        return;
+    }
+    
     if (scancode & 0x80)
         return;
+    
+    // Ctrl+L
+    if (ctrl_pressed && scancode == 0x26) {
+        shell_handle_key('\f');
+        return;
+    }
 
     // Backspace
     if (scancode == 0x0E) {
