@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 readonly BINUTILS_VERSION="2.41"
 readonly GCC_VERSION="13.2.0"
@@ -53,4 +53,5 @@ cat > ./activate << EOF
 export PATH="$PREFIX/bin:\$PATH"
 EOF
 
+source ./activate
 printf "\nactivate with: \n\t. $PREFIX/activate\n"
