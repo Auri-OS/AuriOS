@@ -1,5 +1,6 @@
 #include "../include/idt.h"
 #include "../include/isr.h"
+#include "../include/log.h"
 
 #define IDT_ENTRY_COUNT 256
 
@@ -25,7 +26,7 @@ void idt_init(void)
     for (int i = 0; i < IDT_ENTRY_COUNT; i++) {
         idt_set_gate(i, 0, 0, 0);
     }
-
+    
     idt_set_gate(0,  (uint32_t)isr0,  0x08, 0x8E);
     idt_set_gate(1,  (uint32_t)isr1,  0x08, 0x8E);
     idt_set_gate(2,  (uint32_t)isr2,  0x08, 0x8E);
@@ -60,7 +61,7 @@ void idt_init(void)
     idt_set_gate(31, (uint32_t)isr31, 0x08, 0x8E);
 
 
-
+    
     idt_set_gate(32, (uint32_t)irq0,  0x08, 0x8E);
     idt_set_gate(33, (uint32_t)irq1,  0x08, 0x8E);
     idt_set_gate(34, (uint32_t)irq2,  0x08, 0x8E);
@@ -79,4 +80,5 @@ void idt_init(void)
     idt_set_gate(47, (uint32_t)irq15, 0x08, 0x8E);
 
     idt_flush((uint32_t)&idtp);
+    KINFO("[IDT] Gates configured and loaded");
 }

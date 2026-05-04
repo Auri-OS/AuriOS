@@ -8,38 +8,49 @@
 static char buffer[BUFFER_SIZE];
 static int buffer_pos = 0;
 
+
 void shell_init(void) {
     terminal_writestring("kernel@auri-os~$ ");
 }
 
-void auri_fetch() {
-    terminal_writestring("\n        X                 \n");
-    terminal_writestring("       XXX                kernel@auri-os\n");
-    terminal_writestring("      XXXXX               \n");
-    terminal_writestring("     X XXXXX              Kernel: AuriKernel\n");
-    terminal_writestring("    XXX XXXXX             Version: 0.2\n");
-    terminal_writestring("   XXXXX XXXXX            Release: 2-14-26\n");
-    terminal_writestring("  XXXXXX  XXXXX           \n");
-    terminal_writestring(" XXXXXX    XXXXX          \n");
-    terminal_writestring("XXXXXX      XXXXX         \n\n");
-}
+static void shell_execute(char* cmd)
+{
+    int i = 0;
+    while (cmd[i] == ' ') i++;
+    if (cmd[i] == '\0') return;
 
-void auri_help() {
-    terminal_writestring("\nhelp - show this command\n");
-    terminal_writestring("about - show informations about AuriOS\n");
-    terminal_writestring("clear - clear the terminal\n");
-    terminal_writestring("uptime - show uptime since machine started\n");
-    terminal_writestring("crash - make the machine freeze (fun cmd)\n\n");
-}
-
-void auri_get_uptime() {
+    if (strcmp(cmd, "help") == 0) {
+        terminal_writestring("\nhelp - show this command\n");
+        terminal_writestring("about - show informations about AuriOS\n");
+        terminal_writestring("clear - clear the terminal\n");
+        terminal_writestring("uptime - show uptime since machine started\n");
+        terminal_writestring("crash - make the machine freeze (fun cmd)\n\n");
+    }
+    else if (strcmp(cmd, "clear") == 0) {
+        terminal_clear();
+    }
+    else if (strcmp(cmd, "about") == 0) {
+        terminal_writestring("\n        X                 \n");
+        terminal_writestring("       XXX                kernel@auri-os\n");
+        terminal_writestring("      XXXXX               \n");
+        terminal_writestring("     X XXXXX              Kernel: AuriKernel\n");
+        terminal_writestring("    XXX XXXXX             Version: 0.2\n");
+        terminal_writestring("   XXXXX XXXXX            Release: 2-14-26\n");
+        terminal_writestring("  XXXXXX  XXXXX           \n");
+        terminal_writestring(" XXXXXX    XXXXX          \n");
+        terminal_writestring("XXXXXX      XXXXX         \n\n");
+        terminal_writestring("Type 'help' for available commands\n\n");
+    }
+    else if (strcmp(cmd, "crash") == 0) {
+        asm volatile("cli");
+        for (;;) asm volatile("hlt");
+    }
+    else if (strcmp(cmd, "uptime") == 0) {
         uint32_t ticks = get_tick();
-        uint32_t t_seconds = ticks / 1000;
-
-        uint32_t seconds = t_seconds % 60;
-        uint32_t minutes = (t_seconds / 60) % 60;
-        uint32_t hours = t_seconds / 3600;
-
+        uint32_t seconds = ticks / 1000;
+        uint32_t minutes = seconds / 60;
+        uint32_t hours = minutes / 60;
+        
         char buf[32];
         terminal_writestring("Current Uptime: ");
         itoa(hours, buf);
@@ -51,59 +62,6 @@ void auri_get_uptime() {
         itoa(seconds, buf);
         terminal_writestring(buf);
         terminal_writestring("s\n");
-}
-
-static char *clean_cmd(char *str)
-{
-    char *start = str;
-    char *end;
-
-    while (*start == ' ' || *start == '\t' || *start == '\n' || *start == '\r')
-        start++;
-
-    if (*start == '\0')
-        return start;
-
-    end = start;
-    while (*end)
-        end++;
-
-    end--;
-
-    while (end > start &&
-           (*end == ' ' || *end == '\t' || *end == '\n' || *end == '\r'))
-    {
-        *end = '\0';
-        end--;
-    }
-
-    return start;
-}
-
-static void shell_execute(char* cmd)
-{
-    int i = 0;
-    while (cmd[i] == ' ' || cmd[i] == '\t' || cmd[i] == '\r') i++;
-    if (cmd[i] == '\0') return;
-
-    char *cl_cmd = clean_cmd(cmd);
-
-    if (strcmp(cl_cmd, "help") == 0) {
-        auri_help();
-    }
-    else if (strcmp(cl_cmd, "clear") == 0) {
-        terminal_clear();
-    }
-    else if (strcmp(cl_cmd, "about") == 0) {
-        auri_fetch();
-        terminal_writestring("Type 'help' for available commands\n\n");
-    }
-    else if (strcmp(cl_cmd, "crash") == 0) {
-        asm volatile("cli");
-        for (;;) asm volatile("hlt");
-    }
-    else if (strcmp(cl_cmd, "uptime") == 0) {
-        auri_get_uptime();
     }
     else {
         terminal_writestring("command not found: ");

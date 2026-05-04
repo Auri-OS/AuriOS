@@ -3,6 +3,7 @@
 #include "../include/io.h"
 #include "../include/terminal.h"
 #include "../include/shell.h"
+#include "../include/log.h"
 
 static char scancode_to_ascii[128] = {
     0, 0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 0,
@@ -21,10 +22,6 @@ static char scancode_to_ascii_shift[128] = {
 };
 
 static int shift_pressed = 0;
-static int ctrl_pressed = 0;
-static int extended = 0;
-
-// Scancodes doc : https://wiki.osdev.org/PS/2_Keyboard
 
 void keyboard_callback(registers_t *regs)
 {
@@ -43,47 +40,20 @@ void keyboard_callback(registers_t *regs)
         return;
     }
 
-    if (scancode == 0xE0) {
-        extended = 1;
+    if (scancode & 0x80)
         return;
-    }
-
-    // Left CTRL
-    if (extended == 0) {
-        if (scancode == 0x1D)
-            ctrl_pressed = 1;
-
-        if (scancode == 0x9D)
-            ctrl_pressed = 0;
-    }
-
-    if (extended == 1) {
-        if (scancode == 0x1D)
-            ctrl_pressed = 1;
-
-        if (scancode == 0x9D)
-            ctrl_pressed = 0;
-
-        extended = 0;
-    }
 
     // Backspace
     if (scancode == 0x0E) {
         shell_handle_key('\b');
         return;
     }
-
-    if (scancode & 0x80)
-        return;
-
     char c ;
 
     if (shift_pressed)
         c = scancode_to_ascii_shift[scancode];
     else
         c = scancode_to_ascii[scancode];
-    if (ctrl_pressed && c >= 'a' && c <= 'z')
-        c = c - 'a' + 1;
     if (c)
         shell_handle_key(c);
 }
@@ -94,4 +64,5 @@ void keyboard_init(void)
     uint8_t mask = inb(0x21);
     mask &= ~0x02;
     outb(0x21, mask);
+    KINFO("[KBD] PS/2 Keyboard driver active");
 }
