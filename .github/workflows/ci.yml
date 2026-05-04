@@ -27,7 +27,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/opt/cross
-          key: ${{ runner.os }}-i686-elf-gcc-v1
+          key: ${{ runner.os }}-i686-elf-gcc-v2
           restore-keys: |
             ${{ runner.os }}-i686-elf-gcc-
 
