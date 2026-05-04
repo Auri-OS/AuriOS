@@ -33,7 +33,7 @@ Thank you for your interest in contributing to AuriOS! We welcome contributions 
 7. **Open a Pull Request**  
 	Go to the original repository and open a pull request.
 
-8. **Select the correct branch**
+8. **Select the correct branch**  
 	Please do not ask to push on AuriOS:main but on AuriOS:develop.
 
 ## Guidelines
