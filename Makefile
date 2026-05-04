@@ -142,7 +142,7 @@ run32: iso
 # Run kernel directly on macOS (without ISO)
 run-mac: $(KERNEL_BIN)
 	@echo "Starting QEMU on macOS (direct kernel boot)..."
-	@qemu-system-i386 -kernel $(KERNEL_BIN) -m 512M -vga std
+	@qemu-system-i386 -kernel $(KERNEL_BIN) -m 512M -vga std 
 
 # Clean build artifacts
 clean:
@@ -155,7 +155,7 @@ install-fedora:
 	@echo "[!] Installing dependencies for Fedora"
 	sudo dnf install gcc gcc-c++ binutils make wget tar texinfo gmp-devel mpfr-devel libmpc-devel nasm qemu-system-x86 grub2-tools-extra mtools xorriso
 	bash docs/install_scripts/install.sh
-
+	
 install-arch:
 	@echo "[!] Installing dependencies for Arch Linux"
 	sudo pacman -S gcc binutils make wget tar nasm qemu-system-x86 grub mtools xorriso
@@ -168,7 +168,7 @@ install-debian:
 # need work
 install-mac:
 	@echo "[!] Installing dependencies for MacOS"
-	brew install qemu i686-elf-gcc nasm zig
+	brew install qemu i686-elf-gcc nasm
 
 install-zig:
 	@echo "[!] Detecting OS and installing Zig..."

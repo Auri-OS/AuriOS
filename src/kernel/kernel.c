@@ -7,7 +7,16 @@
 #include "../include/shell.h"
 #include "../include/timer.h"
 
-static void kernel_show_boot() {
+void kernel_main(void) {
+    gdt_init();
+    pic_remap();
+    idt_init();
+    terminal_initialize();
+    memory_init();
+    timer_init(1000);
+
+    asm volatile("sti");
+
     terminal_writestring("AuriOS Kernel v0.2\n");
     sleep(100);
     terminal_writestring("GDT initialized successfully\n");
@@ -34,20 +43,6 @@ static void kernel_show_boot() {
     terminal_writestring("\x1b[0m");
     terminal_writestring("                            Auri-Os - Kernel v0.2\n\n");
     sleep(2000);
-    return;
-}
-
-void kernel_main(void) {
-    gdt_init();
-    pic_remap();
-    idt_init();
-    terminal_initialize();
-    memory_init();
-    timer_init(1000);
-
-    asm volatile("sti");
-
-    kernel_show_boot();
     keyboard_init();
     terminal_clear();
     shell_init();

@@ -3,14 +3,14 @@
 # 🌟 AuriOS
 
 ```
-        X
-       XXX
-      XXXXX
-     X XXXXX
-    XXX XXXXX
-   XXXXX XXXXX
-  XXXXXX  XXXXX
- XXXXXX    XXXXX
+        X       
+       XXX      
+      XXXXX     
+     X XXXXX    
+    XXX XXXXX   
+   XXXXX XXXXX   
+  XXXXXX  XXXXX  
+ XXXXXX    XXXXX 
 XXXXXX      XXXXX
 ```
 
@@ -66,10 +66,9 @@ Thank to all the contributors, you are the flame burning in our heart ❤️
 
 | Profile | GitHub | Role |
 |:-------:|:------:|:----:|
-| <img src="https://github.com/im-nymii.png" width="80" height="80" alt="im-nymii" /> | [nymii](https://github.com/im-nymii) | Founder & Maintainer |
+| <img src="https://github.com/im-nymii.png" width="80" height="80" alt="im-nymii" /> | [Nymii](https://github.com/im-nymii) | Founder & Maintainer |
 | <img src="https://github.com/llmaddie.png" width="80" height="80" alt="llmaddie 2" /> | [Maddie](https://github.com/llmaddie) | Co-Founder & Maintainer |
 | <img src="https://github.com/pepedinho.png" width="80" height="80" alt="pepedinho" /> | [pepedinho](https://github.com/pepedinho) | Contributor |
-| <img src="https://github.com/proxzr" width="80" height="80" alt="proxzr" /> | [proxzr](https://github.com/proxzr) | Contributor |
 
 </div>
 
@@ -105,7 +104,7 @@ make install-debian
 
 #### macOS
 ```bash
-brew install i686-elf-gcc nasm qemu xorriso zig
+brew install i686-elf-gcc nasm qemu xorriso
 ```
 
 > **Note**: For detailed installation instructions for your platform, see [docs/INSTALLATION.MD](docs/INSTALLATION.MD)
