@@ -8,7 +8,8 @@
 #include "../include/timer.h"
 #include "../include/integer.h"
 #include "../include/string.h"
-#include "../include/timer.h" 
+#include "../include/serial.h"
+#include "../include/log.h" 
 
 static void set_cursor_ansi(int x, int y) {
     char buf[16];
