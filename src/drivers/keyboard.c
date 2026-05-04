@@ -3,6 +3,7 @@
 #include "../include/io.h"
 #include "../include/terminal.h"
 #include "../include/shell.h"
+#include "../include/log.h"
 
 static char scancode_to_ascii[128] = {
     0, 0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 0,
@@ -21,6 +22,7 @@ static char scancode_to_ascii_shift[128] = {
 };
 
 static int shift_pressed = 0;
+static int ctrl_pressed = 0;
 
 void keyboard_callback(registers_t *regs)
 {
@@ -38,9 +40,26 @@ void keyboard_callback(registers_t *regs)
         shift_pressed = 0;
         return;
     }
+    // Ctrl captured
+    if (scancode == 0x1D) {
+        ctrl_pressed = 1;
+        return;
+    }
 
+    // Ctrl free
+    if (scancode == 0x9D) {
+        ctrl_pressed = 0;
+        return;
+    }
+    
     if (scancode & 0x80)
         return;
+    
+    // Ctrl+L
+    if (ctrl_pressed && scancode == 0x26) {
+        shell_handle_key('\f');
+        return;
+    }
 
     // Backspace
     if (scancode == 0x0E) {
@@ -63,4 +82,5 @@ void keyboard_init(void)
     uint8_t mask = inb(0x21);
     mask &= ~0x02;
     outb(0x21, mask);
+    KINFO("[KBD] PS/2 Keyboard driver active");
 }

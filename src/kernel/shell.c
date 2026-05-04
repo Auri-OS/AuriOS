@@ -73,6 +73,11 @@ static void shell_execute(char* cmd)
 
 void shell_handle_key(char c)
 {
+    if (c == 0x0C) {
+        terminal_clear();
+        shell_init();
+        return;
+    }
     if (c == '\n') {
         terminal_putchar('\n');
         buffer[buffer_pos] = '\0';
