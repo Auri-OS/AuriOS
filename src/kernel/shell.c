@@ -117,6 +117,7 @@ void shell_handle_key(char c)
 {
     if (c == 0x0C) {
         terminal_clear();
+        shell_init();
         return;
     }
     if (c == '\n') {
