@@ -50,7 +50,7 @@ jobs:
 
       - name: create ISO
         run: |
-          export PATH="$HOME/opt/cross/bin:$PATH"
+          export PATH="$PWD/.environment/bin:$PATH"
           make clean
           make iso
 
