@@ -50,7 +50,7 @@ int	strcat(char *dest, char *src)
 // Catenate the first n bytes from a src string to dest 
 char *strncat(char *dest, char *src, unsigned int nb)
 {
-	unsigned int i = 0;
+unsigned int i = 0;
 	unsigned int j = 0;
 
 	while (dest[i] != '\0')
@@ -127,3 +127,24 @@ char *strcpy(char *dest, const char *src) {
     dest[i] = 0;
     return(dest);
 }
+
+char *str_trim(char *str)
+{
+    char *end;
+
+    if (str == NULL)
+        return NULL;
+    
+    while (*str == ' ' || *str == '\t'){
+        str++;
+    }
+    if (*str == '\0') {
+        return str;
+    }
+    end = str + strlen(str) - 1;
+    while (end > str && (*end == ' ' || *end == '\t')) {
+        *end = '\0';
+        end--;
+    }
+    return str;
+} 
