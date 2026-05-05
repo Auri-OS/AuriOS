@@ -75,6 +75,7 @@ void shell_handle_key(char c)
 {
     if (c == 0x0C) {
         terminal_clear();
+		buffer_pos = 0;
         shell_init();
         return;
     }
