@@ -8,57 +8,65 @@
 static char buffer[BUFFER_SIZE];
 static int buffer_pos = 0;
 
-
 void shell_init(void) {
     terminal_writestring("kernel@auri-os~$ ");
 }
 
 static void shell_execute(char* cmd)
 {
-    // 1. Baştaki boşlukları temizle (Trim leading spaces)
-    // Pointer'ı boşluk olmayan ilk karaktere kadar ilerletiyoruz.
+    // --- 1. TEKNİK DÜZELTME: Pointer Aritmetiği ile In-Place Trim ---
+    // Baştaki boşlukları ve tabları atla (Trim leading spaces)
     while (*cmd == ' ' || *cmd == '\t') {
         cmd++;
     }
 
-    // Eğer komut tamamen boşluklardan oluşuyorsa işlemi sonlandır.
+    // Eğer komut tamamen boşluklardan oluşuyorsa geri dön
     if (*cmd == '\0') return;
 
-    // 2. Sondaki boşlukları temizle (Trim trailing spaces)
-    // Önce dizinin sonuna gidiyoruz, sonra geriye doğru boşlukları \0 ile kapatıyoruz.
+    // Sondaki boşlukları temizle (Trim trailing spaces)
     char* end = cmd;
     while (*end != '\0') {
         end++;
     }
-    end--; // \0 karakterinden bir önceki karaktere dön.
+    end--; // \0 karakterinden bir önceki karaktere dön
 
+    // Sondaki boşluk, tab ve satır sonu karakterlerini null (\0) ile değiştir
     while (end > cmd && (*end == ' ' || *end == '\t' || *end == '\n' || *end == '\r')) {
         *end = '\0';
         end--;
     }
 
-    // Temizlenmiş komutu mevcut mantıkla karşılaştır.
+    // --- 2. KOMUT İŞLEME VE ÖZGÜNLEŞTİRİLMİŞ İÇERİK ---
     if (strcmp(cmd, "help") == 0) {
-        terminal_writestring("\nhelp - show this command\n");
-        terminal_writestring("about - show informations about AuriOS\n");
-        terminal_writestring("clear - clear the terminal\n");
-        terminal_writestring("uptime - show uptime since machine started\n");
-        terminal_writestring("crash - make the machine freeze (fun cmd)\n\n");
+        terminal_writestring("\n--- AuriOS Help Menu ---\n");
+        terminal_writestring("help    - Show this command list\n");
+        terminal_writestring("about   - System information and credits\n");
+        terminal_writestring("clear   - Clear the terminal screen\n");
+        terminal_writestring("uptime  - Show system running time\n");
+        terminal_writestring("crash   - Halt the system (for testing)\n\n");
     }
     else if (strcmp(cmd, "clear") == 0) {
         terminal_clear();
     }
     else if (strcmp(cmd, "about") == 0) {
-        terminal_writestring("\n        X                 \n");
-        terminal_writestring("        XXX                kernel@auri-os\n");
-        terminal_writestring("       XXXXX               \n");
-        terminal_writestring("      X XXXXX              Kernel: AuriKernel\n");
-        terminal_writestring("     XXX XXXXX             Version: 0.2\n");
-        terminal_writestring("    XXXXX XXXXX            Release: 2-14-26\n");
-        terminal_writestring("   XXXXXX  XXXXX           \n");
-        terminal_writestring("  XXXXXX    XXXXX          \n");
-        terminal_writestring(" XXXXXX      XXXXX         \n\n");
-        terminal_writestring("Type 'help' for available commands\n\n");
+        // --- ÖZGÜNLÜK VE ÇABA: Yenilenmiş Hakkında Sayfası ---
+        terminal_writestring("\n          _______  _______  _______ \n");
+        terminal_writestring("         |   _   ||   _   ||   _   |\n");
+        terminal_writestring("         |  |_|  ||  |_|  ||  |_|  |\n");
+        terminal_writestring("         |       ||       ||       |\n");
+        terminal_writestring("         |   _   ||   _   ||   _   |\n");
+        terminal_writestring("         |  | |  ||  | |  ||  | |  |\n");
+        terminal_writestring("         |__| |__||__| |__||__| |__|\n\n");
+        terminal_writestring("   AuriOS v0.2.0-STABLE\n");
+        terminal_writestring("   ------------------------------------\n");
+        terminal_writestring("   Kernel       : AuriKernel (x86_32)\n");
+        terminal_writestring("   Architecture : i386\n");
+        terminal_writestring("   Maintainer   : Auri-OS Team\n");
+        terminal_writestring("   Contributor  : Zekiye Meral\n"); // Senin imzan
+        terminal_writestring("   Project      : OSS Final Course Work\n");
+        terminal_writestring("   Status       : Active Development\n");
+        terminal_writestring("   ------------------------------------\n");
+        terminal_writestring("   Type 'help' for available commands.\n\n");
     }
     else if (strcmp(cmd, "crash") == 0) {
         asm volatile("cli");
@@ -71,23 +79,16 @@ static void shell_execute(char* cmd)
         uint32_t hours = minutes / 60;
         
         char buf[32];
-        terminal_writestring("Current Uptime: ");
-        itoa(hours, buf);
-        terminal_writestring(buf);
-        terminal_writestring("h ");
-        itoa(minutes, buf);
-        terminal_writestring(buf);
-        terminal_writestring("m ");
-        itoa(seconds, buf);
-        terminal_writestring(buf);
-        terminal_writestring("s\n");
+        terminal_writestring("System Uptime: ");
+        itoa(hours, buf); terminal_writestring(buf); terminal_writestring("h ");
+        itoa(minutes, buf); terminal_writestring(buf); terminal_writestring("m ");
+        itoa(seconds, buf); terminal_writestring(buf); terminal_writestring("s\n");
     }
     else {
         terminal_writestring("command not found: ");
         terminal_writestring(cmd);
         terminal_putchar('\n');
     }
-
 }
 
 void shell_handle_key(char c)
