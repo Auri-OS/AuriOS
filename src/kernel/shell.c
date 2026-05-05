@@ -15,10 +15,29 @@ void shell_init(void) {
 
 static void shell_execute(char* cmd)
 {
-    int i = 0;
-    while (cmd[i] == ' ') i++;
-    if (cmd[i] == '\0') return;
+    // 1. Baştaki boşlukları temizle (Trim leading spaces)
+    // Pointer'ı boşluk olmayan ilk karaktere kadar ilerletiyoruz.
+    while (*cmd == ' ' || *cmd == '\t') {
+        cmd++;
+    }
 
+    // Eğer komut tamamen boşluklardan oluşuyorsa işlemi sonlandır.
+    if (*cmd == '\0') return;
+
+    // 2. Sondaki boşlukları temizle (Trim trailing spaces)
+    // Önce dizinin sonuna gidiyoruz, sonra geriye doğru boşlukları \0 ile kapatıyoruz.
+    char* end = cmd;
+    while (*end != '\0') {
+        end++;
+    }
+    end--; // \0 karakterinden bir önceki karaktere dön.
+
+    while (end > cmd && (*end == ' ' || *end == '\t' || *end == '\n' || *end == '\r')) {
+        *end = '\0';
+        end--;
+    }
+
+    // Temizlenmiş komutu mevcut mantıkla karşılaştır.
     if (strcmp(cmd, "help") == 0) {
         terminal_writestring("\nhelp - show this command\n");
         terminal_writestring("about - show informations about AuriOS\n");
@@ -31,14 +50,14 @@ static void shell_execute(char* cmd)
     }
     else if (strcmp(cmd, "about") == 0) {
         terminal_writestring("\n        X                 \n");
-        terminal_writestring("       XXX                kernel@auri-os\n");
-        terminal_writestring("      XXXXX               \n");
-        terminal_writestring("     X XXXXX              Kernel: AuriKernel\n");
-        terminal_writestring("    XXX XXXXX             Version: 0.2\n");
-        terminal_writestring("   XXXXX XXXXX            Release: 2-14-26\n");
-        terminal_writestring("  XXXXXX  XXXXX           \n");
-        terminal_writestring(" XXXXXX    XXXXX          \n");
-        terminal_writestring("XXXXXX      XXXXX         \n\n");
+        terminal_writestring("        XXX                kernel@auri-os\n");
+        terminal_writestring("       XXXXX               \n");
+        terminal_writestring("      X XXXXX              Kernel: AuriKernel\n");
+        terminal_writestring("     XXX XXXXX             Version: 0.2\n");
+        terminal_writestring("    XXXXX XXXXX            Release: 2-14-26\n");
+        terminal_writestring("   XXXXXX  XXXXX           \n");
+        terminal_writestring("  XXXXXX    XXXXX          \n");
+        terminal_writestring(" XXXXXX      XXXXX         \n\n");
         terminal_writestring("Type 'help' for available commands\n\n");
     }
     else if (strcmp(cmd, "crash") == 0) {
