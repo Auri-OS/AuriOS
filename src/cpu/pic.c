@@ -42,7 +42,7 @@ void pic_unmask_irq(uint8_t irqline)
     // Si l'IRQ est entre 0-7, PIC Master (0x21)
     // else, 8-15, PIC Slave (0xA1)
     if (irqline < 8) {
-        port = PIC1_DATA
+        port = PIC1_DATA;
     } else {
         port = PIC2_DATA;
         irqline -= 8;
