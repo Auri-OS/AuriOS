@@ -15,9 +15,8 @@ void shell_init(void) {
 
 static void shell_execute(char* cmd)
 {
-    int i = 0;
-    while (cmd[i] == ' ') i++;
-    if (cmd[i] == '\0') return;
+    cmd = str_trim(cmd);
+    if (cmd == NULL || cmd[0] == '\0') return;
 
     if (strcmp(cmd, "help") == 0) {
         terminal_writestring("\nhelp - show this command\n");
