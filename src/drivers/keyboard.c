@@ -4,6 +4,7 @@
 #include "../include/terminal.h"
 #include "../include/shell.h"
 #include "../include/log.h"
+#include "../include/pic.h"
 
 static char scancode_to_ascii[128] = {
     0, 0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 0,
