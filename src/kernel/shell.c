@@ -4,7 +4,6 @@
 #include "../include/timer.h"
 #include "../include/integer.h"
 #include "../include/colors.h"
-#include <stdint.h>
 
 #define BUFFER_SIZE 256
 static char buffer[BUFFER_SIZE];
