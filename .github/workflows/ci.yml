@@ -22,11 +22,14 @@ jobs:
       - name: Checkout 
         uses: actions/checkout@v4
 
+      - name: add local bin to path
+        run: echo "$PWD/.environment/bin" >> $GITHUB_PATH
+
       - name: restore cross compiler cache 
         id: cache-toolchain
         uses: actions/cache@v4
         with:
-          path: ~/opt/cross
+          path: .environment
           key: ${{ runner.os }}-i686-elf-gcc-v2
           restore-keys: |
             ${{ runner.os }}-i686-elf-gcc-
@@ -50,7 +53,6 @@ jobs:
 
       - name: create ISO
         run: |
-          export PATH="$PWD/.environment/bin:$PATH"
           make clean
           make iso
 
@@ -59,7 +61,7 @@ jobs:
         with:
           name: AuriOS-GCC-ISO
           path: output/AuriOS.iso
-          retention-days: 5
+          retention-days: 1
 
   build-zig:
     name: Build with Zig Toolchain
@@ -68,6 +70,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: add local bin to path
+        run: echo "$PWD/.environment/bin" >> $GITHUB_PATH
 
       - name: install zig 
         uses: goto-bus-stop/setup-zig@v2
@@ -89,4 +94,4 @@ jobs:
         with:
           name: AuriOS-Zig-ISO
           path: output/AuriOS.iso
-          retention-days: 5
+          retention-days: 1
