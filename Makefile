@@ -33,7 +33,7 @@ AS = nasm
 C_SOURCES = $(wildcard src/kernel/*.c) $(wildcard src/cpu/*.c) $(wildcard src/lib/*.c) $(wildcard src/drivers/*.c)
 S_SOURCES = $(wildcard src/boot/*.s)
 ASM_SOURCES = $(wildcard src/cpu/*.asm)
-ZIG_SOURCES = $(wildcard src/kernel/*.zig)
+ZIG_SOURCES = $(wildcard src/kernel/*.zig) $(wildcard src/mm/*.zig)
 ZIG_OBJS = $(patsubst src/%.zig, $(BUILD_DIR)/%.o, $(ZIG_SOURCES))
 
 # Object files (in build directory)
