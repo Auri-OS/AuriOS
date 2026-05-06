@@ -22,14 +22,15 @@ jobs:
       - name: Checkout 
         uses: actions/checkout@v4
 
+      - name: add local bin to path
+        run: echo "$PWD/.environment/bin" >> $GITHUB_PATH
+
       - name: restore cross compiler cache 
         id: cache-toolchain
         uses: actions/cache@v4
         with:
-          path: ~/opt/cross
-          key: ${{ runner.os }}-i686-elf-gcc-v2
-          restore-keys: |
-            ${{ runner.os }}-i686-elf-gcc-
+          path: .environment
+          key: ${{ runner.os }}-i686-elf-gcc-${{ hashFiles('Makefile', 'docs/install_scripts/install.sh') }}
 
       - name: install system deps 
         run: |
@@ -50,7 +51,6 @@ jobs:
 
       - name: create ISO
         run: |
-          export PATH="$PWD/.environment/bin:$PATH"
           make clean
           make iso
 
@@ -68,6 +68,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: add local bin to path
+        run: echo "$PWD/.environment/bin" >> $GITHUB_PATH
 
       - name: install zig 
         uses: goto-bus-stop/setup-zig@v2
