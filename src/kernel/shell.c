@@ -4,6 +4,7 @@
 #include "../include/timer.h"
 #include "../include/integer.h"
 #include "../include/colors.h"
+#include "../include/mm.h"
 
 #define BUFFER_SIZE 256
 static char buffer[BUFFER_SIZE];
@@ -62,6 +63,9 @@ static void shell_execute(char* cmd)
         itoa(seconds, buf);
         terminal_writestring(buf);
         terminal_writestring("s\n");
+    } else if (strcmp(cmd, "memdump") == 0) {
+        // for now i print 128 bytes all the time but when args parsings will be set we can just print the size we want
+        pmm_dump_bitmap(128);
     }
     else {
         terminal_writestring("command not found: ");
