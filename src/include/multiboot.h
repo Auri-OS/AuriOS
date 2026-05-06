@@ -33,4 +33,16 @@ typedef struct multiboot_info {
     uint8_t  framebuffer_type;
 } __attribute__((packed)) multiboot_info_t;
 
+#define MULTIBOOT_MEMORY_AVAILABLE 1
+#define MULTIBOOT_BOOTLOADER_MAGIC 0x2BADB002
+
+typedef struct multiboot_memory_map {
+    uint32_t size;
+    uint32_t base_addr_low;
+    uint32_t base_addr_high;
+    uint32_t length_low;
+    uint32_t length_high;
+    uint32_t type;
+} __attribute__((packed)) multiboot_memory_map_t;
+
 #endif
