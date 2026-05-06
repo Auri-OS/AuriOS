@@ -16,10 +16,34 @@ void shell_init(void) {
 
 static void shell_execute(char* cmd)
 {
+    char* args[16];
+    int argc = 0;
+    int i = 0;
+    
     cmd = str_trim(cmd);
     if (cmd == NULL || cmd[0] == '\0') return;
 
-    if (strcmp(cmd, "help") == 0) {
+    while (cmd[i] != '\0' && argc < 16) {
+        args[argc++] = &cmd[i];
+
+        while (cmd[i] != '\0' && cmd[i] != ' ') {
+            i++;
+        }
+
+        if (cmd[i] == ' ') {
+            cmd[i++] = '\0';
+        }
+
+        while (cmd[i] == ' ') {
+            i++;
+        }
+    }
+
+    if (argc == 0) return;
+
+    char* cmd_name = args[0];
+
+    if (strcmp(cmd_name, "help") == 0) {
         terminal_writestring("\nhelp - show this command\n");
         terminal_writestring("about - show informations about AuriOS\n");
         terminal_writestring("clear - clear the terminal\n");
@@ -27,10 +51,10 @@ static void shell_execute(char* cmd)
         terminal_writestring("echo - repeats your input to the console\n");
         terminal_writestring("crash - make the machine freeze (fun cmd)\n\n");
     }
-    else if (strcmp(cmd, "clear") == 0) {
+    else if (strcmp(cmd_name, "clear") == 0) {
         terminal_clear();
     }
-    else if (strcmp(cmd, "about") == 0) {
+    else if (strcmp(cmd_name, "about") == 0) {
         terminal_writestring("\n        X                 \n");
         terminal_writestring("       XXX                " COLOR_RED_BRIGHT "kernel" COLOR_CYAN_BRIGHT "@" COLOR_WHITE_BRIGHT "auri-os" COLOR_RESET"\n");
         terminal_writestring("      XXXXX               \n");
@@ -42,11 +66,11 @@ static void shell_execute(char* cmd)
         terminal_writestring("XXXXXX      XXXXX         \n\n");
         terminal_writestring("Type 'help' for available commands\n\n");
     }
-    else if (strcmp(cmd, "crash") == 0) {
+    else if (strcmp(cmd_name, "crash") == 0) {
         asm volatile("cli");
         for (;;) asm volatile("hlt");
     }
-    else if (strcmp(cmd, "uptime") == 0) {
+    else if (strcmp(cmd_name, "uptime") == 0) {
         uint32_t ticks = get_tick();
         uint32_t seconds = ticks / 1000;
         uint32_t minutes = seconds / 60;
@@ -64,15 +88,15 @@ static void shell_execute(char* cmd)
         terminal_writestring(buf);
         terminal_writestring("s\n");
     }
-    else if (strncmp(cmd, "echo", 4) == 0) {
-        if (strlen(cmd) > 5) {
-            terminal_writestring(cmd + 5);
+    else if (strncmp(cmd_name, "echo", 4) == 0) {
+        if (strlen(cmd_name) > 5) {
+            terminal_writestring(cmd_name + 5);
         }
         terminal_writestring("\n");
     }
     else {
         terminal_writestring("command not found: ");
-        terminal_writestring(cmd);
+        terminal_writestring(cmd_name);
         terminal_putchar('\n');
     }
 
