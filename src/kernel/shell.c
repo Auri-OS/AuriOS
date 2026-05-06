@@ -18,12 +18,13 @@ void shell_init(void) {
 static void shell_execute(char* input)
 {
     t_cmd_context ctx;
-    char *args[1]; // Maximum args
-    char input_copy[256]; // We don't have malloc yet
+    char *args[16]; // Maximum args
+    char input_copy[256];// We don't have malloc yet
 
     input = str_trim(input);
     if (input == NULL || input[0] == '\0') return;
 
+    // Create a copy for raw_args, strcpy is destructive
     strcpy(input_copy, input);
     
     ctx.cmd = strtok(input_copy, " ");
@@ -33,7 +34,7 @@ static void shell_execute(char* input)
     ctx.raw_args = str_trim(ctx.raw_args);
 
     ctx.argc = 0;
-    while ((args[ctx.argc] = strtok(NULL, " ")) != NULL && ctx.argc < 0) {
+    while ((args[ctx.argc] = strtok(NULL, " ")) != NULL && ctx.argc < 15) {
         ctx.argc++;
     }
     args[ctx.argc] = NULL;
