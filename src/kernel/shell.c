@@ -3,14 +3,15 @@
 #include "../include/string.h"
 #include "../include/timer.h"
 #include "../include/integer.h"
+#include "../include/colors.h"
 
 #define BUFFER_SIZE 256
 static char buffer[BUFFER_SIZE];
 static int buffer_pos = 0;
-
+static char cli_nav[58] = COLOR_RED_BRIGHT "kernel" COLOR_CYAN_BRIGHT "@" COLOR_WHITE_BRIGHT "auri-os" COLOR_RESET "~" COLOR_GREEN_BRIGHT "$ " COLOR_RESET;
 
 void shell_init(void) {
-    terminal_writestring("kernel@auri-os~$ ");
+    terminal_writestring(cli_nav);
 }
 
 static void shell_execute(char* cmd)
@@ -30,7 +31,7 @@ static void shell_execute(char* cmd)
     }
     else if (strcmp(cmd, "about") == 0) {
         terminal_writestring("\n        X                 \n");
-        terminal_writestring("       XXX                kernel@auri-os\n");
+        terminal_writestring("       XXX                " COLOR_RED_BRIGHT "kernel" COLOR_CYAN_BRIGHT "@" COLOR_WHITE_BRIGHT "auri-os" COLOR_RESET"\n");
         terminal_writestring("      XXXXX               \n");
         terminal_writestring("     X XXXXX              Kernel: AuriKernel\n");
         terminal_writestring("    XXX XXXXX             Version: 0.2\n");
@@ -83,7 +84,7 @@ void shell_handle_key(char c)
         buffer[buffer_pos] = '\0';
         shell_execute(buffer);
         buffer_pos = 0;
-        terminal_writestring("kernel@auri-os~$ ");
+        terminal_writestring(cli_nav);
     }
     else if (c == '\b') {
         if (buffer_pos > 0) {
