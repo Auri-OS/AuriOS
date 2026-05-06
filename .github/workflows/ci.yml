@@ -30,9 +30,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .environment
-          key: ${{ runner.os }}-i686-elf-gcc-v2
-          restore-keys: |
-            ${{ runner.os }}-i686-elf-gcc-
+          key: ${{ runner.os }}-i686-elf-gcc-${{ hashFiles('Makefile', 'docs/install_scripts/install.sh') }}
 
       - name: install system deps 
         run: |
@@ -61,7 +59,7 @@ jobs:
         with:
           name: AuriOS-GCC-ISO
           path: output/AuriOS.iso
-          retention-days: 1
+          retention-days: 5
 
   build-zig:
     name: Build with Zig Toolchain
@@ -94,4 +92,4 @@ jobs:
         with:
           name: AuriOS-Zig-ISO
           path: output/AuriOS.iso
-          retention-days: 1
+          retention-days: 5
