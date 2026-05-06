@@ -14,7 +14,7 @@ void shell_init(void) {
     terminal_writestring(cli_nav);
 }
 
-static void shell_execute(char* cmd)
+static void shell_execute(char* input)
 {
     char* args[16];
     int argc = 0;
