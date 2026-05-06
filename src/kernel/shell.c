@@ -24,6 +24,7 @@ static void shell_execute(char* cmd)
         terminal_writestring("about - show informations about AuriOS\n");
         terminal_writestring("clear - clear the terminal\n");
         terminal_writestring("uptime - show uptime since machine started\n");
+        terminal_writestring("echo - repeats your input to the console\n");
         terminal_writestring("crash - make the machine freeze (fun cmd)\n\n");
     }
     else if (strcmp(cmd, "clear") == 0) {
@@ -50,7 +51,7 @@ static void shell_execute(char* cmd)
         uint32_t seconds = ticks / 1000;
         uint32_t minutes = seconds / 60;
         uint32_t hours = minutes / 60;
-        
+
         char buf[32];
         terminal_writestring("Current Uptime: ");
         itoa(hours, buf);
@@ -62,6 +63,12 @@ static void shell_execute(char* cmd)
         itoa(seconds, buf);
         terminal_writestring(buf);
         terminal_writestring("s\n");
+    }
+    else if (strncmp(cmd, "echo", 4) == 0) {
+        if (strlen(cmd) > 5) {
+            terminal_writestring(cmd + 5);
+        }
+        terminal_writestring("\n");
     }
     else {
         terminal_writestring("command not found: ");
