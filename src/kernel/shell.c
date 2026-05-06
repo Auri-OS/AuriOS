@@ -6,6 +6,7 @@
 #include "../include/colors.h"
 
 #define BUFFER_SIZE 256
+#define MAX_CMD_ARGS 16
 static char buffer[BUFFER_SIZE];
 static int buffer_pos = 0;
 static char cli_nav[58] = COLOR_RED_BRIGHT "kernel" COLOR_CYAN_BRIGHT "@" COLOR_WHITE_BRIGHT "auri-os" COLOR_RESET "~" COLOR_GREEN_BRIGHT "$ " COLOR_RESET;
@@ -14,16 +15,17 @@ void shell_init(void) {
     terminal_writestring(cli_nav);
 }
 
-static void shell_execute(char* cmd)
+static int shell_parse(char* cmd, char** args)
 {
-    char* args[16];
     int argc = 0;
     int i = 0;
     
     cmd = str_trim(cmd);
-    if (cmd == NULL || cmd[0] == '\0') return;
+    if (cmd == NULL || cmd[0] == '\0') {
+        return 0;
+    };
 
-    while (cmd[i] != '\0' && argc < 16) {
+    while (cmd[i] != '\0' && argc < MAX_CMD_ARGS) {
         args[argc++] = &cmd[i];
 
         while (cmd[i] != '\0' && cmd[i] != ' ') {
@@ -39,6 +41,14 @@ static void shell_execute(char* cmd)
         }
     }
 
+    args[argc] = NULL;
+    return argc;
+}
+
+static void shell_execute(char* cmd)
+{
+    char* args[MAX_CMD_ARGS];
+    int argc = shell_parse(cmd, args);
     if (argc == 0) return;
 
     char* cmd_name = args[0];
@@ -88,11 +98,36 @@ static void shell_execute(char* cmd)
         terminal_writestring(buf);
         terminal_writestring("s\n");
     }
-    else if (strncmp(cmd_name, "echo", 4) == 0) {
-        if (strlen(cmd_name) > 5) {
-            terminal_writestring(cmd_name + 5);
+    else if (strcmp(cmd_name, "echo") == 0) {
+        int j = 1;
+        int skip_newline = 0;
+
+        while (j < argc && args[j][0] == '-') {
+            if (strcmp(args[j], "-n") == 0){
+                skip_newline = 1;
+            }
+            else if (strcmp(args[j], "-h") == 0){
+                terminal_writestring("echo - repeats your input to the console\n\n");
+                terminal_writestring("-h   - show this command\n");
+                terminal_writestring("-n   - do not output the trailing new line");
+                terminal_writestring("\n");
+                return;
+
+            } else {
+                // No more recognized args
+                break;
+            }
+            j++;
         }
-        terminal_writestring("\n");
+
+        while(j < argc){
+            terminal_writestring(args[j]);
+            terminal_writestring(" ");
+            j++;
+        }
+        
+        if (!skip_newline)
+            terminal_writestring("\n");
     }
     else {
         terminal_writestring("command not found: ");

@@ -14,5 +14,4 @@ char *strupcase(char *str);
 char *strlowcase(char *str);
 char *strcpy(char *dest, const char *src);
 char *str_trim(char *str);
-char *strtok(char *str, const char *delim);
 #endif
