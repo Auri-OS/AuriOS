@@ -14,7 +14,7 @@ void shell_init(void) {
     terminal_writestring(cli_nav);
 }
 
-static void shell_execute(char* input)
+static void shell_execute(char* cmd)
 {
     char* args[16];
     int argc = 0;
@@ -65,6 +65,9 @@ static void shell_execute(char* input)
         terminal_writestring(" XXXXXX    XXXXX          \n");
         terminal_writestring("XXXXXX      XXXXX         \n\n");
         terminal_writestring("Type 'help' for available commands\n\n");
+        if (argc >= 2 && strcmp(args[1], "magic") == 0) {
+        terminal_writestring("You found the magic word!\n");
+    }
     }
     else if (strcmp(cmd_name, "crash") == 0) {
         asm volatile("cli");
