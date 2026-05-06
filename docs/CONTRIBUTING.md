@@ -8,25 +8,26 @@ Thank you for your interest in contributing to AuriOS! We welcome contributions 
 	Click the "Fork" button to create your own copy.
 
 2. **Clone your fork**  
-	```
+	```bash
 	git clone https://github.com/your-username/AuriOS.git
 	```
 
 3. **Create a branch**  
-	```
+	```bash
 	git checkout -b feature/your-feature-name
 	```
 
 4. **Make your changes**  
 	Implement your feature or fix.
 
-5. **Commit your changes**  
+5. **Commit your changes**
+	```bash
+	git commit -m "feat(memory): implement PMM bitmap (#12)"
 	```
-	git commit -m "Describe your changes"
-	```
-
+	*(If you are working on an open issue, please systematically mention its number in your commit messages!)*
+ 
 6. **Push to your fork**  
-	```
+	```bash
 	git push origin feature/your-feature-name
 	```
 

@@ -33,3 +33,21 @@ void pic_remap(void)
     outb(PIC2_DATA, 0xFF);
     KINFO("[PIC] IRQs remapped to 32-47");
 }
+
+void pic_unmask_irq(uint8_t irqline)
+{
+    uint16_t port;
+    uint8_t value;
+
+    // Si l'IRQ est entre 0-7, PIC Master (0x21)
+    // else, 8-15, PIC Slave (0xA1)
+    if (irqline < 8) {
+        port = PIC1_DATA;
+    } else {
+        port = PIC2_DATA;
+        irqline -= 8;
+    }
+
+    value = inb(port) & ~(1 << irqline);
+    outb(port, value);
+}

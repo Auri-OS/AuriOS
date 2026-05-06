@@ -168,7 +168,7 @@ install-debian:
 # need work
 install-mac:
 	@echo "[!] Installing dependencies for MacOS"
-	brew install qemu i686-elf-gcc nasm
+	brew install qemu i686-elf-gcc nasm zig
 
 install-zig:
 	@echo "[!] Detecting OS and installing Zig..."
