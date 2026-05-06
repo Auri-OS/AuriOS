@@ -10,6 +10,7 @@
 #include "../include/string.h"
 #include "../include/serial.h"
 #include "../include/log.h" 
+#include "../include/multiboot.h"
 
 static void set_cursor_ansi(int x, int y) {
     char buf[16];
@@ -95,8 +96,34 @@ void animate_logo(void) {
     sleep(1000);
 }
 
-void kernel_main(void) {
+void check_mem(multiboot_info_t *mboot_ptr) {
+    if (mboot_ptr->flags & (1 << 6)) {
+      multiboot_memory_map_t *mmap = (multiboot_memory_map_t*) mboot_ptr->mmap_addr;
+      
+      while ((uint32_t)mmap < mboot_ptr->mmap_addr + mboot_ptr->mmap_length) {
+        if (mmap->type == MULTIBOOT_MEMORY_AVAILABLE) {
+          char buf[32];
+          serial_write_string("[MEM] Free zone found: Base=0x");
+          serial_write_string(itoa(mmap->base_addr_low, buf)); 
+          serial_write_string(" Size=");
+          serial_write_string(itoa(mmap->length_low, buf));
+          serial_write_string(" bytes\n\r");
+        }
+        mmap = (multiboot_memory_map_t*) ((uint32_t)mmap + mmap->size + sizeof(mmap->size));
+      }
+    } else {
+      KPANIC("No memory map provided by bootloader");
+    }
+}
+
+void kernel_main(uint32_t magic, multiboot_info_t *mboot_ptr) {
     serial_init();
+
+    if (magic != MULTIBOOT_BOOTLOADER_MAGIC) {
+      KPANIC("Invalid Multiboot magic number");
+      return;
+    }
+    
     KINFO("[KRN] Starting AuriOS boot sequence...");
     gdt_init();
     pic_remap();
@@ -106,6 +133,8 @@ void kernel_main(void) {
     timer_init(1000);
 
     asm volatile("sti");
+
+    check_mem(mboot_ptr);
 
     terminal_writestring("AuriOS Kernel v0.2\n");
     sleep(100);
