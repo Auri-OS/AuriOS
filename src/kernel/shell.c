@@ -82,10 +82,14 @@ static void shell_execute(char* cmd)
     }
     else if (strcmp(cmd_name, "uptime") == 0) {
         uint32_t ticks = get_tick();
-        uint32_t seconds = ticks / 1000;
-        uint32_t minutes = seconds / 60;
-        uint32_t hours = minutes / 60;
-
+        uint32_t total_seconds = ticks / 1000;
+        uint32_t seconds = total_seconds % 60;
+        
+        uint32_t total_minutes = total_seconds / 60;
+        uint32_t minutes = total_minutes % 60;
+        
+        uint32_t hours = total_minutes / 60;
+        
         char buf[32];
         terminal_writestring("Current Uptime: ");
         itoa(hours, buf);
