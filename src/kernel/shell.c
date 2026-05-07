@@ -6,6 +6,7 @@
 #include "../include/colors.h"
 
 #define BUFFER_SIZE 256
+#define MAX_CMD_ARGS 16
 static char buffer[BUFFER_SIZE];
 static int buffer_pos = 0;
 static char cli_nav[58] = COLOR_RED_BRIGHT "kernel" COLOR_CYAN_BRIGHT "@" COLOR_WHITE_BRIGHT "auri-os" COLOR_RESET "~" COLOR_GREEN_BRIGHT "$ " COLOR_RESET;
@@ -14,16 +15,17 @@ void shell_init(void) {
     terminal_writestring(cli_nav);
 }
 
-static void shell_execute(char* cmd)
+static int shell_parse(char* cmd, char** args)
 {
-    char* args[16];
     int argc = 0;
     int i = 0;
     
     cmd = str_trim(cmd);
-    if (cmd == NULL || cmd[0] == '\0') return;
+    if (cmd == NULL || cmd[0] == '\0') {
+        return 0;
+    };
 
-    while (cmd[i] != '\0' && argc < 16) {
+    while (cmd[i] != '\0' && argc < MAX_CMD_ARGS) {
         args[argc++] = &cmd[i];
 
         while (cmd[i] != '\0' && cmd[i] != ' ') {
@@ -39,6 +41,14 @@ static void shell_execute(char* cmd)
         }
     }
 
+    args[argc] = NULL;
+    return argc;
+}
+
+static void shell_execute(char* cmd)
+{
+    char* args[MAX_CMD_ARGS];
+    int argc = shell_parse(cmd, args);
     if (argc == 0) return;
 
     char* cmd_name = args[0];
@@ -105,7 +115,6 @@ static void shell_execute(char* cmd)
             j = 2;
         }
 
-        
         while(j < argc){
             terminal_writestring(args[j]);
             terminal_writestring(" ");
