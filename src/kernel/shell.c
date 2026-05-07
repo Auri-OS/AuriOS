@@ -99,20 +99,25 @@ static void shell_execute(char* cmd)
         terminal_writestring("s\n");
     }
     else if (strcmp(cmd_name, "echo") == 0) {
-        if (strcmp(args[1], "-h") == 0){
-            terminal_writestring("echo - repeats your input to the console\n\n");
-            terminal_writestring("-h   - show this command\n");
-            terminal_writestring("-n   - do not output the trailing new line");
-            terminal_writestring("\n");
-            return;
-        }
-        
         int j = 1;
         int skip_newline = 0;
 
-        if (argc > 1 && strcmp(args[1], "-n") == 0) {
-            skip_newline = 1;
-            j = 2;
+        while (j < argc && args[j][0] == '-') {
+            if (strcmp(args[j], "-n") == 0){
+                skip_newline = 1;
+            }
+            else if (strcmp(args[j], "-h") == 0){
+                terminal_writestring("echo - repeats your input to the console\n\n");
+                terminal_writestring("-h   - show this command\n");
+                terminal_writestring("-n   - do not output the trailing new line");
+                terminal_writestring("\n");
+                return;
+
+            } else {
+                // No more recognized args
+                break;
+            }
+            j++;
         }
 
         while(j < argc){
