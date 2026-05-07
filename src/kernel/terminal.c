@@ -1,12 +1,38 @@
 #include "../include/terminal.h"
 #include "../include/string.h"
 #include "../include/ansi.h"
+#include "../include/io.h"
 #include <stddef.h>
 #include <stdint.h>
 
 #define VGA_WIDTH 80
 #define VGA_HEIGHT 25
 #define VGA_MEMORY 0xB8000
+
+#define VGA_CTRL_REGISTER 0x3D4
+#define VGA_DATA_REGISTER 0x3D5
+#define VGA_OFFSET_LOW    0x0F
+#define VGA_OFFSET_HIGH   0x0E
+#define VGA_CURSOR_START  0x0A
+#define VGA_CURSOR_END    0x0B
+
+void terminal_enable_cursor(uint8_t cursor_start, uint8_t cursor_end) {
+    outb(VGA_CTRL_REGISTER, VGA_CURSOR_START);
+    outb(VGA_DATA_REGISTER, (inb(VGA_DATA_REGISTER) & 0xC0) | cursor_start);
+ 
+    outb(VGA_CTRL_REGISTER, VGA_CURSOR_END);
+    outb(VGA_DATA_REGISTER, (inb(VGA_DATA_REGISTER) & 0xE0) | cursor_end);
+}
+
+void terminal_update_cursor(size_t x, size_t y) {
+    uint16_t pos = y * VGA_WIDTH + x;
+
+    outb(VGA_CTRL_REGISTER, VGA_OFFSET_LOW);
+    outb(VGA_DATA_REGISTER, (uint8_t)(pos & 0xFF));
+
+    outb(VGA_CTRL_REGISTER, VGA_OFFSET_HIGH);
+    outb(VGA_DATA_REGISTER, (uint8_t)((pos >> 8) & 0xFF));
+}
 
 static inline uint8_t vga_entry_color(enum vga_color fg, enum vga_color bg) {
     return fg | bg << 4;    
@@ -31,6 +57,8 @@ void terminal_initialize(void) {
             terminal_buffer[index] = vga_entry(' ', terminal_color);
         }
     }
+    terminal_enable_cursor(14, 15);
+    terminal_update_cursor(terminal_column, terminal_row);
 }
 
 void terminal_setcolor(uint8_t color) {
@@ -65,6 +93,7 @@ void terminal_putchar_raw(char c) {
             terminal_scroll();
             terminal_row = VGA_HEIGHT - 1;
         }
+        terminal_update_cursor(terminal_column, terminal_row);
         return;
     }
 
@@ -77,6 +106,7 @@ void terminal_putchar_raw(char c) {
             terminal_row = VGA_HEIGHT - 1;
         }
     }
+    terminal_update_cursor(terminal_column, terminal_row);
 }
 
 void terminal_write(const char* data, size_t size) {
@@ -92,6 +122,7 @@ void terminal_clear(void){
     } 
     terminal_row = 0;
     terminal_column = 0;
+    terminal_update_cursor(terminal_column, terminal_row);
 }
 
 void terminal_clear_until_cursor(void) {
@@ -113,6 +144,7 @@ void terminal_set_cursor(size_t x, size_t y) {
 
   terminal_column = x;
   terminal_row = y;
+  terminal_update_cursor(terminal_column, terminal_row);
 }
 
 void terminal_backspace(void) {
@@ -124,6 +156,7 @@ void terminal_backspace(void) {
         terminal_column = 79;
     }
     terminal_putentryat(' ', terminal_color, terminal_column, terminal_row);
+    terminal_update_cursor(terminal_column, terminal_row);
 }
 
 void terminal_writestring(const char* data) {

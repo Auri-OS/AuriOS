@@ -34,5 +34,7 @@ void terminal_clear(void);
 void terminal_clear_until_cursor(void);
 void terminal_clear_after_cursor(void);
 void terminal_set_cursor(size_t x, size_t y);
+void terminal_enable_cursor(uint8_t cursor_start, uint8_t cursor_end);
+void terminal_update_cursor(size_t x, size_t y);
 
 #endif
