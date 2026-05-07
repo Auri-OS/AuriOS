@@ -88,11 +88,32 @@ static void shell_execute(char* cmd)
         terminal_writestring(buf);
         terminal_writestring("s\n");
     }
-    else if (strncmp(cmd_name, "echo", 4) == 0) {
-        if (strlen(cmd_name) > 5) {
-            terminal_writestring(cmd_name + 5);
+    else if (strcmp(cmd_name, "echo") == 0) {
+        if (strcmp(args[1], "-h") == 0){
+            terminal_writestring("echo - repeats your input to the console\n\n");
+            terminal_writestring("-h   - show this command\n");
+            terminal_writestring("-n   - do not output the trailing new line");
+            terminal_writestring("\n");
+            return;
         }
-        terminal_writestring("\n");
+        
+        int j = 1;
+        int skip_newline = 0;
+
+        if (argc > 1 && strcmp(args[1], "-n") == 0) {
+            skip_newline = 1;
+            j = 2;
+        }
+
+        
+        while(j < argc){
+            terminal_writestring(args[j]);
+            terminal_writestring(" ");
+            j++;
+        }
+        
+        if (!skip_newline)
+            terminal_writestring("\n");
     }
     else {
         terminal_writestring("command not found: ");
