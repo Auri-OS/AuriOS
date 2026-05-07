@@ -142,7 +142,7 @@ run32: iso
 # Run kernel directly on macOS (without ISO)
 run-mac: $(KERNEL_BIN)
 	@echo "Starting QEMU on macOS (direct kernel boot)..."
-	@qemu-system-i386 -kernel $(KERNEL_BIN) -m 512M -vga std 
+	@qemu-system-i386 -kernel $(KERNEL_BIN) -m 512M -vga std -serial stdio -display cocoa,zoom-to-fit=on
 
 # Clean build artifacts
 clean:
