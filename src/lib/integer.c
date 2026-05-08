@@ -68,3 +68,35 @@ char *itoa(int nb, char *buffer)
     return (buffer);
 }
 
+uint32_t htoi(const char *hex_str) {
+    uint32_t result = 0;
+
+    while (*hex_str == ' ') {
+        hex_str++;
+    }
+
+    if (hex_str[0] == '0' && (hex_str[1] == 'x' || hex_str[1] == 'X')) {
+        hex_str += 2;
+    }
+
+    while (*hex_str != '\0') {
+        char c = *hex_str;
+        uint32_t value = 0;
+
+        if (c >= '0' && c <= '9') {
+            value = c - '0';
+        } else if (c >= 'a' && c <= 'f') {
+            value = c - 'a' + 10;
+        } else if (c >= 'A' && c <= 'F') {
+            value = c - 'A' + 10;
+        } else {
+            break;
+        }
+
+        result = (result << 4) | value;
+        
+        hex_str++;
+    }
+
+    return result;
+}

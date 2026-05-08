@@ -37,12 +37,16 @@ static const char *exception_messages[32] = {
     "Reserved"
 };
 
+extern void mmu_handle_page_fault(uint32_t error_code);
+
 void isr_handler(registers_t *regs)
 {
     if (regs->int_no < 32) {
         terminal_writestring("EXCEPTION: ");
         terminal_writestring(exception_messages[regs->int_no]);
         terminal_writestring("\n");
+        if (regs->int_no == 14)
+          mmu_handle_page_fault(regs->err_code);
         KPANIC(exception_messages[regs->int_no]);
         for (;;) {
           asm volatile("cli; hlt");
