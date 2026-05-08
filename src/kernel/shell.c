@@ -4,6 +4,7 @@
 #include "../include/timer.h"
 #include "../include/integer.h"
 #include "../include/colors.h"
+#include "../include/memory.h"
 
 #define BUFFER_SIZE 256
 #define MAX_CMD_ARGS 16
