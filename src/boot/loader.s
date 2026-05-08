@@ -24,9 +24,15 @@ loader:
     push 0
     popf
 
+    ;push kernel_main args
+    push ebx
+    push eax
+
     ; call kernel.c     */
     call kernel_main
-
+    
+    ; clean stack
+    add esp, 8
 .loop:
     hlt
     jmp .loop

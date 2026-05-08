@@ -5,6 +5,7 @@
 #include "../include/integer.h"
 #include "../include/colors.h"
 #include "../include/memory.h"
+#include "../include/mm.h"
 
 #define BUFFER_SIZE 256
 #define MAX_CMD_ARGS 16
@@ -181,6 +182,10 @@ static void shell_execute(char* cmd)
         
         if (!skip_newline)
             terminal_writestring("\n");
+    }
+    else if (strcmp(cmd_name, "memdump") == 0) {
+        // for now i print 128 bytes all the time but when args parsings will be set we can just print the size we want
+        pmm_dump_bitmap(128);
     }
     else {
         terminal_writestring("command not found: ");
