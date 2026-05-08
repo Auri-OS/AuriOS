@@ -12,6 +12,9 @@ static int buffer_pos = 0;
 static char cli_nav[58] = COLOR_RED_BRIGHT "kernel" COLOR_CYAN_BRIGHT "@" COLOR_WHITE_BRIGHT "auri-os" COLOR_RESET "~" COLOR_GREEN_BRIGHT "$ " COLOR_RESET;
 
 void shell_init(void) {
+    // Flush any keystrokes captured by the keyboard interrupt during boot.
+    memset(buffer, 0, BUFFER_SIZE);
+    buffer_pos = 0;
     terminal_writestring(cli_nav);
 }
 
