@@ -148,6 +148,14 @@ void kernel_main(uint32_t magic, multiboot_info_t *mboot_ptr) {
 
     init_mem(mboot_ptr);
     pmm_dump_bitmap(128);
+    mmu_init();
+    mmu_enable();
+
+    if (mmu_is_paging_enabled() == 1) {
+        KINFO("[MMU] Matrix activated: Paging is physically ON!");
+    } else {
+        KPANIC("[MMU] Paging failed to enable!");
+    }
 
     terminal_writestring("AuriOS Kernel v0.2\n");
     sleep(100);

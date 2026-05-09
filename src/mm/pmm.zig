@@ -17,7 +17,7 @@ pub fn panic(msg: []const u8, error_return_trace: ?*std.builtin.StackTrace, ret_
     }
 }
 
-fn print_hex(val: usize) void {
+export fn print_hex(val: usize) void {
     serial_write_string("0x");
     var temp = val;
     var buf: [8]u8 = undefined;
