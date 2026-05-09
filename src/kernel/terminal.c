@@ -162,3 +162,22 @@ void terminal_backspace(void) {
 void terminal_writestring(const char* data) {
 	terminal_write(data, strlen(data));
 }
+// Based on src/mm/pmm.zig > fn print_hex
+void terminal_writehex(size_t val){
+    terminal_writestring("0x");
+
+    const int num_chars = sizeof(size_t) * 2;
+
+    char buf[num_chars];
+    size_t temp = val;
+
+    for (int i = num_chars - 1; i >= 0; i--) {
+        uint8_t nibble = temp & 0xF;
+        buf[i] = (nibble < 10) ? ('0' + nibble) : ('A' + (nibble - 10));
+        temp >>= 4;
+    }
+
+    for (int j = 0; j < num_chars; j++) {
+        terminal_writestring(&buf[j]);
+    }
+}
