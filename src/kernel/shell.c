@@ -2,7 +2,6 @@
 #include "../include/colors.h"
 #include "../include/integer.h"
 #include "../include/log.h"
-#include "../include/memory.h"
 #include "../include/mm.h"
 #include "../include/string.h"
 #include "../include/terminal.h"
@@ -16,12 +15,7 @@ static char cli_nav[58] = COLOR_RED_BRIGHT
     "kernel" COLOR_CYAN_BRIGHT "@" COLOR_WHITE_BRIGHT "auri-os" COLOR_RESET
     "~" COLOR_GREEN_BRIGHT "$ " COLOR_RESET;
 
-void shell_init(void) {
-    // Flush any keystrokes captured by the keyboard interrupt during boot.
-    memset(buffer, 0, BUFFER_SIZE);
-    buffer_pos = 0;
-    terminal_writestring(cli_nav);
-}
+void shell_init(void) { terminal_writestring(cli_nav); }
 
 static int shell_parse(char *cmd, char **args) {
   int argc = 0;
