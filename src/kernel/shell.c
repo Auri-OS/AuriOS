@@ -188,6 +188,10 @@ static void shell_execute(char *cmd) {
     if (!skip_newline)
       terminal_writestring("\n");
   } else if (strcmp(cmd_name, "memdump") == 0) {
+    if (argc !=  2) {
+        terminal_writestring("usage: memdump <size>\n");
+        return;
+    }
     pmm_dump_bitmap(atoi(args[1]));
   } else if (strcmp(cmd_name, "mia") == 0) {
     debug_trigger_page_fault();
