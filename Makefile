@@ -153,22 +153,22 @@ clean:
 # Installation targets
 install-fedora:
 	@echo "[!] Installing dependencies for Fedora"
-	sudo dnf install gcc gcc-c++ binutils make wget tar texinfo gmp-devel mpfr-devel libmpc-devel nasm qemu-system-x86 grub2-tools-extra mtools xorriso
+	sudo dnf install gcc gcc-c++ binutils make wget tar texinfo gmp-devel mpfr-devel libmpc-devel nasm qemu-system-x86 grub2-tools-extra mtools xorriso clang-tools-extra
 	bash docs/install_scripts/install.sh
-	
+
 install-arch:
 	@echo "[!] Installing dependencies for Arch Linux"
-	sudo pacman -S gcc binutils make wget tar nasm qemu-system-x86 grub mtools xorriso
+	sudo pacman -S gcc binutils make wget tar nasm qemu-system-x86 grub mtools xorriso clang
 	bash docs/install_scripts/install.sh
 
 install-debian:
 	@echo "[!] Installing dependencies for Debian/Ubuntu"
-	sudo apt install gcc g++ binutils make wget tar mtools xorriso nasm qemu-system-x86 grub-pc-bin
+	sudo apt install gcc g++ binutils make wget tar mtools xorriso nasm qemu-system-x86 grub-pc-bin clang-format
 	bash docs/install_scripts/install.sh
 # need work
 install-mac:
 	@echo "[!] Installing dependencies for MacOS"
-	brew install qemu i686-elf-gcc nasm zig
+	brew install qemu i686-elf-gcc nasm zig clang-format
 
 install-zig:
 	@echo "[!] Detecting OS and installing Zig..."
