@@ -141,5 +141,5 @@ export fn pmm_alloc_frame() usize {
 }
 
 export fn pmm_free_frame(phys_addr: usize) void {
-    pmm_mark_region_used(phys_addr, PAGE_SIZE);
+    pmm_mark_region_free(phys_addr, PAGE_SIZE);
 }
