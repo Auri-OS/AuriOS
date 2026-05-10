@@ -1,5 +1,7 @@
 #include "../include/shell.h"
 #include "../include/colors.h"
+#include "../include/integer.h"
+#include "../include/log.h"
 #include "../include/memory.h"
 #include "../include/mm.h"
 #include "../include/string.h"
@@ -20,6 +22,15 @@ void shell_init(void) {
     buffer_pos = 0;
     terminal_writestring(cli_nav);
 }
+
+static int shell_parse(char *cmd, char **args) {
+  int argc = 0;
+  int i = 0;
+
+  cmd = str_trim(cmd);
+  if (cmd == NULL || cmd[0] == '\0') {
+    return 0;
+  };
 
   while (cmd[i] != '\0' && argc < MAX_CMD_ARGS) {
     args[argc++] = &cmd[i];
