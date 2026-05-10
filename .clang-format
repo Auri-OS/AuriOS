@@ -7,7 +7,7 @@ BasedOnStyle: LLVM
 
 # Indentation
 IndentWidth: 2
-UseTab: Never
+UseTab: Always
 TabWidth: 2
 
 # Spacing
