@@ -2,6 +2,9 @@
 #include "../include/string.h"
 #include "../include/ansi.h"
 #include "../include/io.h"
+#ifdef AURI_TEST_MODE
+      #include "../include/serial.h"
+#endif
 #include <stddef.h>
 #include <stdint.h>
 
@@ -85,7 +88,6 @@ static void terminal_scroll(void) {
 void terminal_putchar(char c) {
   ansi_process_char((uint8_t)c);
   #ifdef AURI_TEST_MODE
-    #include "../include/serial.h"
     serial_write_char(c);
   #endif
 }
