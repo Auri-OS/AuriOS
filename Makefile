@@ -47,7 +47,7 @@ OBJS = $(S_OBJS) $(ASM_OBJS) $(C_OBJS) $(ZIG_OBJS)
 .DEFAULT_GOAL := help
 
 # Phony targets
-.PHONY: all clean help iso run run32 run-mac install-fedora install-arch install-debian
+.PHONY: all clean help iso iso-debug run run32 run-mac install-fedora install-arch install-debian
 
 help:
 	@echo "======================= AuriOS Makefile ======================="
@@ -55,6 +55,7 @@ help:
 	@echo "Available targets:"
 	@echo "  make all            - Build everything"
 	@echo "  make iso            - Build OS binary and create bootable ISO"
+	@echo "  make iso-debug      - Build bootable ISO with Test Mode enabled (serial output)"
 	@echo "  make run            - Build and run in QEMU (x86_64)"
 	@echo "  make run32          - Build and run in QEMU (i386)"
 	@echo "  make run-mac        - Build and run on macOS (direct boot)"
@@ -128,6 +129,12 @@ iso: $(KERNEL_BIN)
 	@echo '}' >> $(ISO_DIR)/boot/grub/grub.cfg
 	@grub-mkrescue -o $(ISO) $(ISO_DIR) 2>/dev/null || grub2-mkrescue -o $(ISO) $(ISO_DIR)
 	@echo "ISO created: $(ISO)"
+
+iso-debug:
+	@echo "Building Test ISO with AURI_TEST_MODE..."
+	@$(MAKE) clean
+	@$(MAKE) CFLAGS="$(CFLAGS) -DAURI_TEST_MODE" iso
+	@echo "Test ISO build complete!"
 
 # Run in QEMU (x86_64)
 run: iso

@@ -144,6 +144,10 @@ void kernel_main(uint32_t magic, multiboot_info_t *mboot_ptr) {
     terminal_initialize();
     timer_init(1000);
 
+    #ifdef AURI_TEST_MODE
+      pic_unmask_irq(4);
+    #endif
+
     asm volatile("sti");
 
     init_mem(mboot_ptr);
