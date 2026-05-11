@@ -1,38 +1,41 @@
 name: AuriOS CI
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 on:
   push:
-    branches: [ "main", "develop" ]
+    branches: ["main", "develop"]
     paths:
-      - 'src/**'
-      - 'Makefile'
-      - 'linker.ld'
-      - '.github/workflows/ci.yml'
+      - "src/**"
+      - "Makefile"
+      - "linker.ld"
+      - ".github/workflows/ci.yml"
   pull_request:
-    branches: [ "main", "develop" ]
-  
+    branches: ["main", "develop"]
+
   workflow_dispatch:
 
 jobs:
   build-gcc:
     name: Build with GCC (i686-elf)
     runs-on: ubuntu-latest
-    
+
     steps:
-      - name: Checkout 
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: add local bin to path
         run: echo "$PWD/.environment/bin" >> $GITHUB_PATH
 
-      - name: restore cross compiler cache 
+      - name: restore cross compiler cache
         id: cache-toolchain
         uses: actions/cache@v4
         with:
           path: .environment
           key: ${{ runner.os }}-i686-elf-gcc-${{ hashFiles('Makefile', 'docs/install_scripts/install.sh') }}
 
-      - name: install system deps 
+      - name: install system deps
         run: |
           sudo apt-get update
           sudo apt-get install -y nasm xorriso mtools grub-pc-bin grub-common
@@ -64,7 +67,7 @@ jobs:
   build-zig:
     name: Build with Zig Toolchain
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -72,7 +75,7 @@ jobs:
       - name: add local bin to path
         run: echo "$PWD/.environment/bin" >> $GITHUB_PATH
 
-      - name: install zig 
+      - name: install zig
         uses: goto-bus-stop/setup-zig@v2
         with:
           version: 0.16.0
