@@ -1,0 +1,21 @@
+name: "Memory Diagnostics (PMM/MMU)"
+command: "qemu-system-i386 -cdrom output/AuriOS.iso -m 512M -display none -serial stdio"
+timeout_ms: 8000
+
+boot_sequence:
+  - "System ready."
+
+shell_interactions:
+  prompt: "auri-os"
+  tests:
+    - command: "mmap"
+      expect: "=== ACTIVE MEMORY MAPPINGS ==="
+
+    - command: "memdump 16"
+      expect: "=== PMM BITMAP DUMP ==="
+
+    - command: "memdump"
+      expect: "usage: memdump <size>"
+
+    - command: "peek 0x100000"
+      expect: "Peeking at 0x" 

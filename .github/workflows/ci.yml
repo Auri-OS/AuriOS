@@ -96,3 +96,35 @@ jobs:
           name: AuriOS-Zig-ISO
           path: output/AuriOS.iso
           retention-days: 5
+
+  integration-tests:
+    name: Integration Tests (Walkman)
+    runs-on: ubuntu-latest
+    needs: build-zig
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: install system deps & QEMU
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y nasm xorriso mtools grub-pc-bin grub-common qemu-system-x86
+
+      - name: install zig
+        uses: mlugg/setup-zig@v2
+        with:
+          version: 0.16.0
+
+      - name: Build Test ISO (AURI_TEST_MODE)
+        run: |
+          make clean
+          make USE_ZIG=1 iso-debug
+
+      - name: Install Walkman
+        run: |
+          cargo install --git https://github.com/Auri-OS/walkman.git --tag v0.1.0
+
+      - name: Run Walkman Test Suite
+        run: |
+          walkman tests/integrations --nui

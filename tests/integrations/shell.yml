@@ -1,0 +1,21 @@
+name: "Shell Parsing & Robustness"
+command: "qemu-system-i386 -cdrom output/AuriOS.iso -m 512M -display none -serial stdio"
+timeout_ms: 10000
+
+boot_sequence:
+  - "System ready."
+
+shell_interactions:
+  prompt: "auri-os"
+  tests:
+    - command: ""
+      expect: "\n" 
+
+    - command: "jhdsbfjdsbf"
+      expect: "command not found: jhdsbfjdsbf"
+
+    - command: "   echo    AuriOS   Rocks   "
+      expect: "AuriOS Rocks"
+
+    - command: "echo -n test"
+      expect: "test"
