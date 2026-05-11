@@ -7,8 +7,8 @@ BasedOnStyle: LLVM
 
 # Indentation
 IndentWidth: 2
-UseTab: Always
-TabWidth: 2
+UseTab: Never
+TabWidth: 4
 
 # Spacing
 ColumnLimit: 100
@@ -56,14 +56,14 @@ PenaltyReturnTypeOnItsOwnLine: 200
 
 # Other
 AccessModifierOffset: -2
-AlignAfterOpenBracket: Align
+AlignAfterOpenBracket: DontAlign
 AlignConsecutiveMacros: false
 AlignEscapedNewlines: Left
-AlignOperands: true
+AlignOperands: DontAlign
 AlignTrailingComments: true
-AllowAllParametersOfDeclarationOnNextLine: true
-BinPackArguments: true
-BinPackParameters: true
+AllowAllParametersOfDeclarationOnNextLine: false
+BinPackArguments: false
+BinPackParameters: false
 BreakBeforeBinaryOperators: None
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: BeforeColon
