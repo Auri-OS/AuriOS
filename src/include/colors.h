@@ -40,4 +40,15 @@
 // Basic white color
 #define COLOR_RESET "\x1b[0m"
 
+// Grouped background colors
+#define bg_color                                                                                 \
+  BG_COLOR_RED "  " BG_COLOR_GREEN "  " BG_COLOR_YELLOW "  " BG_COLOR_BLUE "  " BG_COLOR_MAGENTA \
+               "  " BG_COLOR_CYAN "  " BG_COLOR_WHITE "  " COLOR_RESET
+
+#define bg_color_bright                                                      \
+  BG_COLOR_RED_BRIGHT "  " BG_COLOR_GREEN_BRIGHT "  " BG_COLOR_YELLOW_BRIGHT \
+                      "  " BG_COLOR_BLUE_BRIGHT "  " BG_COLOR_MAGENTA_BRIGHT \
+                      "  " BG_COLOR_CYAN_BRIGHT "  " BG_COLOR_WHITE_BRIGHT "  " COLOR_RESET
+
+
 #endif

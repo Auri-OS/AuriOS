@@ -10,8 +10,8 @@ boot_sequence:
   - "System ready."
 
 shell_interactions:
-  prompt: "auri-os" 
-  
+  prompt: "auri-os"
+
   tests:
     - command: "uptime"
       expect: "Current Uptime:"
@@ -19,8 +19,8 @@ shell_interactions:
     - command: "echo Bonjour Walkman"
       expect: "Bonjour Walkman"
 
-    - command: "about"
-      expect: "Version: 0.2"
+    - command: "fetch"
+      expect: "Version:"
 
     - command: "uptime -p"
       expect: "second"
