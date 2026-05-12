@@ -22,11 +22,18 @@ ifeq ($(USE_ZIG), 1)
     CFLAGS = -ffreestanding -Wall -Wextra -m32 -I src/include -fno-pie -fno-stack-protector -mgeneral-regs-only -fno-sanitize=all 
     LDFLAGS = -T linker.ld -nostdlib -z max-page-size=0x1000 --build-id=none
 else
-    CC = i686-elf-gcc
-    LD = i686-elf-ld
-    CFLAGS = -ffreestanding -O2 -Wall -Wextra -m32 -I src/include
-    LDFLAGS = -T linker.ld -nostdlib
+    # Check if i686-elf-gcc is available, otherwise fall back to host gcc
+    ifeq ($(shell command -v i686-elf-gcc > /dev/null 2>&1 && echo 1 || echo 0), 1)
+        CC = i686-elf-gcc
+        LD = i686-elf-ld
+    else
+        CC = gcc
+        LD = ld
+    endif
+    CFLAGS = -ffreestanding -O2 -Wall -Wextra -m32 -Isrc/include
+    LDFLAGS = -T linker.ld -nostdlib -m elf_i386
 endif
+
 
 AS = nasm
 
