@@ -13,4 +13,6 @@ gdt_flush:
 
         jmp 0x08:.flush         ; far jump to reload CS
     .flush:
+        mov ax, 0x2B
+        ltr ax
         ret

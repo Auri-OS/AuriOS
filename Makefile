@@ -2,6 +2,7 @@
 # Output directory for final binaries
 OUTPUT_DIR = output
 BUILD_DIR = build
+HEADER_DIR = src/include
 ISO_DIR = iso
 
 # Final binaries
@@ -18,7 +19,7 @@ USE_ZIG ?= 0
 ifeq ($(USE_ZIG), 1)
     CC = zig cc -target x86-freestanding-none
     LD = zig ld.lld
-    CFLAGS = -ffreestanding -Wall -Wextra -m32 -Isrc/include -fno-pie -fno-stack-protector -mgeneral-regs-only -fno-sanitize=all
+    CFLAGS = -ffreestanding -Wall -Wextra -m32 -I src/include -fno-pie -fno-stack-protector -mgeneral-regs-only -fno-sanitize=all 
     LDFLAGS = -T linker.ld -nostdlib -z max-page-size=0x1000 --build-id=none
 else
     # Check if i686-elf-gcc is available, otherwise fall back to host gcc
@@ -41,12 +42,12 @@ C_SOURCES = $(wildcard src/kernel/*.c) $(wildcard src/cpu/*.c) $(wildcard src/li
 S_SOURCES = $(wildcard src/boot/*.s)
 ASM_SOURCES = $(wildcard src/cpu/*.asm)
 ZIG_SOURCES = $(wildcard src/kernel/*.zig) $(wildcard src/mm/*.zig)
-ZIG_OBJS = $(patsubst src/%.zig, $(BUILD_DIR)/%.o, $(ZIG_SOURCES))
 
 # Object files (in build directory)
 C_OBJS = $(patsubst src/%.c, $(BUILD_DIR)/%.o, $(C_SOURCES))
 S_OBJS = $(patsubst src/%.s, $(BUILD_DIR)/%.o, $(S_SOURCES))
 ASM_OBJS = $(patsubst src/%.asm, $(BUILD_DIR)/%.o, $(ASM_SOURCES))
+ZIG_OBJS = $(patsubst src/%.zig, $(BUILD_DIR)/%.o, $(ZIG_SOURCES))
 
 OBJS = $(S_OBJS) $(ASM_OBJS) $(C_OBJS) $(ZIG_OBJS)
 
@@ -54,7 +55,7 @@ OBJS = $(S_OBJS) $(ASM_OBJS) $(C_OBJS) $(ZIG_OBJS)
 .DEFAULT_GOAL := help
 
 # Phony targets
-.PHONY: all clean help iso run run32 run-mac install-fedora install-arch install-debian
+.PHONY: all clean help iso iso-debug run run32 run-mac install-fedora install-arch install-debian
 
 help:
 	@echo "======================= AuriOS Makefile ======================="
@@ -62,6 +63,7 @@ help:
 	@echo "Available targets:"
 	@echo "  make all            - Build everything"
 	@echo "  make iso            - Build OS binary and create bootable ISO"
+	@echo "  make iso-debug      - Build bootable ISO with Test Mode enabled (serial output)"
 	@echo "  make run            - Build and run in QEMU (x86_64)"
 	@echo "  make run32          - Build and run in QEMU (i386)"
 	@echo "  make run-mac        - Build and run on macOS (direct boot)"
@@ -75,7 +77,7 @@ help:
 	@echo ""
 	@echo "Zig Toolchain (Optional):"
 	@echo "  make install-zig    - Auto-install Zig compiler based on your OS"
-	@echo "  -USE_ZIG=1          - Compile with Zig toolchain"
+	@echo "  make run* USE_ZIG=1 - Compile with Zig toolchain"
 	@echo "==============================================================="
 
 # Create necessary directories
@@ -104,10 +106,11 @@ $(BUILD_DIR)/%.o: src/%.asm | $(BUILD_DIR)
 	@echo "AS $<"
 	@$(AS) -f elf32 $< -o $@
 
-$(BUILD_DIR)/%.o: src/%.zig | $(BUILD_DIR)
+# Compile zig files (.zig)
+$(BUILD_DIR)/%.o: src/%.zig | $(BUILD_DIR) 
 	@mkdir -p $(dir $@)
 	@echo "ZIG $<"
-	@zig build-obj $< -femit-bin=$@ -target x86-freestanding-none -O ReleaseSafe -fno-stack-check -mcpu=i386
+	@zig build-obj $< -femit-bin=$@ -target x86-freestanding-none -O ReleaseSafe -fno-stack-check -mcpu=i386 -I $(HEADER_DIR)
 
 # Link kernel binary
 $(KERNEL_BIN): $(OBJS) | $(OUTPUT_DIR)
@@ -136,6 +139,12 @@ iso: $(KERNEL_BIN)
 	@grub-mkrescue -o $(ISO) $(ISO_DIR) 2>/dev/null || grub2-mkrescue -o $(ISO) $(ISO_DIR)
 	@echo "ISO created: $(ISO)"
 
+iso-debug:
+	@echo "Building Test ISO with AURI_TEST_MODE..."
+	@$(MAKE) clean
+	@$(MAKE) CFLAGS="$(CFLAGS) -DAURI_TEST_MODE" iso
+	@echo "Test ISO build complete!"
+
 # Run in QEMU (x86_64)
 run: iso
 	@echo "Starting QEMU (x86_64)..."
@@ -160,22 +169,22 @@ clean:
 # Installation targets
 install-fedora:
 	@echo "[!] Installing dependencies for Fedora"
-	sudo dnf install gcc gcc-c++ binutils make wget tar texinfo gmp-devel mpfr-devel libmpc-devel nasm qemu-system-x86 grub2-tools-extra mtools xorriso
+	sudo dnf install gcc gcc-c++ binutils make wget tar texinfo gmp-devel mpfr-devel libmpc-devel nasm qemu-system-x86 grub2-tools-extra mtools xorriso clang-tools-extra
 	bash docs/install_scripts/install.sh
-	
+
 install-arch:
 	@echo "[!] Installing dependencies for Arch Linux"
-	sudo pacman -S gcc binutils make wget tar nasm qemu-system-x86 grub mtools xorriso
+	sudo pacman -S gcc binutils make wget tar nasm qemu-system-x86 grub mtools xorriso clang
 	bash docs/install_scripts/install.sh
 
 install-debian:
 	@echo "[!] Installing dependencies for Debian/Ubuntu"
-	sudo apt install gcc g++ binutils make wget tar mtools xorriso nasm qemu-system-x86 grub-pc-bin
+	sudo apt install gcc g++ binutils make wget tar mtools xorriso nasm qemu-system-x86 grub-pc-bin clang-format
 	bash docs/install_scripts/install.sh
 # need work
 install-mac:
 	@echo "[!] Installing dependencies for MacOS"
-	brew install qemu i686-elf-gcc nasm zig
+	brew install qemu i686-elf-gcc nasm zig clang-format
 
 install-zig:
 	@echo "[!] Detecting OS and installing Zig..."

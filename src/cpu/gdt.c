@@ -1,10 +1,12 @@
 #include "../include/gdt.h"
 #include "../include/log.h"
+#include "../include/memory.h"
 
-#define GDT_ENTRY_COUNT 5
+#define GDT_ENTRY_COUNT 6
 
 uint64_t gdt[GDT_ENTRY_COUNT];
 struct gdt_ptr gp;
+struct tss_entry tss;
 
 extern void gdt_flush(uint32_t);
 
@@ -23,11 +25,20 @@ uint64_t create_descriptor(uint32_t base, uint32_t limit, uint16_t flag)
 
 void gdt_init()
 {
+    memset(&tss, 0, sizeof(struct tss_entry));
+
+    tss.ss0 = 0x10;
+    tss.esp0 = 0x90000;
+
     gdt[0] = create_descriptor(0, 0, 0);                    // null
     gdt[1] = create_descriptor(0, 0x000FFFFF, GDT_CODE_PL0); // code pl0
     gdt[2] = create_descriptor(0, 0x000FFFFF, GDT_DATA_PL0); // data pl0
     gdt[3] = create_descriptor(0, 0x000FFFFF, GDT_CODE_PL3); // code pl3
     gdt[4] = create_descriptor(0, 0x000FFFFF, GDT_DATA_PL3); // data pl3
+  
+    uint32_t tss_base = (uint32_t)&tss;
+    uint32_t tss_limit = sizeof(struct tss_entry) - 1;
+    gdt[5] = create_descriptor(tss_base, tss_limit, 0x89);
 
     gp.limit = sizeof(gdt) - 1;
     gp.base = (uint32_t)&gdt;

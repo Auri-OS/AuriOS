@@ -3,14 +3,14 @@
 # 🌟 AuriOS
 
 ```
-        X       
-       XXX      
-      XXXXX     
-     X XXXXX    
-    XXX XXXXX   
-   XXXXX XXXXX   
-  XXXXXX  XXXXX  
- XXXXXX    XXXXX 
+        X
+       XXX
+      XXXXX
+     X XXXXX
+    XXX XXXXX
+   XXXXX XXXXX
+  XXXXXX  XXXXX
+ XXXXXX    XXXXX
 XXXXXX      XXXXX
 ```
 
@@ -61,16 +61,22 @@ This project demonstrates low-level system programming concepts and serves as a 
   - ISO generation for bootable media
 
 ## ❤️ Contributors
+
 Thank to all the contributors, you are the flame burning in our heart ❤️
+
 <div align="left">
 
-| Profile | GitHub | Role |
-|:-------:|:------:|:----:|
-| <img src="https://github.com/im-nymii.png" width="80" height="80" alt="im-nymii" /> | [nymii](https://github.com/im-nymii) | Founder & Maintainer |
-| <img src="https://github.com/llmaddie.png" width="80" height="80" alt="llmaddie 2" /> | [Maddie](https://github.com/llmaddie) | Co-Founder & Maintainer |
-| <img src="https://github.com/pepedinho.png" width="80" height="80" alt="pepedinho" /> | [pepedinho](https://github.com/pepedinho) | Co-Maintainer |
-| <img src="https://github.com/swtchcoder.png" width="80" height="80" alt="switchcodeur" /> | [switchcodeur](https://github.com/swtchcoder) | Contributor |
-| <img src="https://github.com/proxzr.png" width="80" height="80" alt="proxzr" /> | [proxzr](https://github.com/proxzr) | Contributor |
+|                                           Profile                                           |                     GitHub                      |          Role           |
+| :-----------------------------------------------------------------------------------------: | :---------------------------------------------: | :---------------------: |
+|     <img src="https://github.com/im-nymii.png" width="80" height="80" alt="im-nymii" />     |      [nymii](https://github.com/im-nymii)       |  Founder & Maintainer   |
+|    <img src="https://github.com/llmaddie.png" width="80" height="80" alt="llmaddie 2" />    |      [Maddie](https://github.com/llmaddie)      | Co-Founder & Maintainer |
+|    <img src="https://github.com/pepedinho.png" width="80" height="80" alt="pepedinho" />    |    [pepedinho](https://github.com/pepedinho)    |      Co-Maintainer      |
+|  <img src="https://github.com/swtchcoder.png" width="80" height="80" alt="switchcodeur" />  |  [switchcodeur](https://github.com/swtchcoder)  |       Contributor       |
+|       <img src="https://github.com/proxzr.png" width="80" height="80" alt="proxzr" />       |       [proxzr](https://github.com/proxzr)       |       Contributor       |
+|      <img src="https://github.com/aomitsu.png" width="80" height="80" alt="Aomitsu" />      |      [Aomitsu](https://github.com/aomitsu)      |       Contributor       |
+|       <img src="https://github.com/ivy-js.png" width="80" height="80" alt="ivy-js" />       |       [Ivy-js](https://github.com/ivy-js)       |       Contributor       |
+| <img src="https://github.com/gittihub-jpg.png" width="80" height="80" alt="gittihub-jpg" /> | [gittihub-jpg](https://github.com/gittihub-jpg) |       Contributor       |
+| <img src="https://github.com/jesuiskoriel.png" width="80" height="80" alt="jesuiskoriel" /> | [Jesuiskoriel](https://github.com/Jesuiskoriel) |       Contributor       |
 
 </div>
 
@@ -90,21 +96,25 @@ Before building AuriOS, ensure you have the following tools installed:
 ### Quick Install Dependencies
 
 #### Fedora / RHEL
+
 ```bash
 make install-fedora
 ```
 
 #### Arch Linux
+
 ```bash
 make install-arch
 ```
 
 #### Debian / Ubuntu
+
 ```bash
 make install-debian
 ```
 
 #### macOS
+
 ```bash
 brew install i686-elf-gcc nasm qemu xorriso
 ```
@@ -127,6 +137,7 @@ make all
 ```
 
 This will:
+
 - Compile all C source files
 - Assemble all assembly files
 - Link everything into a kernel binary
@@ -210,6 +221,7 @@ Please read [CONTRIBUTING.md](docs/CONTRIBUTING.md) for details on our code of c
 ## 🗺️ Roadmap
 
 ### Current Version (v0.2.0)
+
 - ✅ Basic kernel initialization
 - ✅ GDT and IDT setup
 - ✅ Keyboard driver
@@ -218,6 +230,7 @@ Please read [CONTRIBUTING.md](docs/CONTRIBUTING.md) for details on our code of c
 - ✅ Memory management basics
 
 ### Planned Features
+
 - [ ] Virtual memory management
 - [ ] File system support (FAT32)
 - [ ] Multi-tasking and process scheduling

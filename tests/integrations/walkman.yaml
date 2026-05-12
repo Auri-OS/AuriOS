@@ -1,0 +1,26 @@
+name: "AuriOS Basic Integration Test"
+command: "qemu-system-i386 -cdrom output/AuriOS.iso -m 512M -display none -serial stdio"
+timeout_ms: 10000
+
+boot_sequence:
+  - "[KRN] Starting AuriOS boot sequence..."
+  - "[GDT] Initialized succesfully"
+  - "[PMM] Physical Memory Manager initialized by Zig."
+  - "[MMU] Matrix activated: Paging is physically ON!"
+  - "System ready."
+
+shell_interactions:
+  prompt: "auri-os" 
+  
+  tests:
+    - command: "uptime"
+      expect: "Current Uptime:"
+
+    - command: "echo Bonjour Walkman"
+      expect: "Bonjour Walkman"
+
+    - command: "about"
+      expect: "Version: 0.2"
+
+    - command: "uptime -p"
+      expect: "second"

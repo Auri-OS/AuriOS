@@ -1,4 +1,7 @@
 const std = @import("std");
+pub const c = @cImport({
+    @cInclude("../include/colors.h");
+});
 
 extern fn pmm_alloc_frame() usize;
 extern fn serial_write_string(str: [*c]const u8) void;
@@ -200,8 +203,12 @@ export fn mmu_handle_page_fault(error_code: u32) noreturn {
         : [val] "=r" (cr2),
     );
 
-    serial_write_string("\r\n\x1b[91m[PANIC] PAGE FAULT DETECTED!\x1b[0m\r\n");
-    serial_write_string("Faulting Address : ");
+	serial_write_string("\r\n");
+	serial_write_string(c.COLOR_RED_BRIGHT);
+    serial_write_string("[PANIC] PAGE FAULT DETECTED!");
+	serial_write_string("\r\n");
+    serial_write_string(c.COLOR_RESET);
+	serial_write_string("Faulting Address : ");
     print_hex(cr2);
     serial_write_string("\r\n");
 
