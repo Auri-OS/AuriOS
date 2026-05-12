@@ -1,0 +1,21 @@
+name: "Timer & Uptime Arguments"
+command: "qemu-system-i386 -cdrom output/AuriOS.iso -m 512M -display none -serial stdio"
+timeout_ms: 10000
+
+boot_sequence:
+  - "System ready."
+
+shell_interactions:
+  prompt: "auri-os"
+  tests:
+    - command: "uptime -h"
+      expect: "-r     - show uptime in miliseconds"
+
+    - command: "uptime -r"
+      expect: "ms"
+
+    - command: "uptime -s"
+      expect: "s"
+
+    - command: "uptime -p"
+      expect: "Current Uptime:"
