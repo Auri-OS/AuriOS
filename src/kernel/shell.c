@@ -1,5 +1,6 @@
 #include "../include/shell.h"
 #include "../include/colors.h"
+#include "../include/fetch.h"
 #include "../include/integer.h"
 #include "../include/log.h"
 #include "../include/memory.h"
@@ -7,18 +8,12 @@
 #include "../include/string.h"
 #include "../include/terminal.h"
 #include "../include/timer.h"
-
 #define BUFFER_SIZE 256
 #define MAX_CMD_ARGS 16
-#define fetch_user \
-  COLOR_RED_BRIGHT "kernel" COLOR_CYAN_BRIGHT "@" COLOR_WHITE_BRIGHT "auri-os" COLOR_RESET
 
 
 static char buffer[BUFFER_SIZE];
 static int buffer_pos = 0;
-static char cli_nav[58] =
-    COLOR_RED_BRIGHT "kernel" COLOR_CYAN_BRIGHT "@" COLOR_WHITE_BRIGHT "auri-os" COLOR_RESET
-                     "~" COLOR_GREEN_BRIGHT "$ " COLOR_RESET;
 
 void shell_init(void) {
   // Flush any keystrokes captured by the keyboard interrupt during boot.
@@ -103,6 +98,10 @@ static void shell_execute(char *cmd) {
   else if (strcmp(cmd_name, "clear") == 0) {
     terminal_clear();
   }
+  /*
+  To modify the info strings displayed to the right of the fetch ASCII art,
+  edit src/include/fetch.h
+  */
   else if (strcmp(cmd_name, "fetch") == 0) {
     terminal_writestring(
         "\n          " COLOR_WHITE_BRIGHT ".**." COLOR_RESET "                 \n");
@@ -116,14 +115,15 @@ static void shell_execute(char *cmd) {
     ///
     terminal_writestring("       " COLOR_WHITE_BRIGHT "." COLOR_CYAN_BRIGHT "===" COLOR_WHITE_BRIGHT
                          "." COLOR_BLUE_BRIGHT "###" COLOR_WHITE_BRIGHT "." COLOR_RESET
-                         "            Kernel: AuriKernel\n");
+                         "            " fetch_kernel_name "\n");
     ///
-    terminal_writestring("      " COLOR_WHITE_BRIGHT "." COLOR_CYAN_BRIGHT "=====" COLOR_BLUE_BRIGHT
-                         "###" COLOR_WHITE_BRIGHT "." COLOR_RESET "            Version: 0.2.2\n");
+    terminal_writestring(
+        "      " COLOR_WHITE_BRIGHT "." COLOR_CYAN_BRIGHT "=====" COLOR_BLUE_BRIGHT
+        "###" COLOR_WHITE_BRIGHT "." COLOR_RESET "            " fetch_version "\n");
     ///
     terminal_writestring("     " COLOR_WHITE_BRIGHT "." COLOR_CYAN_BRIGHT
                          "======" COLOR_WHITE_BRIGHT "." COLOR_BLUE_BRIGHT "###" COLOR_WHITE_BRIGHT
-                         "." COLOR_RESET "           Release: M-DY-26\n");
+                         "." COLOR_RESET "           " fetch_release_date "\n");
     ///
     terminal_writestring(
         "    " COLOR_WHITE_BRIGHT "." COLOR_CYAN_BRIGHT "======" COLOR_WHITE_BRIGHT
