@@ -2,6 +2,7 @@
 # Output directory for final binaries
 OUTPUT_DIR = output
 BUILD_DIR = build
+HEADER_DIR = src/include
 ISO_DIR = iso
 
 # Final binaries
@@ -18,12 +19,12 @@ USE_ZIG ?= 0
 ifeq ($(USE_ZIG), 1)
     CC = zig cc -target x86-freestanding-none
     LD = zig ld.lld
-    CFLAGS = -ffreestanding -Wall -Wextra -m32 -Isrc/include -fno-pie -fno-stack-protector -mgeneral-regs-only -fno-sanitize=all
+    CFLAGS = -ffreestanding -Wall -Wextra -m32 -I src/include -fno-pie -fno-stack-protector -mgeneral-regs-only -fno-sanitize=all 
     LDFLAGS = -T linker.ld -nostdlib -z max-page-size=0x1000 --build-id=none
 else
     CC = i686-elf-gcc
     LD = i686-elf-ld
-    CFLAGS = -ffreestanding -O2 -Wall -Wextra -m32 -Isrc/include
+    CFLAGS = -ffreestanding -O2 -Wall -Wextra -m32 -I src/include
     LDFLAGS = -T linker.ld -nostdlib
 endif
 
@@ -34,12 +35,12 @@ C_SOURCES = $(wildcard src/kernel/*.c) $(wildcard src/cpu/*.c) $(wildcard src/li
 S_SOURCES = $(wildcard src/boot/*.s)
 ASM_SOURCES = $(wildcard src/cpu/*.asm)
 ZIG_SOURCES = $(wildcard src/kernel/*.zig) $(wildcard src/mm/*.zig)
-ZIG_OBJS = $(patsubst src/%.zig, $(BUILD_DIR)/%.o, $(ZIG_SOURCES))
 
 # Object files (in build directory)
 C_OBJS = $(patsubst src/%.c, $(BUILD_DIR)/%.o, $(C_SOURCES))
 S_OBJS = $(patsubst src/%.s, $(BUILD_DIR)/%.o, $(S_SOURCES))
 ASM_OBJS = $(patsubst src/%.asm, $(BUILD_DIR)/%.o, $(ASM_SOURCES))
+ZIG_OBJS = $(patsubst src/%.zig, $(BUILD_DIR)/%.o, $(ZIG_SOURCES))
 
 OBJS = $(S_OBJS) $(ASM_OBJS) $(C_OBJS) $(ZIG_OBJS)
 
@@ -69,7 +70,7 @@ help:
 	@echo ""
 	@echo "Zig Toolchain (Optional):"
 	@echo "  make install-zig    - Auto-install Zig compiler based on your OS"
-	@echo "  -USE_ZIG=1          - Compile with Zig toolchain"
+	@echo "  make run* USE_ZIG=1 - Compile with Zig toolchain"
 	@echo "==============================================================="
 
 # Create necessary directories
@@ -98,10 +99,11 @@ $(BUILD_DIR)/%.o: src/%.asm | $(BUILD_DIR)
 	@echo "AS $<"
 	@$(AS) -f elf32 $< -o $@
 
-$(BUILD_DIR)/%.o: src/%.zig | $(BUILD_DIR)
+# Compile zig files (.zig)
+$(BUILD_DIR)/%.o: src/%.zig | $(BUILD_DIR) 
 	@mkdir -p $(dir $@)
 	@echo "ZIG $<"
-	@zig build-obj $< -femit-bin=$@ -target x86-freestanding-none -O ReleaseSafe -fno-stack-check -mcpu=i386
+	@zig build-obj $< -femit-bin=$@ -target x86-freestanding-none -O ReleaseSafe -fno-stack-check -mcpu=i386 -I $(HEADER_DIR)
 
 # Link kernel binary
 $(KERNEL_BIN): $(OBJS) | $(OUTPUT_DIR)

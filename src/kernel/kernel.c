@@ -12,10 +12,12 @@
 #include "../include/log.h" 
 #include "../include/multiboot.h"
 #include "../include/mm.h"
+#include "../include/ansi.h"
+#include "../include/colors.h"
 
 static void set_cursor_ansi(int x, int y) {
     char buf[16];
-    terminal_writestring("\x1b[");
+    terminal_writestring(ANSI_CSI);
     itoa(y, buf);
     terminal_writestring(buf);
     terminal_writestring(";");
@@ -39,7 +41,7 @@ void animate_logo(void) {
     };
 
     terminal_clear();
-    terminal_writestring("\x1b[96m");
+    terminal_writestring(COLOR_CYAN_BRIGHT);
 
     int start_y = 6;
     int max_width = 48; 
@@ -72,7 +74,7 @@ void animate_logo(void) {
     int text_x = 28;
     int text_y = 17;
 
-    terminal_writestring("\x1b[97;44m");
+    terminal_writestring(COLOR_WHITE_BRIGHT BG_COLOR_BLUE);
 
     for (int frame = 0; frame < 30; frame++) {
         set_cursor_ansi(text_x, text_y);
@@ -92,7 +94,7 @@ void animate_logo(void) {
     set_cursor_ansi(text_x, text_y);
     terminal_writestring(target_text);
 
-    terminal_writestring("\x1b[0m");
+    terminal_writestring(COLOR_RESET);
     set_cursor_ansi(1, 20);
     sleep(1000);
 }
