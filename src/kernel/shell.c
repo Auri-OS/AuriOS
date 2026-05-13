@@ -2,6 +2,7 @@
 #include "../include/colors.h"
 #include "../include/fetch.h"
 #include "../include/integer.h"
+#include "../include/keyboard.h"
 #include "../include/log.h"
 #include "../include/memory.h"
 #include "../include/mm.h"
@@ -10,10 +11,13 @@
 #include "../include/timer.h"
 #define BUFFER_SIZE 256
 #define MAX_CMD_ARGS 16
-
+#define HISTORY_SIZE 10
 
 static char buffer[BUFFER_SIZE];
 static int buffer_pos = 0;
+static char history[HISTORY_SIZE][BUFFER_SIZE];
+static int history_count = 0;
+static int history_index = -1;
 
 void shell_init(void) {
   // Flush any keystrokes captured by the keyboard interrupt during boot.
@@ -76,6 +80,22 @@ void debug_trigger_page_fault(void) {
 
 static void shell_execute(char *cmd) {
   char *args[MAX_CMD_ARGS];
+  if (strlen(cmd) > 0) {
+    if (history_count < HISTORY_SIZE) {
+      strncpy(history[history_count], cmd, BUFFER_SIZE - 1);
+      history[history_count][BUFFER_SIZE - 1] = '\0';
+      history_count++;
+    }
+    else {
+      for (int i = 0; i < HISTORY_SIZE - 1; i++) {
+        strncpy(history[i], history[i + 1], BUFFER_SIZE - 1);
+        history[i][BUFFER_SIZE - 1] = '\0';
+      }
+      strncpy(history[HISTORY_SIZE - 1], cmd, BUFFER_SIZE - 1);
+      history[HISTORY_SIZE - 1][BUFFER_SIZE - 1] = '\0';
+    }
+    history_index = -1;
+  }
   int argc = shell_parse(cmd, args);
   if (argc == 0)
     return;
@@ -279,5 +299,58 @@ void shell_handle_key(char c) {
       buffer[buffer_pos++] = c;
       terminal_putchar(c);
     }
+  }
+}
+
+void shell_handle_arrow_key(int arrow) {
+  if (arrow == ARROW_UP) {
+    if (history_index == -1)
+      history_index = (history_count > 0) ? history_count - 1 : -1;
+    else if (history_index > 0)
+      history_index--;
+    else
+      return;
+
+
+    if (history_index >= 0) {
+      memset(buffer, 0, BUFFER_SIZE);
+      strncpy(buffer, history[history_index], BUFFER_SIZE - 1);
+      buffer_pos = strlen(buffer);
+      terminal_clear_line();
+      terminal_writestring(cli_nav);
+      terminal_writestring(buffer);
+    }
+  }
+  else if (arrow == ARROW_DOWN) {
+    if (history_index == -1) {
+      return;
+    }
+
+    if (history_index < history_count - 1) {
+      history_index++;
+
+      memset(buffer, 0, BUFFER_SIZE);
+      strncpy(buffer, history[history_index], BUFFER_SIZE - 1);
+      buffer_pos = strlen(buffer);
+
+      terminal_clear_line();
+      terminal_writestring(cli_nav);
+      terminal_writestring(buffer);
+    }
+    else if (history_index == history_count - 1) {
+      history_index = -1;
+
+      memset(buffer, 0, BUFFER_SIZE);
+      buffer_pos = 0;
+
+      terminal_clear_line();
+      terminal_writestring(cli_nav);
+    }
+  }
+  else if (arrow == ARROW_LEFT) {
+    terminal_left_column();
+  }
+  else if (arrow == ARROW_RIGHT) {
+    terminal_right_column();
   }
 }
