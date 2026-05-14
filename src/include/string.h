@@ -3,15 +3,16 @@
 
 #include <stddef.h>
 
-size_t strlen(const char* str);
+size_t strlen(const char *str);
 int strcmp(const char *s1, const char *s2);
 int strncmp(char *s1, char *s2, unsigned int n);
-int	strcat(char *dest, char *src);
+int strcat(char *dest, char *src);
 char *strncat(char *dest, char *src, unsigned int nb);
 int str_is_uppercase(char *str);
 int str_is_lowercase(char *str);
 char *strupcase(char *str);
 char *strlowcase(char *str);
 char *strcpy(char *dest, const char *src);
+char *strncpy(char *dest, const char *src, size_t len);
 char *str_trim(char *str);
 #endif

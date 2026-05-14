@@ -6,5 +6,6 @@
                    "~" COLOR_GREEN_BRIGHT "$ " COLOR_RESET
 void shell_init(void);
 void shell_handle_key(char c);
+void shell_handle_arrow_key(int arrow);
 
 #endif
