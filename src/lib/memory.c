@@ -106,7 +106,7 @@ char *strdup(const char *src)
 	char *cpy = malloc(sizeof(char) * (strlen(src) + 1));
 	if (cpy == NULL)
 		return NULL;
-	strcpy(cpy, src);
+	strlcpy(cpy, src, strlen(src) + 1);
 	return (cpy);
 } 
 

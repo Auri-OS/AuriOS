@@ -117,15 +117,17 @@ char *strlowcase(char *str)
 	return(str);
 }
 
-// Copy a string from a source to a destination
-char *strcpy(char *dest, const char *src) {
-    int i = 0;
-    while (src[i] != '\0') {
+// Copy a string from src to dest with bounds checking (size includes null terminator)
+char *strlcpy(char *dest, const char *src, size_t size) {
+    size_t i = 0;
+    if (size == 0)
+        return dest;
+    while (i < size && src[i] != '\0') {
         dest[i] = src[i];
         i++;
     }
-    dest[i] = 0;
-    return(dest);
+    dest[i] = '\0';
+    return dest;
 }
 
 char *str_trim(char *str)
