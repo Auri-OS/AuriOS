@@ -89,6 +89,7 @@ static void shell_execute(char *cmd) {
     terminal_writestring(
         "uptime  - show uptime since machine started\n           -h for options help\n");
     terminal_writestring("memdump - print the PMM Bitmap in the log\n");
+    terminal_writestring("memtest - allocate/free on the kernel heap (heap self-test)\n");
     terminal_writestring("mia     - force a Page Fault for MMU testing\n");
     terminal_writestring("mmap    - print current virtual memory mappings\n");
     terminal_writestring("peek    - read and print memory at a given hex address\n");
