@@ -169,6 +169,7 @@ void kernel_main(uint32_t magic, multiboot_info_t *mboot_ptr) {
     KPANIC("[MMU] Paging failed to enable!");
   }
 
+
   terminal_writestring("AuriOS Kernel v0.2\n");
   sleep(100);
   terminal_writestring("GDT initialized successfully\n");
@@ -177,6 +178,7 @@ void kernel_main(uint32_t magic, multiboot_info_t *mboot_ptr) {
   sleep(30);
   terminal_writestring("IDT initialized with ISR handlers\n");
   sleep(60);
+  memory_init();
   terminal_writestring("Memory initialized\n");
   sleep(120);
   terminal_writestring("System ready.\n\n");

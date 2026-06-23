@@ -247,6 +247,19 @@ static void shell_execute(char *cmd) {
     uint32_t addr = htoi(args[1]);
     mmu_debug_peek(addr);
   }
+  else if (strcmp(cmd_name, "memtest") == 0) {
+    char *a = malloc(32);
+    char *b = malloc(100);
+    strcpy(a, "heap ok");
+    terminal_writestring("\nalloc a: ");
+    terminal_writestring(a);
+    free(a);
+    char *c = malloc(16);
+    terminal_writestring("\nreuse : ");
+    print_unit((uint32_t) (uintptr_t) c, "(addr)", 1);
+    free(b);
+    free(c);
+  }
   else {
     terminal_writestring("command not found: ");
     terminal_writestring(cmd_name);
