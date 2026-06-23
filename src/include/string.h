@@ -12,6 +12,6 @@ int str_is_uppercase(char *str);
 int str_is_lowercase(char *str);
 char *strupcase(char *str);
 char *strlowcase(char *str);
-char *strcpy(char *dest, const char *src);
+char *strlcpy(char *dest, const char *src, size_t size);
 char *str_trim(char *str);
 #endif

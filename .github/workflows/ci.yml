@@ -123,7 +123,7 @@ jobs:
 
       - name: Install Walkman
         run: |
-          cargo install --git https://github.com/Auri-OS/walkman.git --tag v0.1.0
+          cargo install --git https://github.com/Auri-OS/walkman.git --tag v0.1.1
 
       - name: Run Walkman Test Suite
         run: |
