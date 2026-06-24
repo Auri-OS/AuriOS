@@ -251,7 +251,7 @@ static void shell_execute(char *cmd) {
   else if (strcmp(cmd_name, "memtest") == 0) {
     char *a = malloc(32);
     char *b = malloc(100);
-    strcpy(a, "heap ok");
+    strlcpy(a, "heap ok", 8);
     terminal_writestring("\nalloc a: ");
     terminal_writestring(a);
     free(a);
