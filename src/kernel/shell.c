@@ -247,6 +247,7 @@ static void shell_execute(char *cmd) {
   else if (strcmp(cmd_name, "peek") == 0) {
     uint32_t addr = htoi(args[1]);
     mmu_debug_peek(addr);
+	
   }
   else if (strcmp(cmd_name, "memtest") == 0) {
     char *a = malloc(32);

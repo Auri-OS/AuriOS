@@ -115,10 +115,24 @@ void terminal_putchar_raw(char c) {
     terminal_update_cursor(terminal_column, terminal_row);
 }
 
+void terminal_print_hex(uint32_t val) {
+	char buf[11];
+	buf[0] = '0';
+	buf[1] = 'x';
+	for (int i = 9; i >= 2; i--) {
+		uint8_t nibble = val & 0xF;
+		buf[i] = (nibble < 10) ? ('0' + nibble) : ('A' + (nibble - 10));
+		val >>= 4;
+	}
+	buf[10] = '\0';
+	terminal_writestring(buf);
+}
+
 void terminal_write(const char* data, size_t size) {
     for (size_t i = 0; i < size; i++)
         terminal_putchar(data[i]);
 }
+
 
 void terminal_clear(void){
     for (size_t y = 0; y < VGA_HEIGHT; y++) {
