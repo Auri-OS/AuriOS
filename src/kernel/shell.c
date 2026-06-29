@@ -89,6 +89,7 @@ static void shell_execute(char *cmd) {
     terminal_writestring(
         "uptime  - show uptime since machine started\n           -h for options help\n");
     terminal_writestring("memdump - print the PMM Bitmap in the log\n");
+    terminal_writestring("memtest - allocate/free on the kernel heap (heap self-test)\n");
     terminal_writestring("mia     - force a Page Fault for MMU testing\n");
     terminal_writestring("mmap    - print current virtual memory mappings\n");
     terminal_writestring("peek    - read and print memory at a given hex address\n");
@@ -246,6 +247,19 @@ static void shell_execute(char *cmd) {
   else if (strcmp(cmd_name, "peek") == 0) {
     uint32_t addr = htoi(args[1]);
     mmu_debug_peek(addr);
+  }
+  else if (strcmp(cmd_name, "memtest") == 0) {
+    char *a = malloc(32);
+    char *b = malloc(100);
+    strlcpy(a, "heap ok", 8);
+    terminal_writestring("\nalloc a: ");
+    terminal_writestring(a);
+    free(a);
+    char *c = malloc(16);
+    terminal_writestring("\nreuse : ");
+    print_unit((uint32_t) (uintptr_t) c, "(addr)", 1);
+    free(b);
+    free(c);
   }
   else {
     terminal_writestring("command not found: ");
