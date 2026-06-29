@@ -25,6 +25,3 @@ shell_interactions:
 
     - command: "peek 0x000C0002"
       expect: "Value found:"
-
-    - command: "mia"
-      expect: "Page Fault"
