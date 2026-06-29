@@ -17,5 +17,14 @@ shell_interactions:
     - command: "memdump"
       expect: "usage: memdump <size>"
 
+    - command: "memtest"
+      expect: "heap ok"
+
     - command: "peek 0x100000"
-      expect: "Peeking at 0x" 
+      expect: "Peeking at 0x"
+
+    - command: "peek 0x000C0002"
+      expect: "Value found:"
+
+    - command: "mia"
+      expect: "Page Fault"
