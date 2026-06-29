@@ -6,6 +6,8 @@ pub const c = @cImport({
 extern fn pmm_alloc_frame() usize;
 extern fn serial_write_string(str: [*c]const u8) void;
 extern fn print_hex(val: usize) void;
+extern fn terminal_writestring(str: [*c]const u8) void;
+extern fn terminal_print_hex(val: u32) void;
 
 const PAGE_SIZE = 4096;
 
@@ -187,13 +189,19 @@ export fn mmu_debug_peek(addr: usize) void {
     serial_write_string("\r\n[DEBUG] Peeking at ");
     print_hex(addr);
     serial_write_string("...\r\n");
+	
 
     const ptr = @as(*volatile u8, @ptrFromInt(addr));
     const value = ptr.*;
 
+	terminal_writestring("Value found : ");
+	terminal_print_hex(value);
+	terminal_writestring("\n");
+
     serial_write_string("Value found: ");
     print_hex(value);
     serial_write_string("\r\n");
+	
 }
 
 export fn mmu_handle_page_fault(error_code: u32) noreturn {
