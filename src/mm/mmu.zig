@@ -133,7 +133,7 @@ export fn mmu_map_page(phys_addr: usize, virt_addr: usize, is_writeable: bool, i
         .user = if (is_user) 1 else 0,
         .physical_frame = @as(u20, @truncate(phys_addr / PAGE_SIZE)),
     };
-
+	
     asm volatile ("invlpg (%[addr])"
         :
         : [addr] "r" (virt_addr),
@@ -183,6 +183,7 @@ export fn mmu_view_mappings() void {
     serial_write_string("===============================\r\n");
 }
 
+
 export fn mmu_debug_peek(addr: usize) void {
     serial_write_string("\r\n[DEBUG] Peeking at ");
     print_hex(addr);
@@ -196,12 +197,26 @@ export fn mmu_debug_peek(addr: usize) void {
     serial_write_string("\r\n");
 }
 
-export fn mmu_handle_page_fault(error_code: u32) noreturn {
-    var cr2: usize = undefined;
+export fn mmu_handle_page_fault(error_code: u32) void {
+    const fault_addr = mmu_get_fault_address();
+	
+	const present = (error_code & 1) != 0; // P : 1=protection 
+	const write = (error_code & 2) != 0; //  W : 1=write
+	const user = (error_code & 4) != 0; // U : 1=ring 3
 
-    asm volatile ("mov %%cr2, %[val]"
-        : [val] "=r" (cr2),
-    );
+	const HEAP_START = 0xD0000000;
+	const HEAP_END = 0x30000000;
+
+	if (!present) {
+		if (fault_addr >= HEAP_START and fault_addr < HEAP_END) {
+			const frame = pmm_alloc_frame();
+			if (frame != 0) {
+				mmu_map_page(frame, fault_addr & 0xFFFFF000, write, user);
+				return;
+			}
+		}
+		
+	}
 
 	serial_write_string("\r\n");
 	serial_write_string(c.COLOR_RED_BRIGHT);
@@ -209,22 +224,12 @@ export fn mmu_handle_page_fault(error_code: u32) noreturn {
 	serial_write_string("\r\n");
     serial_write_string(c.COLOR_RESET);
 	serial_write_string("Faulting Address : ");
-    print_hex(cr2);
+    print_hex(fault_addr);
     serial_write_string("\r\n");
 
     serial_write_string("Reason           : ");
-    if ((error_code & 1) == 0) {
-        serial_write_string("Page not present (Unmapped memory)");
-    } else {
-        serial_write_string("Protection violation (Access denied)");
-    }
-
-    if ((error_code & 2) != 0) {
-        serial_write_string(" on WRITE attempt\r\n");
-    } else {
-        serial_write_string(" on READ attempt\r\n");
-    }
-
+	if(!present) serial_write_string("Page not present (OOM)") else serial_write_string("Protection violation");
+	if (write) serial_write_string(" on Write\r\n") else serial_write_string(" on READ\r\n");
     while (true) {
         asm volatile ("cli; hlt");
     }
