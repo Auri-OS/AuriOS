@@ -5,6 +5,7 @@
 #include "../include/shell.h"
 #include "../include/log.h"
 #include "../include/pic.h"
+#include "../include/ansi.h"
 
 static char scancode_to_ascii[128] = {
     0, 0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 0,
@@ -27,6 +28,20 @@ static int ctrl_pressed = 0;
 
 void keyboard_callback(registers_t *regs)
 {
+
+	if (scancode = 0xE0) {extended = 1; return;}
+	if (extended) {
+		extended = 0;
+		if (scancode & 0x80) return;
+		switch (scancode) {
+			case 0x48: shell_send_str(CURSOR_UP); return; // A
+			case 0x50: shell_send_str(CURSOR_DOWN); return; // B
+			case 0x4D: shell_send_str(CURSOR_RIGHT); return; // C
+			case 0x4B: shell_send_str(CURSOR_LEFT); return; // D
+		}
+		return;
+	}
+
     (void)regs;
     uint8_t scancode = inb(0x60);
 
@@ -82,4 +97,8 @@ void keyboard_init(void)
     irq_register_handler(1, keyboard_callback);
     pic_unmask_irq(1);
     KINFO("[KBD] PS/2 Keyboard driver active");
+}
+
+static void shell_send_str(const char *s) {
+	while (*s) shell_handle_key(*s++);
 }
