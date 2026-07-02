@@ -43,7 +43,7 @@ void memory_init(void) {
 
 
   head = (block_header_t *) HEAP_VIRT_START;
-  head->size = (heap_end = HEAP_VIRT_START) - HEADER_SIZE;
+  head->size = (heap_end - HEAP_VIRT_START) - HEADER_SIZE;
   head->free = 1;
   head->next = NULL;
   head->prev = NULL;
