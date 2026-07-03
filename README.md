@@ -77,6 +77,7 @@ Thank to all the contributors, you are the flame burning in our heart ❤️
 |       <img src="https://github.com/ivy-js.png" width="80" height="80" alt="ivy-js" />       |       [Ivy-js](https://github.com/ivy-js)       |       Contributor       |
 | <img src="https://github.com/gittihub-jpg.png" width="80" height="80" alt="gittihub-jpg" /> | [gittihub-jpg](https://github.com/gittihub-jpg) |       Contributor       |
 | <img src="https://github.com/jesuiskoriel.png" width="80" height="80" alt="jesuiskoriel" /> | [Jesuiskoriel](https://github.com/Jesuiskoriel) |       Contributor       |
+| <img src="https://github.com/kudasaixc.png" width="80" height="80" alt="kudasaixc" /> | [Kudasai](https://github.com/kudasaixc) |   Contributor & Bug Hunter    |
 
 </div>
 
