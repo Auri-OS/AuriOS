@@ -159,8 +159,8 @@ void terminal_clear_after_cursor(void) {
 }
 
 void terminal_set_cursor(size_t x, size_t y) {
-  if (x > VGA_WIDTH) x = VGA_WIDTH - 1;
-  if (y > VGA_HEIGHT) y = VGA_HEIGHT - 1;
+  if (x >= VGA_WIDTH) x = VGA_WIDTH - 1;
+  if (y >= VGA_HEIGHT) y = VGA_HEIGHT - 1;
 
   terminal_column = x;
   terminal_row = y;
