@@ -64,6 +64,18 @@ This project demonstrates low-level system programming concepts and serves as a 
 
 Thank to all the contributors, you are the flame burning in our heart ❤️
 
+<div align="center">
+
+<a href="https://github.com/kudasaixc">
+  <img src="https://github.com/kudasaixc.png" width="130" height="130" alt="kudasai" />
+</a>
+
+[![Grand Contributor](https://img.shields.io/badge/👑_GRAND_CONTRIBUTOR_🐐-FFD700?style=for-the-badge&labelColor=8B6914)](https://github.com/kudasaixc)
+
+✨🥇 **[kudasai](https://github.com/kudasaixc)** — *Bug Hunter Supreme* 🥇✨
+
+</div>
+
 <div align="left">
 
 |                                           Profile                                           |                     GitHub                      |          Role           |
