@@ -64,18 +64,6 @@ This project demonstrates low-level system programming concepts and serves as a 
 
 Thank to all the contributors, you are the flame burning in our heart ❤️
 
-<div align="center">
-
-<a href="https://github.com/kudasaixc">
-  <img src="https://github.com/kudasaixc.png" width="130" height="130" alt="kudasai" />
-</a>
-
-[![Grand Contributor](https://img.shields.io/badge/👑_GRAND_CONTRIBUTOR_🐐-FFD700?style=for-the-badge&labelColor=8B6914)](https://github.com/kudasaixc)
-
-✨🥇 **[kudasai](https://github.com/kudasaixc)** — *Bug Hunter Supreme* 🥇✨
-
-</div>
-
 <div align="left">
 
 |                                           Profile                                           |                     GitHub                      |          Role           |
@@ -83,6 +71,7 @@ Thank to all the contributors, you are the flame burning in our heart ❤️
 |     <img src="https://github.com/im-nymii.png" width="80" height="80" alt="im-nymii" />     |      [nymii](https://github.com/im-nymii)       |  Founder & Maintainer   |
 |    <img src="https://github.com/llmaddie.png" width="80" height="80" alt="llmaddie 2" />    |      [Maddie](https://github.com/llmaddie)      | Co-Founder & Maintainer |
 |    <img src="https://github.com/pepedinho.png" width="80" height="80" alt="pepedinho" />    |    [pepedinho](https://github.com/pepedinho)    |      Co-Maintainer      |
+|     <img src="https://github.com/kudasaixc.png" width="80" height="80" alt="kudasai" />     |     [kudasai](https://github.com/kudasaixc)     | [![Grand Contributor](https://img.shields.io/badge/👑_GRAND_CONTRIBUTOR_🐐-FFD700?style=for-the-badge&labelColor=8B6914)](https://github.com/kudasaixc)<br>✨🥇 *Bug Hunter Supreme* 🥇✨ |
 |  <img src="https://github.com/swtchcoder.png" width="80" height="80" alt="switchcodeur" />  |  [switchcodeur](https://github.com/swtchcoder)  |       Contributor       |
 |       <img src="https://github.com/proxzr.png" width="80" height="80" alt="proxzr" />       |       [proxzr](https://github.com/proxzr)       |       Contributor       |
 |      <img src="https://github.com/aomitsu.png" width="80" height="80" alt="Aomitsu" />      |      [Aomitsu](https://github.com/aomitsu)      |       Contributor       |
