@@ -44,6 +44,9 @@ void pic_unmask_irq(uint8_t irqline)
     if (irqline < 8) {
         port = PIC1_DATA;
     } else {
+        // IRQs 8-15 come in through the slave PIC, wired to the master's
+        // IRQ2 line: the cascade must be unmasked too or they never fire
+        outb(PIC1_DATA, inb(PIC1_DATA) & ~(1 << 2));
         port = PIC2_DATA;
         irqline -= 8;
     }
