@@ -19,5 +19,6 @@ extern void mmu_map_page(uint32_t phys_addr, uint32_t virt_addr, bool is_writeab
 
 extern void mmu_view_mappings(void);
 extern void mmu_debug_peek(uint32_t addr);
+extern void mmu_debug_poke(uint32_t addr, uint8_t value);
 
 #endif

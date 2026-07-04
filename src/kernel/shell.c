@@ -93,6 +93,7 @@ static void shell_execute(char *cmd) {
     terminal_writestring("mia     - force a Page Fault for MMU testing\n");
     terminal_writestring("mmap    - print current virtual memory mappings\n");
     terminal_writestring("peek    - read and print memory at a given hex address\n");
+    terminal_writestring("poke    - write a hex byte at a given hex address\n");
     terminal_writestring("echo    - repeats your input to the console\n");
     terminal_writestring("crash   - make the machine freeze (fun cmd)\n\n");
   }
@@ -247,7 +248,16 @@ static void shell_execute(char *cmd) {
   else if (strcmp(cmd_name, "peek") == 0) {
     uint32_t addr = htoi(args[1]);
     mmu_debug_peek(addr);
-	
+
+  }
+  else if (strcmp(cmd_name, "poke") == 0) {
+    if (argc != 3) {
+      terminal_writestring("usage: poke <hex address> <hex value>\n");
+      return;
+    }
+    uint32_t addr = htoi(args[1]);
+    uint8_t value = (uint8_t) htoi(args[2]);
+    mmu_debug_poke(addr, value);
   }
   else if (strcmp(cmd_name, "memtest") == 0) {
     char *a = malloc(32);
