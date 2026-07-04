@@ -3,15 +3,15 @@
 # 🌟 AuriOS
 
 ```
-        X
-       XXX
-      XXXXX
-     X XXXXX
-    XXX XXXXX
-   XXXXX XXXXX
-  XXXXXX  XXXXX
- XXXXXX    XXXXX
-XXXXXX      XXXXX
+          .**.
+         .=###.
+        .==.##%
+       .===.###
+      .=====###.
+     .======.###
+    .======..###.
+   .===.     ###.
+             .***
 ```
 
 **A minimal x86 operating system kernel written in C and Assembly**
