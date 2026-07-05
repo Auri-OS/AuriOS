@@ -61,6 +61,41 @@ void print_unit(uint32_t val, const char *unit, int new_line) {
     terminal_writestring("\n");
 }
 
+// Print a single byte as two uppercase hex digits
+static void print_hex_byte(uint8_t b) {
+  const char *hex = "0123456789ABCDEF";
+  terminal_putchar(hex[(b >> 4) & 0xF]);
+  terminal_putchar(hex[b & 0xF]);
+}
+
+// Dump `len` bytes starting at `addr` as an offset / hex / ASCII table,
+// 16 bytes per row (classic hexdump -C layout).
+static void hexdump(uint32_t addr, uint32_t len) {
+  volatile uint8_t *mem = (volatile uint8_t *) addr;
+
+  for (uint32_t i = 0; i < len; i += 16) {
+    terminal_print_hex(addr + i);
+    terminal_writestring("  ");
+
+    for (uint32_t j = 0; j < 16; j++) {
+      if (i + j < len) {
+        print_hex_byte(mem[i + j]);
+        terminal_putchar(' ');
+      }
+      else {
+        terminal_writestring("   ");
+      }
+    }
+
+    terminal_writestring(" |");
+    for (uint32_t j = 0; j < 16 && i + j < len; j++) {
+      uint8_t c = mem[i + j];
+      terminal_putchar((c >= 32 && c < 127) ? (char) c : '.');
+    }
+    terminal_writestring("|\n");
+  }
+}
+
 void debug_trigger_page_fault(void) {
   terminal_writestring("\n");
   KINFO("[TEST] Attempting to read unmapped memory at 10 MB...");
@@ -93,6 +128,7 @@ static void shell_execute(char *cmd) {
     terminal_writestring("mia     - force a Page Fault for MMU testing\n");
     terminal_writestring("mmap    - print current virtual memory mappings\n");
     terminal_writestring("peek    - read and print memory at a given hex address\n");
+    terminal_writestring("hexdump - dump a memory range as hex + ASCII\n");
     terminal_writestring("echo    - repeats your input to the console\n");
     terminal_writestring("crash   - make the machine freeze (fun cmd)\n\n");
   }
@@ -247,7 +283,16 @@ static void shell_execute(char *cmd) {
   else if (strcmp(cmd_name, "peek") == 0) {
     uint32_t addr = htoi(args[1]);
     mmu_debug_peek(addr);
-	
+
+  }
+  else if (strcmp(cmd_name, "hexdump") == 0) {
+    if (argc != 3) {
+      terminal_writestring("usage: hexdump <hex address> <length>\n");
+      return;
+    }
+    uint32_t addr = htoi(args[1]);
+    uint32_t len = atoi(args[2]);
+    hexdump(addr, len);
   }
   else if (strcmp(cmd_name, "memtest") == 0) {
     char *a = malloc(32);
