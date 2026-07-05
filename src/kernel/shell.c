@@ -2,6 +2,7 @@
 #include "../include/colors.h"
 #include "../include/fetch.h"
 #include "../include/integer.h"
+#include "../include/io.h"
 #include "../include/log.h"
 #include "../include/memory.h"
 #include "../include/mm.h"
@@ -94,6 +95,8 @@ static void shell_execute(char *cmd) {
     terminal_writestring("mmap    - print current virtual memory mappings\n");
     terminal_writestring("peek    - read and print memory at a given hex address\n");
     terminal_writestring("echo    - repeats your input to the console\n");
+    terminal_writestring("reboot  - restart the machine\n");
+    terminal_writestring("poweroff- shut the machine down (QEMU/Bochs)\n");
     terminal_writestring("crash   - make the machine freeze (fun cmd)\n\n");
   }
   else if (strcmp(cmd_name, "clear") == 0) {
@@ -143,6 +146,23 @@ static void shell_execute(char *cmd) {
     asm volatile("cli");
     for (;;)
       asm volatile("hlt");
+  }
+  else if (strcmp(cmd_name, "reboot") == 0) {
+    terminal_writestring("Rebooting...\n");
+    // Wait for the 8042 input buffer to drain, then pulse the CPU reset line.
+    while (inb(0x64) & 0x02)
+      ;
+    outb(0x64, 0xFE);
+    // If the reset did not fire, fall back to a halt.
+    asm volatile("cli; hlt");
+  }
+  else if (strcmp(cmd_name, "poweroff") == 0) {
+    terminal_writestring("Powering off...\n");
+    // ACPI shutdown as exposed by QEMU (0x604) and older QEMU / Bochs (0xB004).
+    outw(0x604, 0x2000);
+    outw(0xB004, 0x2000);
+    // No virtual power management available: halt instead.
+    asm volatile("cli; hlt");
   }
   else if (strcmp(cmd_name, "uptime") == 0) {
     uint32_t ticks = get_tick();
