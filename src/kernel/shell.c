@@ -149,19 +149,15 @@ static void shell_execute(char *cmd) {
   }
   else if (strcmp(cmd_name, "reboot") == 0) {
     terminal_writestring("Rebooting...\n");
-    // Wait for the 8042 input buffer to drain, then pulse the CPU reset line.
     while (inb(0x64) & 0x02)
       ;
     outb(0x64, 0xFE);
-    // If the reset did not fire, fall back to a halt.
     asm volatile("cli; hlt");
   }
-  else if (strcmp(cmd_name, "poweroff") == 0) {
+  else if (strcmp(cmd_name, "exit") == 0) {
     terminal_writestring("Powering off...\n");
-    // ACPI shutdown as exposed by QEMU (0x604) and older QEMU / Bochs (0xB004).
     outw(0x604, 0x2000);
     outw(0xB004, 0x2000);
-    // No virtual power management available: halt instead.
     asm volatile("cli; hlt");
   }
   else if (strcmp(cmd_name, "uptime") == 0) {
