@@ -96,7 +96,7 @@ static void shell_execute(char *cmd) {
     terminal_writestring("peek    - read and print memory at a given hex address\n");
     terminal_writestring("echo    - repeats your input to the console\n");
     terminal_writestring("reboot  - restart the machine\n");
-    terminal_writestring("poweroff- shut the machine down (QEMU/Bochs)\n");
+    terminal_writestring("exit.   - shut the machine down (QEMU/Bochs)\n");
     terminal_writestring("crash   - make the machine freeze (fun cmd)\n\n");
   }
   else if (strcmp(cmd_name, "clear") == 0) {
