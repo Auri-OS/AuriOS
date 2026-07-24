@@ -79,7 +79,9 @@ export fn ansi_process_char(c: u8) void {
             switch (c) {
                 '0'...'9' => {
                     const n = c - '0';
-                    val.params[val.param_index] = (val.params[val.param_index] * 10) + n;
+                    // saturate instead of overflowing: a u16 overflow would
+                    // trip the ReleaseSafe safety check and hang the kernel
+                    val.params[val.param_index] = val.params[val.param_index] *| 10 +| n;
                 },
                 'J' => {
                     switch (val.params[0]) {
