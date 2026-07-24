@@ -208,22 +208,23 @@ export fn mmu_debug_peek(addr: usize) void {
 export fn mmu_handle_page_fault(error_code: u32) void {
     const fault_addr = mmu_get_fault_address();
 	
-	const present = (error_code & 1) != 0; // P : 1=protection 
+	const present = (error_code & 1) != 0; // P : 1=protection
 	const write = (error_code & 2) != 0; //  W : 1=write
-	const user = (error_code & 4) != 0; // U : 1=ring 3
 
+	// Kernel heap spans from HEAP_START to the top of the 32-bit address space
 	const HEAP_START = 0xD0000000;
-	const HEAP_END = 0x30000000;
 
 	if (!present) {
-		if (fault_addr >= HEAP_START and fault_addr < HEAP_END) {
+		if (fault_addr >= HEAP_START) {
 			const frame = pmm_alloc_frame();
 			if (frame != 0) {
-				mmu_map_page(frame, fault_addr & 0xFFFFF000, write, user);
+				// heap pages are always kernel-only and writable, regardless
+				// of the access that triggered the fault
+				mmu_map_page(frame, fault_addr & 0xFFFFF000, true, false);
 				return;
 			}
 		}
-		
+
 	}
 
 	serial_write_string("\r\n");
