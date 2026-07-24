@@ -76,7 +76,7 @@ void debug_trigger_page_fault(void) {
 }
 
 static void shell_execute(char *cmd) {
-  char *args[MAX_CMD_ARGS];
+  char *args[MAX_CMD_ARGS + 1]; // +1 for the NULL terminator written by shell_parse
   int argc = shell_parse(cmd, args);
   if (argc == 0)
     return;
