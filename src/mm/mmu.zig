@@ -202,7 +202,24 @@ export fn mmu_debug_peek(addr: usize) void {
     serial_write_string("Value found: ");
     print_hex(value);
     serial_write_string("\r\n");
-	
+
+}
+
+export fn mmu_debug_poke(addr: usize, value: u8) void {
+    const ptr = @as(*volatile u8, @ptrFromInt(addr));
+    ptr.* = value;
+
+    terminal_writestring("Wrote ");
+    terminal_print_hex(value);
+    terminal_writestring(" at ");
+    terminal_print_hex(@as(u32, @truncate(addr)));
+    terminal_writestring("\n");
+
+    serial_write_string("\r\n[DEBUG] Poked ");
+    print_hex(value);
+    serial_write_string(" at ");
+    print_hex(addr);
+    serial_write_string("\r\n");
 }
 
 export fn mmu_handle_page_fault(error_code: u32) void {
