@@ -262,6 +262,10 @@ static void shell_execute(char *cmd) {
     mmu_view_mappings();
   }
   else if (strcmp(cmd_name, "peek") == 0) {
+    if (argc != 2) {
+      terminal_writestring("usage: peek <hex address>\n");
+      return;
+    }
     uint32_t addr = htoi(args[1]);
     mmu_debug_peek(addr);
 
