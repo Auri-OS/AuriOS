@@ -30,7 +30,18 @@ void keyboard_callback(registers_t *regs)
     (void)regs;
     uint8_t scancode = inb(0x60);
 
-        // Shift captured
+    // Arrows
+    // Up free
+    if (scancode == 0x48) {
+        shell_history(1);
+        return;
+    }
+    if (scancode == 0x50) {
+        shell_history(2);
+        return;
+    }
+
+    // Shift captured
     if (scancode == 0x2A || scancode == 0x36) {
         shift_pressed = 1;
         return;
@@ -52,6 +63,7 @@ void keyboard_callback(registers_t *regs)
         ctrl_pressed = 0;
         return;
     }
+
     
     if (scancode & 0x80)
         return;
