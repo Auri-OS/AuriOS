@@ -9,6 +9,7 @@
 #include "../include/string.h"
 #include "../include/terminal.h"
 #include "../include/timer.h"
+#include "../include/history.h"
 #define BUFFER_SIZE 256
 #define MAX_CMD_ARGS 16
 #define MAX_HISTORY_SIZE 16
@@ -16,11 +17,6 @@
 
 static char buffer[BUFFER_SIZE];
 static int buffer_pos = 0;
-
-static char history[MAX_HISTORY_SIZE][BUFFER_SIZE];
-static int write = 0; // Where to save the next command
-static int count = 0; // Command count
-static int nav = 0; // Buffer command
 
 void shell_init(void) {
   // Flush any keystrokes captured by the keyboard interrupt during boot.
@@ -82,12 +78,7 @@ void debug_trigger_page_fault(void) {
 }
 
 static void shell_execute(char *cmd) {
-  strlcpy(history[write], cmd, BUFFER_SIZE - 1);
-  write = write == MAX_HISTORY_SIZE - 1 ? 0 : write + 1;
-  strlcpy(history[write], "", BUFFER_SIZE - 1);
-  count += count == MAX_HISTORY_SIZE ? 0 : 1;
-  nav = write;
-
+  history_push(cmd);
   char *args[MAX_CMD_ARGS + 1]; // +1 for the NULL terminator written by shell_parse
   int argc = shell_parse(cmd, args);
   if (argc == 0)
@@ -340,19 +331,13 @@ void shell_handle_key(char c) {
 }
 
 void shell_history(int a) {
-  if (count == 0) return;
-  if (nav == write) {
-      buffer[buffer_pos] = '\0';
-      strlcpy(history[write], buffer, BUFFER_SIZE);
-  }
-
-  int slots = count < MAX_HISTORY_SIZE ? count + 1 : MAX_HISTORY_SIZE;
-  if (a == 1) nav = (nav + slots - 1) % slots;
-  if (a == 2) nav = (nav + 1) % slots;
+  buffer[buffer_pos] = '\0';
+  const char *cmd = (a == 1) ? history_prev(buffer) : history_next();
+  if (cmd == NULL) return;
 
   int old_len = buffer_pos;
   for (int x=0; x<old_len; x++) terminal_backspace();
-  strlcpy(buffer, history[nav], BUFFER_SIZE - 1);
-  buffer_pos = strlen(history[nav]);
+  strlcpy(buffer, history_getcurrentcommand(), BUFFER_SIZE - 1);
+  buffer_pos = strlen(history_getcurrentcommand());
   terminal_writestring(buffer);
 }

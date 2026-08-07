@@ -5,6 +5,7 @@
 #include "../include/shell.h"
 #include "../include/log.h"
 #include "../include/pic.h"
+#include "../include/history.h"
 
 static char scancode_to_ascii[128] = {
     0, 0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 0,
@@ -31,11 +32,12 @@ void keyboard_callback(registers_t *regs)
     uint8_t scancode = inb(0x60);
 
     // Arrows
-    // Up free
+    // Up captured
     if (scancode == 0x48) {
         shell_history(1);
         return;
     }
+    // Down captured
     if (scancode == 0x50) {
         shell_history(2);
         return;
