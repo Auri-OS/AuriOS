@@ -5,6 +5,7 @@
 #include "../include/shell.h"
 #include "../include/log.h"
 #include "../include/pic.h"
+#include "../include/history.h"
 
 static char scancode_to_ascii[128] = {
     0, 0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 0,
@@ -24,13 +25,35 @@ static char scancode_to_ascii_shift[128] = {
 
 static int shift_pressed = 0;
 static int ctrl_pressed = 0;
+static int extended = 0;
 
 void keyboard_callback(registers_t *regs)
 {
     (void)regs;
     uint8_t scancode = inb(0x60);
 
-        // Shift captured
+    // Arrows
+    // Up captured
+
+	//extended-key
+	if (scancode == 0xE0) {
+		extended = 1;
+		return;
+	}
+	if (extended) {
+		extended = 0;
+		if (scancode == 0x48) {
+			shell_history(1);
+			return;
+		}
+		// Down captured
+		if (scancode == 0x50) {
+			shell_history(2);
+			return;
+		}
+	}
+	
+    // Shift captured
     if (scancode == 0x2A || scancode == 0x36) {
         shift_pressed = 1;
         return;
@@ -52,6 +75,7 @@ void keyboard_callback(registers_t *regs)
         ctrl_pressed = 0;
         return;
     }
+
     
     if (scancode & 0x80)
         return;

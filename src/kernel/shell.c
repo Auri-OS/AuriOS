@@ -9,8 +9,10 @@
 #include "../include/string.h"
 #include "../include/terminal.h"
 #include "../include/timer.h"
+#include "../include/history.h"
 #define BUFFER_SIZE 256
 #define MAX_CMD_ARGS 16
+#define MAX_HISTORY_SIZE 16
 
 
 static char buffer[BUFFER_SIZE];
@@ -76,12 +78,13 @@ void debug_trigger_page_fault(void) {
 }
 
 static void shell_execute(char *cmd) {
+  history_push(cmd);
   char *args[MAX_CMD_ARGS + 1]; // +1 for the NULL terminator written by shell_parse
   int argc = shell_parse(cmd, args);
   if (argc == 0)
     return;
 
-  char *cmd_name = args[0];
+  char *cmd_name = args[0]; 
 
   if (strcmp(cmd_name, "help") == 0) {
     terminal_writestring("\nhelp  - show this command\n");
@@ -325,4 +328,19 @@ void shell_handle_key(char c) {
       terminal_putchar(c);
     }
   }
+}
+
+void shell_history(int a) {
+	buffer[buffer_pos] = '\0';
+	int old_len = buffer_pos;
+
+	if (a == 1) history_prev(buffer);
+	else        history_next();
+
+	for (int x = 0; x < old_len; x++) terminal_backspace();
+
+	strlcpy(buffer, history_getcurrentcommand(), BUFFER_SIZE);
+	buffer_pos = strlen(buffer);
+
+	terminal_writestring(buffer);
 }
