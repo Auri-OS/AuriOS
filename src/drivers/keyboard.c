@@ -25,6 +25,7 @@ static char scancode_to_ascii_shift[128] = {
 
 static int shift_pressed = 0;
 static int ctrl_pressed = 0;
+static int extended = 0;
 
 void keyboard_callback(registers_t *regs)
 {
@@ -33,16 +34,25 @@ void keyboard_callback(registers_t *regs)
 
     // Arrows
     // Up captured
-    if (scancode == 0x48) {
-        shell_history(1);
-        return;
-    }
-    // Down captured
-    if (scancode == 0x50) {
-        shell_history(2);
-        return;
-    }
 
+	//extended-key
+	if (scancode == 0xE0) {
+		extended = 1;
+		return;
+	}
+	if (extended) {
+		extended = 0;
+		if (scancode == 0x48) {
+			shell_history(1);
+			return;
+		}
+		// Down captured
+		if (scancode == 0x50) {
+			shell_history(2);
+			return;
+		}
+	}
+	
     // Shift captured
     if (scancode == 0x2A || scancode == 0x36) {
         shift_pressed = 1;

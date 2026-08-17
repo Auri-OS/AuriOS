@@ -331,13 +331,16 @@ void shell_handle_key(char c) {
 }
 
 void shell_history(int a) {
-  buffer[buffer_pos] = '\0';
-  const char *cmd = (a == 1) ? history_prev(buffer) : history_next();
-  if (cmd == NULL) return;
+	buffer[buffer_pos] = '\0';
+	int old_len = buffer_pos;
 
-  int old_len = buffer_pos;
-  for (int x=0; x<old_len; x++) terminal_backspace();
-  strlcpy(buffer, history_getcurrentcommand(), BUFFER_SIZE - 1);
-  buffer_pos = strlen(history_getcurrentcommand());
-  terminal_writestring(buffer);
+	if (a == 1) history_prev(buffer);
+	else        history_next();
+
+	for (int x = 0; x < old_len; x++) terminal_backspace();
+
+	strlcpy(buffer, history_getcurrentcommand(), BUFFER_SIZE);
+	buffer_pos = strlen(buffer);
+
+	terminal_writestring(buffer);
 }
