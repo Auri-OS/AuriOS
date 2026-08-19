@@ -311,28 +311,41 @@ void shell_handle_key(char c) {
   }
   if (c == '\n') {
     terminal_putchar('\n');
-    buffer[buffer_pos] = '\0';
     shell_execute(buffer);
+    buffer[0] = '\0';
     buffer_pos = 0;
     terminal_writestring(cli_nav);
   }
   else if (c == '\b') {
     if (buffer_pos > 0) {
+      int len = (int) strlen(buffer);
+      int tail = len - buffer_pos; 
+      for (int x = buffer_pos; x < len; x++) buffer[x - 1] = buffer[x];
+      buffer[len - 1] = '\0';
       buffer_pos--;
       terminal_backspace();
+      terminal_writestring(&buffer[buffer_pos]);
+      terminal_putchar(' ');
+      terminal_move_cursor(-(tail + 1));
     }
   }
   else {
     if (buffer_pos < BUFFER_SIZE - 1) {
-      buffer[buffer_pos++] = c;
-      terminal_putchar(c);
+      int len = (int) strlen(buffer);
+      int tail = len - buffer_pos;
+      for (int x = len; x > buffer_pos; x--) buffer[x] = buffer[x - 1];
+      buffer[buffer_pos] = c;
+      buffer[len + 1] = '\0';
+      terminal_writestring(&buffer[buffer_pos]);
+      buffer_pos++;
+      terminal_move_cursor(-tail);
     }
   }
 }
 
 void shell_history(int a) {
-	buffer[buffer_pos] = '\0';
-	int old_len = buffer_pos;
+	int old_len = (int) strlen(buffer);
+	terminal_move_cursor(old_len - buffer_pos);
 
 	if (a == 1) history_prev(buffer);
 	else        history_next();
@@ -343,4 +356,16 @@ void shell_history(int a) {
 	buffer_pos = strlen(buffer);
 
 	terminal_writestring(buffer);
+}
+
+void shell_buffer_pos_decrement(void) {
+  if (buffer_pos <= 0) return;
+  buffer_pos--;
+  terminal_move_cursor(-1);
+}
+
+void shell_buffer_pos_increment(void) {
+  if (buffer_pos >= (int) strlen(buffer)) return;
+  buffer_pos++;
+  terminal_move_cursor(1);
 }
