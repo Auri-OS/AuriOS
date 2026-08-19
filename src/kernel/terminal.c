@@ -60,7 +60,7 @@ void terminal_initialize(void) {
             terminal_buffer[index] = vga_entry(' ', terminal_color);
         }
     }
-    terminal_enable_cursor(14, 15);
+    terminal_enable_cursor(0, 15);
     terminal_update_cursor(terminal_column, terminal_row);
 }
 
@@ -181,4 +181,11 @@ void terminal_backspace(void) {
 
 void terminal_writestring(const char* data) {
 	terminal_write(data, strlen(data));
+}
+
+void terminal_move_cursor(int offset) {
+    int future_pos = (int) terminal_column + offset;
+    if (future_pos < 0 || future_pos >= VGA_WIDTH) return;
+    terminal_column = (size_t) future_pos;
+    terminal_update_cursor(terminal_column, terminal_row);
 }

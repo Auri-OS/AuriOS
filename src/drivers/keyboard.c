@@ -32,9 +32,6 @@ void keyboard_callback(registers_t *regs)
     (void)regs;
     uint8_t scancode = inb(0x60);
 
-    // Arrows
-    // Up captured
-
 	//extended-key
 	if (scancode == 0xE0) {
 		extended = 1;
@@ -42,6 +39,7 @@ void keyboard_callback(registers_t *regs)
 	}
 	if (extended) {
 		extended = 0;
+        // Up captured
 		if (scancode == 0x48) {
 			shell_history(1);
 			return;
@@ -51,6 +49,16 @@ void keyboard_callback(registers_t *regs)
 			shell_history(2);
 			return;
 		}
+        // Left captured
+        if (scancode == 0x4B) {
+            shell_buffer_pos_decrement();
+            return;
+        }
+        // Right captured
+        if (scancode == 0x4D) {
+            shell_buffer_pos_increment();
+            return;
+        }
 	}
 	
     // Shift captured
