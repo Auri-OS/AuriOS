@@ -330,16 +330,18 @@ void shell_handle_key(char c) {
     }
   }
   else {
-    if (buffer_pos < BUFFER_SIZE - 1) {
-      int len = (int) strlen(buffer);
-      int tail = len - buffer_pos;
-      for (int x = len; x > buffer_pos; x--) buffer[x] = buffer[x - 1];
-      buffer[buffer_pos] = c;
-      buffer[len + 1] = '\0';
-      terminal_writestring(&buffer[buffer_pos]);
-      buffer_pos++;
-      terminal_move_cursor(-tail);
-    }
+
+    int len = (int) strlen(buffer);
+	if(len < BUFFER_SIZE - 1) {
+		int tail = len - buffer_pos;
+		for (int x = len; x > buffer_pos; x--)
+			buffer[x] = buffer[x - 1];
+		buffer[buffer_pos] = c;
+		buffer[len + 1] = '\0';
+		terminal_writestring(&buffer[buffer_pos]);
+		buffer_pos++;
+		terminal_move_cursor(-tail);
+	}
   }
 }
 
