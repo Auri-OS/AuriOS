@@ -78,6 +78,7 @@ Thank to all the contributors, you are the flame burning in our heart ❤️
 | <img src="https://github.com/gittihub-jpg.png" width="80" height="80" alt="gittihub-jpg" /> | [gittihub-jpg](https://github.com/gittihub-jpg) |       Contributor       |
 | <img src="https://github.com/jesuiskoriel.png" width="80" height="80" alt="jesuiskoriel" /> | [Jesuiskoriel](https://github.com/Jesuiskoriel) |       Contributor       |
 | <img src="https://github.com/kudasaixc.png" width="80" height="80" alt="kudasaixc" /> | [Kudasai](https://github.com/kudasaixc) |   Contributor & Bug Hunter    |
+| <img src="https://github.com/frenchcast1234.png" width="80" height="80" alt="frenchcast1234"> | [frenchcast1234](https://github.com/frenchcast1234) | Contributor |
 
 </div>
 
