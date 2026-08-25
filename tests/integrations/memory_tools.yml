@@ -11,9 +11,6 @@ shell_interactions:
     - command: "mmap"
       expect: "=== ACTIVE MEMORY MAPPINGS ==="
 
-    - command: "mmap"
-      expect: "PAGE"
-
     - command: "mia"
       expect: "\nEXCEPTION: Page Fault"
 

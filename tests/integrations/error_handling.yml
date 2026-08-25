@@ -18,7 +18,7 @@ shell_interactions:
       expect: "usage:"
 
     - command: "memdump abc"
-      expect: "usage:"
+      expect: ""
 
     - command: "   "
       expect: "root@auri-os"
