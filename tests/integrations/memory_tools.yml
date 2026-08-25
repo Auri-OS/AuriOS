@@ -11,6 +11,9 @@ shell_interactions:
     - command: "mmap"
       expect: "=== ACTIVE MEMORY MAPPINGS ==="
 
+    - command: "mmap"
+      expect: "PAGE"
+
     - command: "mia"
       expect: "\nEXCEPTION: Page Fault"
 
@@ -22,15 +25,36 @@ shell_interactions:
 
     - command: "memtest"
       expect: "heap ok"
-
-    - command: "peek 0x100000"
-      expect: "Peeking at 0x"
-
-    - command: "peek 0x000C0002"
-      expect: "Value found:"
-
-    - command: "peek 0x000C000"
-      expect: "0x000C045"
     
-    - command: "poke 0x00000045 0x00C0045"
-      expect: "Poking 0x00000045 with value 0x00C0045"
+    - command: "memtest"
+      expect: "reuse"
+
+    - command: "peek 0xFFFFFFFF"
+      expect: "Peeking at"
+
+    - command: "peek 0x100"
+      expect: "Peeking at 0x100"
+
+    - command: "peek"
+      expect: "usage: peek <hex address>"
+
+    - command: "poke 0x100 0xFF"
+      expect: "Poking 0x100"
+
+    - command: "poke 0x100"
+      expect: "usage: poke <hex address> <hex value>"
+
+    - command: "poke 0xDEADBEEF 0xAURIOS"
+      expect: "Poking"
+
+    - command: "peek 0x50000"
+      expect: "Value found:"
+    
+    - command: "memdump 8"
+      expect: "=== PMM BITMAP DUMP ==="
+
+    - command: "memdump 32"
+      expect: "=== PMM BITMAP DUMP ==="
+
+    - command: "memdump 0"
+      expect: "usage: memdump"

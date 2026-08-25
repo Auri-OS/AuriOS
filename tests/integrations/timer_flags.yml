@@ -9,7 +9,7 @@ shell_interactions:
   prompt: "auri-os"
   tests:
     - command: "uptime -h"
-      expect: "-r     - show uptime in miliseconds"
+      expect: "-h     - show this message"
 
     - command: "uptime -r"
       expect: "ms"
@@ -19,3 +19,9 @@ shell_interactions:
 
     - command: "uptime -p"
       expect: "Current Uptime:"
+
+    - command: "uptime -p -r"
+      expect: "ms"
+
+    - command: "uptime -s -p"
+      expect: "s"
