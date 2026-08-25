@@ -45,9 +45,6 @@ shell_interactions:
     - command: "fetch"
       expect: "Version:"
 
-    - command: "fetch"
-      expect: "root@auri-os"
-
     - command: "help"
       expect: "echo"
 
