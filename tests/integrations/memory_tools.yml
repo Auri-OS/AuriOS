@@ -11,9 +11,6 @@ shell_interactions:
     - command: "mmap"
       expect: "=== ACTIVE MEMORY MAPPINGS ==="
 
-    - command: "mia"
-      expect: "\nEXCEPTION: Page Fault"
-
     - command: "memdump 16"
       expect: "=== PMM BITMAP DUMP ==="
 
@@ -22,7 +19,7 @@ shell_interactions:
 
     - command: "memtest"
       expect: "heap ok"
-    
+
     - command: "memtest"
       expect: "reuse"
 
@@ -46,7 +43,7 @@ shell_interactions:
 
     - command: "peek 0x50000"
       expect: "Value found:"
-    
+
     - command: "memdump 8"
       expect: "=== PMM BITMAP DUMP ==="
 
@@ -55,3 +52,7 @@ shell_interactions:
 
     - command: "memdump 0"
       expect: "usage: memdump"
+
+    - command: "mia"
+      expect: "\nEXCEPTION: Page Fault"
+      no_prompt: true

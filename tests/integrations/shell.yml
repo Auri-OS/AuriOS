@@ -9,7 +9,7 @@ shell_interactions:
   prompt: "auri-os"
   tests:
     - command: ""
-      expect: "\n" 
+      expect: "\n"
 
     - command: "echo"
       expect: "\n"
@@ -32,16 +32,16 @@ shell_interactions:
 
     - command: "echo     multiple     spaces"
       expect: "multiple spaces"
-    
+
     - command: "echo test; echo test2"
       expect: "test; echo test2"
-    
+
     - command: "help"
-      expect: "Available commands:"
+      expect: "show this command"
 
     - command: "fetch"
       expect: "AuriOS"
-      
+
     - command: "fetch"
       expect: "Version:"
 

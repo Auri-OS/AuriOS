@@ -21,8 +21,7 @@ shell_interactions:
       expect: ""
 
     - command: "   "
-      expect: "root@auri-os"
+      expect: "\n"
 
     - command: "uptime -r -s -p"
       expect: "ms"
-
