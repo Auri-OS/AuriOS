@@ -19,3 +19,6 @@ shell_interactions:
 
     - command: "echo -n test"
       expect: "test"
+
+    - command: "fetch"
+      expect: "OS: AuriOS"

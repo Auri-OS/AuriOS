@@ -11,6 +11,9 @@ shell_interactions:
     - command: "mmap"
       expect: "=== ACTIVE MEMORY MAPPINGS ==="
 
+    - command: "mia"
+      expect: "\nEXCEPTION: Page Fault"
+
     - command: "memdump 16"
       expect: "=== PMM BITMAP DUMP ==="
 
@@ -25,3 +28,9 @@ shell_interactions:
 
     - command: "peek 0x000C0002"
       expect: "Value found:"
+
+    - command: "peek 0x000C000"
+      expect: "0x000C045"
+    
+    - command: "poke 0x00000045 0x00C0045"
+      expect: "Poking 0x00000045 with value 0x00C0045"
