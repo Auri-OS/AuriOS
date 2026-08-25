@@ -33,13 +33,13 @@ shell_interactions:
       expect: "usage: peek <hex address>"
 
     - command: "poke 0x00000100 0xFF"
-      expect: "Poking 0x00000100"
+      expect: "Wrote 0x000000FF at 0x00000100"
 
     - command: "poke 0x00000100"
       expect: "usage: poke <hex address> <hex value>"
 
     - command: "poke 0xDEADBEEF 0xAURIOS"
-      expect: "Poking"
+      expect: "Wrote 0xAURIOS at 0xDEADBEEF"
 
     - command: "peek 0x50000"
       expect: "Value found:"
