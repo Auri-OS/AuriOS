@@ -38,9 +38,6 @@ shell_interactions:
     - command: "poke 0x00000100"
       expect: "usage: poke <hex address> <hex value>"
 
-    - command: "poke 0xDEADBEEF 0xAURIOS"
-      expect: "Wrote 0xAURIOS at 0xDEADBEEF"
-
     - command: "peek 0x50000"
       expect: "Value found:"
 
@@ -52,6 +49,10 @@ shell_interactions:
 
     - command: "memdump 0"
       expect: "usage: memdump"
+
+    - command: "poke 0xDEADBEEF 0xAURIOS"
+      expect: "Wrote 0xAURIOS at 0xDEADBEEF"
+      no_prompt: true
 
     - command: "mia"
       expect: "\nEXCEPTION: Page Fault"
