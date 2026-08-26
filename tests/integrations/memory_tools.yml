@@ -20,8 +20,40 @@ shell_interactions:
     - command: "memtest"
       expect: "heap ok"
 
-    - command: "peek 0x100000"
-      expect: "Peeking at 0x"
+    - command: "memtest"
+      expect: "reuse"
 
-    - command: "peek 0x000C0002"
+    - command: "peek 0xFFFFFFFF"
+      expect: "Peeking at"
+
+    - command: "peek 0x00000100"
+      expect: "Peeking at 0x00000100"
+
+    - command: "peek"
+      expect: "usage: peek <hex address>"
+
+    - command: "poke 0x00000100 0xFF"
+      expect: "Wrote 0x000000FF at 0x00000100"
+
+    - command: "poke 0x00000100"
+      expect: "usage: poke <hex address> <hex value>"
+
+    - command: "peek 0x50000"
       expect: "Value found:"
+
+    - command: "memdump 8"
+      expect: "=== PMM BITMAP DUMP ==="
+
+    - command: "memdump 32"
+      expect: "=== PMM BITMAP DUMP ==="
+
+    - command: "memdump 0"
+      expect: "memdump: size must be between 1-16384"
+
+    - command: "poke 0xDEADBEEF 0xAURIOS"
+      expect: "EXCEPTION: Page Fault"
+      no_prompt: true
+
+    - command: "mia"
+      expect: "EXCEPTION: Page Fault"
+      no_prompt: true

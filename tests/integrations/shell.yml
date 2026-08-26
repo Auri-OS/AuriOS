@@ -9,13 +9,53 @@ shell_interactions:
   prompt: "auri-os"
   tests:
     - command: ""
-      expect: "\n" 
+      expect: "\n"
 
-    - command: "jhdsbfjdsbf"
-      expect: "command not found: jhdsbfjdsbf"
+    - command: "echo"
+      expect: "\n"
+
+    - command: "echo hello"
+      expect: "hello"
 
     - command: "   echo    AuriOS   Rocks   "
       expect: "AuriOS Rocks"
 
     - command: "echo -n test"
       expect: "test"
+      not_expect: "\n"
+
+    - command: "echo -h"
+      expect: "echo - repeats your input"
+
+    - command: "echo test1 test2 test3"
+      expect: "test1 test2 test3"
+
+    - command: "echo     multiple     spaces"
+      expect: "multiple spaces"
+
+    - command: "echo test; echo test2"
+      expect: "test; echo test2"
+
+    - command: "help"
+      expect: "show this command"
+
+    - command: "fetch"
+      expect: "AuriOS"
+
+    - command: "fetch"
+      expect: "Version:"
+
+    - command: "help"
+      expect: "echo"
+
+    - command: "help"
+      expect: "uptime"
+
+    - command: "help"
+      expect: "memtest"
+
+    - command: "help"
+      expect: "peek"
+
+    - command: "help"
+      expect: "poke"

@@ -1,0 +1,27 @@
+name: "Error Handling & Edge Cases"
+command: "qemu-system-i386 -cdrom output/AuriOS.iso -m 512M -display none -serial stdio"
+timeout_ms: 10000
+
+boot_sequence:
+  - "System ready."
+
+shell_interactions:
+  prompt: "auri-os"
+  tests:
+    - command: "jhdsbfjdsbf"
+      expect: "command not found: jhdsbfjdsbf"
+
+    - command: "peek"
+      expect: "usage:"
+
+    - command: "poke 0x100"
+      expect: "usage:"
+
+    - command: "memdump abc"
+      expect: ""
+
+    - command: "   "
+      expect: "\n"
+
+    - command: "uptime -r -s -p"
+      expect: "ms"
