@@ -19,7 +19,6 @@ static char buffer[BUFFER_SIZE];
 static int buffer_pos = 0;
 
 void shell_init(void) {
-  // Flush any keystrokes captured by the keyboard interrupt during boot.
   memset(buffer, 0, BUFFER_SIZE);
   buffer_pos = 0;
   terminal_writestring(cli_nav);
@@ -256,7 +255,12 @@ static void shell_execute(char *cmd) {
       terminal_writestring("usage: memdump <size>\n");
       return;
     }
-    pmm_dump_bitmap(atoi(args[1]));
+    int size = atoi(args[1]);
+    if (size < 1 || size > 16384) {
+      terminal_writestring("memdump: size must be between 1-16384\n");
+      return;
+    }
+    pmm_dump_bitmap(size);
   }
   else if (strcmp(cmd_name, "mia") == 0) {
     debug_trigger_page_fault();

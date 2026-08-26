@@ -48,7 +48,7 @@ shell_interactions:
       expect: "=== PMM BITMAP DUMP ==="
 
     - command: "memdump 0"
-      expect: "usage: memdump"
+      expect: "memdump: size must be between 1-16384"
 
     - command: "poke 0xDEADBEEF 0xAURIOS"
       expect: "Wrote 0xAURIOS at 0xDEADBEEF"
