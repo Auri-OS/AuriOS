@@ -51,7 +51,7 @@ shell_interactions:
       expect: "memdump: size must be between 1-16384"
 
     - command: "poke 0xDEADBEEF 0xAURIOS"
-      expect: "Wrote 0xAURIOS at 0xDEADBEEF"
+      expect: "EXCEPTION: Page Fault"
       no_prompt: true
 
     - command: "mia"
