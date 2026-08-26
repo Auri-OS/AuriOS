@@ -184,8 +184,10 @@ void terminal_writestring(const char* data) {
 }
 
 void terminal_move_cursor(int offset) {
-    int future_pos = (int) terminal_column + offset;
-    if (future_pos < 0 || future_pos >= VGA_WIDTH) return;
-    terminal_column = (size_t) future_pos;
+    int pos = (int)(terminal_row * VGA_WIDTH + terminal_column) + offset;
+    if (pos < 0) pos = 0;
+    if (pos >= (int)(VGA_WIDTH * VGA_HEIGHT)) pos = VGA_WIDTH * VGA_HEIGHT - 1;
+    terminal_row = pos / VGA_WIDTH;
+    terminal_column = pos % VGA_WIDTH;
     terminal_update_cursor(terminal_column, terminal_row);
 }
