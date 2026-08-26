@@ -55,5 +55,5 @@ shell_interactions:
       no_prompt: true
 
     - command: "mia"
-      expect: "\nEXCEPTION: Page Fault"
+      expect: "EXCEPTION: Page Fault"
       no_prompt: true
