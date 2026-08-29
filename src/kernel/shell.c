@@ -18,6 +18,13 @@
 static char buffer[BUFFER_SIZE];
 static int buffer_pos = 0;
 
+static void command_completion(void);
+static void shell_insert_completion(const char *text, int len, int add_space);
+
+static const char *command_list[] = {
+    "help", "fetch", "clear", "uptime", "memdump", "memtest", "mia",
+    "mmap", "peek",  "poke",  "echo",  "reboot",  "exit",   "crash", NULL};
+
 void shell_init(void) {
   memset(buffer, 0, BUFFER_SIZE);
   buffer_pos = 0;
@@ -99,7 +106,7 @@ static void shell_execute(char *cmd) {
     terminal_writestring("poke    - write a hex byte at a given hex address\n");
     terminal_writestring("echo    - repeats your input to the console\n");
     terminal_writestring("reboot  - restart the machine\n");
-    terminal_writestring("exit.   - shut the machine down (QEMU/Bochs)\n");
+    terminal_writestring("exit    - shut the machine down (QEMU/Bochs)\n");
     terminal_writestring("crash   - make the machine freeze (fun cmd)\n\n");
   }
   else if (strcmp(cmd_name, "clear") == 0) {
@@ -298,11 +305,86 @@ static void shell_execute(char *cmd) {
     print_unit((uint32_t) (uintptr_t) c, "(addr)", 1);
     free(b);
     free(c);
-  }
-  else {
+  } else {
     terminal_writestring("command not found: ");
     terminal_writestring(cmd_name);
     terminal_putchar('\n');
+  } 
+}
+
+static int command_recognition(const char *a, const char *b) {
+  int i = 0;
+  while (a[i] && b[i] && a[i] == b[i])
+    i++;
+  return i;
+}
+
+static void command_completion(void) {
+  int i = 0;
+  int prefix_len = buffer_pos;
+  const char *matches[32];
+  int n = 0;
+  int lcp = -1;
+
+  while (i < buffer_pos) 
+    if (buffer[i++] == ' ')
+      return;
+
+  i = 0;
+
+  while (command_list[i] != NULL) {
+    if (strncmp(command_list[i], buffer, prefix_len) == 0) {
+      if (n < 32) 
+        matches[n++] = command_list[i];
+      if (lcp < 0)
+        lcp = (int) strlen(command_list[i]);
+      else
+        lcp = command_recognition(matches[0], command_list[i]) < lcp ? command_recognition(matches[0], command_list[i]) : lcp;
+    }
+    i++;
+  }
+if (n == 0) 
+  return;
+
+if (n == 1) {
+  shell_insert_completion(matches[0], (int) strlen(matches[0]), 1);
+  return;
+}
+
+if (lcp > prefix_len) {
+  shell_insert_completion(matches[0], lcp, 0);
+  return;
+}
+
+terminal_putchar('\n');
+for (i = 0; i < n; i++) {
+  terminal_writestring(matches[i]);
+  terminal_writestring("  ");
+}
+terminal_putchar('\n');
+terminal_writestring(cli_nav);
+terminal_writestring(buffer);
+
+}
+
+static void shell_insert_completion(const char *text, int len, int add_space) {
+  int i = buffer_pos;
+  while (i < len) {
+    if (i >= BUFFER_SIZE - 2) break;
+    char ch = text[i];
+    buffer[i] = ch;
+    terminal_putchar(ch);
+    i++;
+  }
+
+  buffer_pos = len;
+  buffer[buffer_pos] = '\0';
+
+  if (add_space && buffer_pos < BUFFER_SIZE - 1) {
+    buffer[buffer_pos] = ' ';
+    buffer_pos++;
+    buffer[buffer_pos] = '\0';
+    terminal_putchar(' ');
   }
 }
 
@@ -312,15 +394,13 @@ void shell_handle_key(char c) {
     buffer_pos = 0;
     shell_init();
     return;
-  }
-  if (c == '\n') {
+  } if (c == '\n') {
     terminal_putchar('\n');
     shell_execute(buffer);
     buffer[0] = '\0';
     buffer_pos = 0;
     terminal_writestring(cli_nav);
-  }
-  else if (c == '\b') {
+  } else if (c == '\b') {
     if (buffer_pos > 0) {
       int len = (int) strlen(buffer);
       int tail = len - buffer_pos; 
@@ -332,20 +412,23 @@ void shell_handle_key(char c) {
       terminal_putchar(' ');
       terminal_move_cursor(-(tail + 1));
     }
-  }
-  else {
-
+  } else if (c == '\t') {
+    command_completion();
+  } else {
     int len = (int) strlen(buffer);
-	if(len < BUFFER_SIZE - 1) {
-		int tail = len - buffer_pos;
-		for (int x = len; x > buffer_pos; x--)
-			buffer[x] = buffer[x - 1];
-		buffer[buffer_pos] = c;
-		buffer[len + 1] = '\0';
-		terminal_writestring(&buffer[buffer_pos]);
-		buffer_pos++;
-		terminal_move_cursor(-tail);
-	}
+
+    if(len < BUFFER_SIZE - 1) {
+      int tail = len - buffer_pos;
+
+      for (int x = len; x > buffer_pos; x--)
+        buffer[x] = buffer[x - 1];
+
+      buffer[buffer_pos] = c;
+      buffer[len + 1] = '\0';
+      terminal_writestring(&buffer[buffer_pos]);
+      buffer_pos++;
+      terminal_move_cursor(-tail);
+    }
   }
 }
 

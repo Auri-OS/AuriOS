@@ -83,7 +83,6 @@ void keyboard_callback(registers_t *regs)
         ctrl_pressed = 0;
         return;
     }
-
     
     if (scancode & 0x80)
         return;
@@ -101,6 +100,11 @@ void keyboard_callback(registers_t *regs)
     }
     char c ;
 
+    if (scancode == 0x0F) {
+        shell_handle_key('\t');
+        return;
+    }
+    
     if (shift_pressed)
         c = scancode_to_ascii_shift[scancode];
     else
