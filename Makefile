@@ -55,29 +55,23 @@ OBJS = $(S_OBJS) $(ASM_OBJS) $(C_OBJS) $(ZIG_OBJS)
 .DEFAULT_GOAL := help
 
 # Phony targets
-.PHONY: all clean help iso iso-debug run run32 run-mac install-fedora install-arch install-debian
+.PHONY: all clean help iso iso-debug run install
 
 help:
 	@echo "======================= AuriOS Makefile ======================="
 	@echo ""
-	@echo "Available targets:"
+	@echo "Installation (requires admin rights):"
+	@echo "  make install - Install dependencies (cross-platform)"
+	@echo ""
+	@echo "Compilation targets:"
 	@echo "  make all            - Build everything"
 	@echo "  make iso            - Build OS binary and create bootable ISO"
 	@echo "  make iso-debug      - Build bootable ISO with Test Mode enabled (serial output)"
+	@echo ""
+	@echo "Execution targets:"
 	@echo "  make run            - Build and run in QEMU (x86_64)"
-	@echo "  make run32          - Build and run in QEMU (i386)"
-	@echo "  make run-mac        - Build and run on macOS (direct boot)"
 	@echo "  make clean          - Remove all build artifacts"
 	@echo ""
-	@echo "Installation (requires sudo):"
-	@echo "  make install-fedora - Install dependencies for Fedora"
-	@echo "  make install-arch   - Install dependencies for Arch Linux"
-	@echo "  make install-debian - Install dependencies for Debian/Ubuntu"
-	@echo "  make install-mac    - Install dependencies for Mac (Brew required)"
-	@echo ""
-	@echo "Zig Toolchain (Optional):"
-	@echo "  make install-zig    - Auto-install Zig compiler based on your OS"
-	@echo "  make run* USE_ZIG=1 - Compile with Zig toolchain"
 	@echo "==============================================================="
 
 # Create necessary directories
@@ -145,20 +139,16 @@ iso-debug:
 	@$(MAKE) CFLAGS="$(CFLAGS) -DAURI_TEST_MODE" iso
 	@echo "Test ISO build complete!"
 
-# Run in QEMU (x86_64)
-run: iso
-	@echo "Starting QEMU (x86_64)..."
-	@qemu-system-x86_64 -cdrom $(ISO) -m 512M -boot d -vga std -serial stdio
-
-# Run in QEMU (i386)
-run32: iso
-	@echo "Starting QEMU (i386)..."
-	@qemu-system-i386 -cdrom $(ISO) -m 512M -boot d -vga std -serial stdio
-
-# Run kernel directly on macOS (without ISO)
-run-mac: $(KERNEL_BIN)
-	@echo "Starting QEMU on macOS (direct kernel boot)..."
-	@qemu-system-i386 -kernel $(KERNEL_BIN) -m 512M -vga std -serial stdio -display cocoa,zoom-to-fit=on
+# Run in QEMU (auto-detect Linux/macOS)
+run: $(KERNEL_BIN)
+	@if [ "$$(uname)" = "Darwin" ]; then \
+		echo "Starting QEMU on macOS (direct kernel boot)..."; \
+		qemu-system-i386 -kernel $(KERNEL_BIN) -m 512M -vga std -serial stdio -display cocoa,zoom-to-fit=on; \
+	else \
+		$(MAKE) iso; \
+		echo "Starting QEMU on Linux (x86_64)..."; \
+		qemu-system-x86_64 -cdrom $(ISO) -m 512M -boot d -vga std -serial stdio; \
+	fi
 
 # Clean build artifacts
 clean:
@@ -166,37 +156,20 @@ clean:
 	@rm -rf $(BUILD_DIR) $(OUTPUT_DIR) $(ISO_DIR)
 	@echo "Clean complete."
 
-# Installation targets
-install-fedora:
-	@echo "[!] Installing dependencies for Fedora"
-	sudo dnf install gcc gcc-c++ binutils make wget tar texinfo gmp-devel mpfr-devel libmpc-devel nasm qemu-system-x86 grub2-tools-extra mtools xorriso clang-tools-extra
-	bash docs/install_scripts/install.sh
-
-install-arch:
-	@echo "[!] Installing dependencies for Arch Linux"
-	sudo pacman -S gcc binutils make wget tar nasm qemu-system-x86 grub mtools xorriso clang
-	bash docs/install_scripts/install.sh
-
-install-debian:
-	@echo "[!] Installing dependencies for Debian/Ubuntu"
-	sudo apt install gcc g++ binutils make wget tar mtools xorriso nasm qemu-system-x86 grub-pc-bin clang-format
-	bash docs/install_scripts/install.sh
-# need work
-install-mac:
-	@echo "[!] Installing dependencies for MacOS"
-	brew install qemu i686-elf-gcc nasm zig clang-format
-
-install-zig:
-	@echo "[!] Detecting OS and installing Zig..."
+# Installation target
+install:
+	@echo "[!] Installing dependencies for your OS..."
 	@if [ "$$(uname)" = "Darwin" ]; then \
-		brew install zig; \
+		brew install qemu i686-elf-gcc nasm zig clang-format; \
 	elif [ -f /etc/arch-release ]; then \
-		sudo pacman -S --noconfirm zig; \
+		sudo pacman -S --noconfirm gcc binutils make wget tar mtools xorriso nasm qemu-system-x86 grub clang zig; \
+		bash docs/install_scripts/install.sh; \
 	elif [ -f /etc/fedora-release ]; then \
-		sudo dnf install -y zig; \
+		sudo dnf install -y gcc gcc-c++ binutils make wget tar texinfo gmp-devel mpfr-devel libmpc-devel nasm qemu-system-x86 grub2-tools-extra mtools xorriso clang-tools-extra zig; \
+		bash docs/install_scripts/install.sh; \
 	elif [ -f /etc/debian_version ]; then \
-		echo "[!] Installing Zig via apt (Debian/Ubuntu)..."; \
-		sudo apt-get update && sudo apt-get install -y zig; \
+		sudo apt install -y gcc g++ binutils make wget tar mtools xorriso nasm qemu-system-x86 grub-pc-bin clang-format zig; \
+		bash docs/install_scripts/install.sh; \
 	else \
-		echo "Unsupported OS for auto-install. Please visit https://ziglang.org"; \
+		echo "Unsupported OS for auto-install. Please visit https://auri-os.org/docs"; \
 	fi
