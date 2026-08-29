@@ -55,7 +55,7 @@ OBJS = $(S_OBJS) $(ASM_OBJS) $(C_OBJS) $(ZIG_OBJS)
 .DEFAULT_GOAL := help
 
 # Phony targets
-.PHONY: all clean help iso iso-debug run run32 run-mac install-fedora install-arch install-debian
+.PHONY: all clean help iso iso-debug run install
 
 help:
 	@echo "======================= AuriOS Makefile ======================="
@@ -140,11 +140,12 @@ iso-debug:
 	@echo "Test ISO build complete!"
 
 # Run in QEMU (auto-detect Linux/macOS)
-run: iso
+run: $(KERNEL_BIN)
 	@if [ "$$(uname)" = "Darwin" ]; then \
 		echo "Starting QEMU on macOS (direct kernel boot)..."; \
 		qemu-system-i386 -kernel $(KERNEL_BIN) -m 512M -vga std -serial stdio -display cocoa,zoom-to-fit=on; \
 	else \
+		$(MAKE) iso; \
 		echo "Starting QEMU on Linux (x86_64)..."; \
 		qemu-system-x86_64 -cdrom $(ISO) -m 512M -boot d -vga std -serial stdio; \
 	fi
