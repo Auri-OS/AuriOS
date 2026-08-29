@@ -33,7 +33,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .environment
-          key: ${{ runner.os }}-i686-elf-gcc-${{ hashFiles('Makefile', 'docs/install_scripts/install.sh') }}
+          key: ${{ runner.os }}-i686-elf-gcc-${{ hashFiles('Makefile', 'scripts/install.sh') }}
 
       - name: install system deps
         run: |
@@ -49,8 +49,8 @@ jobs:
         if: steps.cache-toolchain.outputs.cache-hit != 'true'
         run: |
           sudo apt-get install -y gcc g++ binutils make wget tar texinfo libgmp-dev libmpfr-dev libmpc-dev
-          chmod +x docs/install_scripts/install.sh
-          ./docs/install_scripts/install.sh
+          chmod +x scripts/install.sh
+          ./scripts/install.sh
 
       - name: create ISO
         run: |

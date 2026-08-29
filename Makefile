@@ -163,13 +163,13 @@ install:
 		brew install qemu i686-elf-gcc nasm zig clang-format; \
 	elif [ -f /etc/arch-release ]; then \
 		sudo pacman -S --noconfirm gcc binutils make wget tar mtools xorriso nasm qemu-system-x86 grub clang zig; \
-		bash docs/install_scripts/install.sh; \
+		bash scripts/install.sh; \
 	elif [ -f /etc/fedora-release ]; then \
 		sudo dnf install -y gcc gcc-c++ binutils make wget tar texinfo gmp-devel mpfr-devel libmpc-devel nasm qemu-system-x86 grub2-tools-extra mtools xorriso clang-tools-extra zig; \
-		bash docs/install_scripts/install.sh; \
+		bash scripts/install.sh; \
 	elif [ -f /etc/debian_version ]; then \
 		sudo apt install -y gcc g++ binutils make wget tar mtools xorriso nasm qemu-system-x86 grub-pc-bin clang-format zig; \
-		bash docs/install_scripts/install.sh; \
+		bash scripts/install.sh; \
 	else \
 		echo "Unsupported OS for auto-install. Please visit https://auri-os.org/docs"; \
 	fi
