@@ -38,7 +38,7 @@ endif
 AS = nasm
 
 # Source files
-C_SOURCES = $(wildcard src/kernel/*.c) $(wildcard src/cpu/*.c) $(wildcard src/lib/*.c) $(wildcard src/drivers/*.c)
+C_SOURCES = $(wildcard src/kernel/*.c) $(wildcard src/cpu/*.c) $(wildcard src/lib/*.c) $(wildcard src/drivers/*.c) $(wildcard src/commands/*.c)
 S_SOURCES = $(wildcard src/boot/*.s)
 ASM_SOURCES = $(wildcard src/cpu/*.asm)
 ZIG_SOURCES = $(wildcard src/kernel/*.zig) $(wildcard src/mm/*.zig)

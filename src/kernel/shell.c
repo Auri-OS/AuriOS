@@ -10,6 +10,7 @@
 #include "../include/terminal.h"
 #include "../include/timer.h"
 #include "../include/history.h"
+#include "../include/commands.h"
 #define BUFFER_SIZE 256
 #define MAX_CMD_ARGS 16
 #define MAX_HISTORY_SIZE 16
@@ -70,19 +71,6 @@ void print_unit(uint32_t val, const char *unit, int new_line) {
     terminal_writestring("\n");
 }
 
-void debug_trigger_page_fault(void) {
-  terminal_writestring("\n");
-  KINFO("[TEST] Attempting to read unmapped memory at 10 MB...");
-
-  uint32_t *illegal_ptr = (uint32_t *) 0x00A00000;
-
-  volatile uint32_t crash_value = *illegal_ptr;
-
-  (void) crash_value;
-
-  KPANIC("MMU failed to block unmapped memory access!");
-}
-
 static void shell_execute(char *cmd) {
   history_push(cmd);
   char *args[MAX_CMD_ARGS + 1]; // +1 for the NULL terminator written by shell_parse
@@ -93,218 +81,46 @@ static void shell_execute(char *cmd) {
   char *cmd_name = args[0]; 
 
   if (strcmp(cmd_name, "help") == 0) {
-    terminal_writestring("\nhelp  - show this command\n");
-    terminal_writestring("fetch   - show informations about AuriOS\n");
-    terminal_writestring("clear   - clear the terminal (can be done with CTRL + L)\n");
-    terminal_writestring(
-        "uptime  - show uptime since machine started\n           -h for options help\n");
-    terminal_writestring("memdump - print the PMM Bitmap in the log\n");
-    terminal_writestring("memtest - allocate/free on the kernel heap (heap self-test)\n");
-    terminal_writestring("mia     - force a Page Fault for MMU testing\n");
-    terminal_writestring("mmap    - print current virtual memory mappings\n");
-    terminal_writestring("peek    - read and print memory at a given hex address\n");
-    terminal_writestring("poke    - write a hex byte at a given hex address\n");
-    terminal_writestring("echo    - repeats your input to the console\n");
-    terminal_writestring("reboot  - restart the machine\n");
-    terminal_writestring("exit    - shut the machine down (QEMU/Bochs)\n");
-    terminal_writestring("crash   - make the machine freeze (fun cmd)\n\n");
+    help();
   }
   else if (strcmp(cmd_name, "clear") == 0) {
     terminal_clear();
   }
-  /*
-  To modify the info strings displayed to the right of the fetch ASCII art,
-  edit src/include/fetch.h
-  */
   else if (strcmp(cmd_name, "fetch") == 0) {
-    terminal_writestring(
-        "\n          " COLOR_WHITE_BRIGHT ".**." COLOR_RESET "                 \n");
-    ///
-    terminal_writestring("         " COLOR_WHITE_BRIGHT "." COLOR_CYAN_BRIGHT "=" COLOR_BLUE_BRIGHT
-                         "###" COLOR_WHITE_BRIGHT "." COLOR_RESET "             " fetch_user "\n");
-    ///
-    terminal_writestring("        " COLOR_WHITE_BRIGHT "." COLOR_CYAN_BRIGHT "==" COLOR_WHITE_BRIGHT
-                         "." COLOR_BLUE_BRIGHT "##%" COLOR_WHITE_BRIGHT "." COLOR_RESET
-                         "            --------------\n");
-    ///
-    terminal_writestring("       " COLOR_WHITE_BRIGHT "." COLOR_CYAN_BRIGHT "===" COLOR_WHITE_BRIGHT
-                         "." COLOR_BLUE_BRIGHT "###" COLOR_WHITE_BRIGHT "." COLOR_RESET
-                         "            " fetch_kernel_name "\n");
-    ///
-    terminal_writestring(
-        "      " COLOR_WHITE_BRIGHT "." COLOR_CYAN_BRIGHT "=====" COLOR_BLUE_BRIGHT
-        "###" COLOR_WHITE_BRIGHT "." COLOR_RESET "            " fetch_version "\n");
-    ///
-    terminal_writestring("     " COLOR_WHITE_BRIGHT "." COLOR_CYAN_BRIGHT
-                         "======" COLOR_WHITE_BRIGHT "." COLOR_BLUE_BRIGHT "###" COLOR_WHITE_BRIGHT
-                         "." COLOR_RESET "           " fetch_release_date "\n");
-    ///
-    terminal_writestring(
-        "    " COLOR_WHITE_BRIGHT "." COLOR_CYAN_BRIGHT "======" COLOR_WHITE_BRIGHT
-        ".." COLOR_BLUE_BRIGHT "###" COLOR_WHITE_BRIGHT "." COLOR_RESET "         \n");
-    ///
-    terminal_writestring(
-        "   " COLOR_WHITE_BRIGHT ".===.    ." COLOR_BLUE_BRIGHT "###" COLOR_WHITE_BRIGHT
-        "." COLOR_RESET "           " bg_color_bright "\n");
-    ///
-    terminal_writestring(
-        "             " COLOR_WHITE_BRIGHT ".***." COLOR_RESET "          " bg_color "\n\n");
-    ///
-    terminal_writestring("Type 'help' for available commands\n\n");
+    fetch();
   }
   else if (strcmp(cmd_name, "crash") == 0) {
-    asm volatile("cli");
-    for (;;)
-      asm volatile("hlt");
+    crash();
   }
   else if (strcmp(cmd_name, "reboot") == 0) {
-    terminal_writestring("Rebooting...\n");
-    while (inb(0x64) & 0x02)
-      ;
-    outb(0x64, 0xFE);
-    asm volatile("cli; hlt");
+    reboot();
   }
   else if (strcmp(cmd_name, "exit") == 0) {
-    terminal_writestring("Powering off...\n");
-    outw(0x604, 0x2000);
-    outw(0xB004, 0x2000);
-    asm volatile("cli; hlt");
+    poweroff();
   }
   else if (strcmp(cmd_name, "uptime") == 0) {
-    uint32_t ticks = get_tick();
-    uint32_t total_seconds = ticks / 1000;
-    uint32_t seconds = total_seconds % 60;
-
-    uint32_t total_minutes = total_seconds / 60;
-    uint32_t minutes = total_minutes % 60;
-
-    uint32_t hours = total_minutes / 60;
-
-    int j = 1;
-    int raw = 0;
-    int sec = 0;
-    int pretty = 0;
-    while (j < argc && args[j][0] == '-') {
-      if (strcmp(args[j], "-h") == 0) {
-        terminal_writestring("uptime - show uptime since machine started\n");
-        terminal_writestring("-h     - show this message\n");
-        terminal_writestring("-r     - show uptime in miliseconds\n");
-        terminal_writestring("-s     - show uptime in seconds\n");
-        terminal_writestring("-p     - show uptime in a pretty format\n");
-        return;
-      }
-      else if (strcmp(args[j], "-r") == 0)
-        raw = 1;
-      else if (strcmp(args[j], "-s") == 0)
-        sec = 1;
-      else if (strcmp(args[j], "-p") == 0)
-        pretty = 1;
-      else {
-        break;
-      }
-      j++;
-    }
-
-    if (raw == 1) {
-      print_unit(ticks, "ms", 1);
-    }
-    else if (sec == 1) {
-      print_unit(total_seconds, "s", 1);
-    }
-    else if (pretty == 1) {
-      terminal_writestring("Current Uptime: \n");
-      if (hours != 0)
-        print_unit(hours, hours > 1 ? " hours" : " hour", 1);
-      print_unit(minutes, minutes > 1 ? " minutes" : " minute", 1);
-      print_unit(seconds, seconds > 1 ? " seconds" : " second", 1);
-      terminal_writestring("\n");
-    }
-    else {
-      terminal_writestring("Current Uptime: ");
-      print_unit(hours, "h ", 0);
-      print_unit(minutes, "m ", 0);
-      print_unit(seconds, "s", 1);
-    }
+    uptime(args, argc);
   }
   else if (strcmp(cmd_name, "echo") == 0) {
-    int j = 1;
-    int skip_newline = 0;
-
-    while (j < argc && args[j][0] == '-') {
-      if (strcmp(args[j], "-n") == 0) {
-        skip_newline = 1;
-      }
-      else if (strcmp(args[j], "-h") == 0) {
-        terminal_writestring("echo - repeats your input to the console\n\n");
-        terminal_writestring("-h   - show this command\n");
-        terminal_writestring("-n   - do not output the trailing new line");
-        terminal_writestring("\n");
-        return;
-      }
-      else {
-        // No more recognized args
-        break;
-      }
-      j++;
-    }
-
-    while (j < argc) {
-      terminal_writestring(args[j]);
-      terminal_writestring(" ");
-      j++;
-    }
-
-    if (!skip_newline)
-      terminal_writestring("\n");
+    echo(args, argc);
   }
   else if (strcmp(cmd_name, "memdump") == 0) {
-    if (argc != 2) {
-      terminal_writestring("usage: memdump <size>\n");
-      return;
-    }
-    int size = atoi(args[1]);
-    if (size < 1 || size > 16384) {
-      terminal_writestring("memdump: size must be between 1-16384\n");
-      return;
-    }
-    pmm_dump_bitmap(size);
+    memdump(args, argc);
   }
   else if (strcmp(cmd_name, "mia") == 0) {
-    debug_trigger_page_fault();
+    mia();
   }
   else if (strcmp(cmd_name, "mmap") == 0) {
     mmu_view_mappings();
   }
   else if (strcmp(cmd_name, "peek") == 0) {
-    if (argc != 2) {
-      terminal_writestring("usage: peek <hex address>\n");
-      return;
-    }
-    uint32_t addr = htoi(args[1]);
-    mmu_debug_peek(addr);
-
+    peek(args, argc);
   }
   else if (strcmp(cmd_name, "poke") == 0) {
-    if (argc != 3) {
-      terminal_writestring("usage: poke <hex address> <hex value>\n");
-      return;
-    }
-    uint32_t addr = htoi(args[1]);
-    uint8_t value = (uint8_t) htoi(args[2]);
-    mmu_debug_poke(addr, value);
+    poke(args, argc);
   }
   else if (strcmp(cmd_name, "memtest") == 0) {
-    char *a = malloc(32);
-    char *b = malloc(100);
-    strlcpy(a, "heap ok", 8);
-    terminal_writestring("\nalloc a: ");
-    terminal_writestring(a);
-    free(a);
-    char *c = malloc(16);
-    terminal_writestring("\nreuse : ");
-    print_unit((uint32_t) (uintptr_t) c, "(addr)", 1);
-    free(b);
-    free(c);
+    memtest();
   } else {
     terminal_writestring("command not found: ");
     terminal_writestring(cmd_name);
