@@ -10,6 +10,14 @@ extern fn terminal_writestring(str: [*c]const u8) void;
 extern fn terminal_print_hex(val: u32) void;
 
 const PAGE_SIZE = 4096;
+const RECURSIVE_PD: usize = 0xFFFFF000; 
+
+inline fn invlpg(addr: usize) void {
+    asm volatile ("invlpg (%[addr])"
+        :
+        : [addr] "r" (addr),
+        : .{ .memory = true });
+}
 
 const PageTableEntry = packed struct {
     present: u1 = 0, // page is present in RAM ? present == 0 and we try to read it -> page fault
@@ -69,6 +77,13 @@ export fn mmu_init() void {
         .user = 0,
         .pt_frame = @as(u20, @truncate(pt_addr / PAGE_SIZE)),
     };
+
+    kernel_directory[1023] = PageDirectoryEntry{
+        .present = 1,
+        .rw = 1,
+        .user = 0,
+        .pt_frame = @as(u20, @truncate(pd_addr / PAGE_SIZE)),
+    };
 }
 
 export fn mmu_enable() void {
@@ -99,34 +114,26 @@ export fn mmu_is_paging_enabled() u8 {
 }
 
 export fn mmu_map_page(phys_addr: usize, virt_addr: usize, is_writeable: bool, is_user: bool) void {
-    // virtual address is splitted like
-    // [10 bits Directory][10 bits Table][12 bits Offset]
+
     const pd_index = virt_addr >> 22;
     const pt_index = (virt_addr >> 12) & 0x3FF;
 
-    const pde = &kernel_directory[pd_index];
-    var table_ptr: *PageTable = undefined;
+    const pd = @as(*PageDirectory, @ptrFromInt(RECURSIVE_PD));
+    const pde = &pd[pd_index];
+    const table_ptr = @as(*PageTable, @ptrFromInt(0xFFC00000 + (pd_index << 12)));
 
     if (pde.present == 0) {
-        // page does not already exist for this 4Mo Area
-        // so we ask PMM for a new one
         const new_pt_phys = pmm_alloc_frame();
-        table_ptr = @as(*PageTable, @ptrFromInt(new_pt_phys));
 
-        // clean the new table
-        @memset(@as([*]u8, @ptrCast(table_ptr))[0..PAGE_SIZE], 0);
-
-        // register it in Directory
         pde.* = PageDirectoryEntry{
             .present = 1,
-            .rw = if (is_writeable) 1 else 0,
+            .rw = 1,
             .user = if (is_user) 1 else 0,
             .pt_frame = @as(u20, @truncate(new_pt_phys / PAGE_SIZE)),
         };
-    } else {
-        // already exist so we just grab it address
-        const pt_phys = @as(usize, pde.pt_frame) * PAGE_SIZE;
-        table_ptr = @as(*PageTable, @ptrFromInt(pt_phys));
+
+        invlpg(@intFromPtr(table_ptr));
+        @memset(@as([*]u8, @ptrCast(table_ptr))[0..PAGE_SIZE], 0);
     }
 
     table_ptr[pt_index] = PageTableEntry{
@@ -135,11 +142,8 @@ export fn mmu_map_page(phys_addr: usize, virt_addr: usize, is_writeable: bool, i
         .user = if (is_user) 1 else 0,
         .physical_frame = @as(u20, @truncate(phys_addr / PAGE_SIZE)),
     };
-	
-    asm volatile ("invlpg (%[addr])"
-        :
-        : [addr] "r" (virt_addr),
-        : .{ .memory = true });
+
+    invlpg(virt_addr);
 }
 
 // ================
