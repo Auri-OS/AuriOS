@@ -1,5 +1,5 @@
-#ifndef COMMANDS_D
-#define COMMANDS_D
+#ifndef COMMANDS_H
+#define COMMANDS_H
 
 #include "types.h"
 
@@ -17,5 +17,6 @@ void echo(void *args, int argc);
 void memdump(void *args, int argc);
 void peek(void *args, int argc);
 void poke(void *args, int argc);
+void setprompt(void *args, int argc);
 
 #endif

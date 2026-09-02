@@ -11,6 +11,7 @@
 #include "../include/timer.h"
 #include "../include/history.h"
 #include "../include/commands.h"
+
 #define BUFFER_SIZE 256
 #define MAX_CMD_ARGS 16
 #define MAX_HISTORY_SIZE 16
@@ -24,12 +25,12 @@ static void shell_insert_completion(const char *text, int len, int add_space);
 
 static const char *command_list[] = {
     "help", "fetch", "clear", "uptime", "memdump", "memtest", "mia",
-    "mmap", "peek",  "poke",  "echo",  "reboot",  "exit",   "crash", NULL};
+    "mmap", "peek",  "poke",  "echo",  "reboot",  "exit",   "crash", "setprompt", NULL};
 
 void shell_init(void) {
   memset(buffer, 0, BUFFER_SIZE);
   buffer_pos = 0;
-  terminal_writestring(cli_nav);
+  shell_render_prompt();
 }
 
 static int shell_parse(char *cmd, char **args) {
@@ -121,6 +122,8 @@ static void shell_execute(char *cmd) {
   }
   else if (strcmp(cmd_name, "memtest") == 0) {
     memtest();
+  } else if (strcmp(cmd_name, "setprompt") == 0) {
+    setprompt(args, argc);
   } else {
     terminal_writestring("command not found: ");
     terminal_writestring(cmd_name);
@@ -178,7 +181,7 @@ for (i = 0; i < n; i++) {
   terminal_writestring("  ");
 }
 terminal_putchar('\n');
-terminal_writestring(cli_nav);
+shell_render_prompt();
 terminal_writestring(buffer);
 
 }
@@ -215,7 +218,7 @@ void shell_handle_key(char c) {
     shell_execute(buffer);
     buffer[0] = '\0';
     buffer_pos = 0;
-    terminal_writestring(cli_nav);
+    shell_render_prompt();
   } else if (c == '\b') {
     if (buffer_pos > 0) {
       int len = (int) strlen(buffer);

@@ -59,3 +59,18 @@ shell_interactions:
 
     - command: "help"
       expect: "poke"
+
+    - command: "help"
+      expect: "setprompt"
+
+    - command: "setprompt"
+      expect: "Usage: setprompt"
+
+    - command: "setprompt charlotte"
+      expect: "charlotte"
+
+    - command: "setprompt tux auri-os"
+      expect: "tux"
+
+    - command: "setprompt root auri-os"
+      expect: "root"
