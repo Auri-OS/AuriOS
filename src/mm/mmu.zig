@@ -166,7 +166,7 @@ export fn mmu_view_mappings() void {
         const pde = kernel_directory[i];
         if (pde.present == 1) {
             const start_addr = i * 4 * 1024 * 1024;
-            const end_addr = start_addr + (4 * 1024 * 1024) - 1;
+            const end_addr = start_addr + (4 * 1024 * 1024 - 1);
 
             serial_write_string("Range: ");
             print_hex(start_addr);
