@@ -17,4 +17,5 @@ void help(void) {
     terminal_writestring("reboot  - restart the machine\n");
     terminal_writestring("exit    - shut the machine down (QEMU/Bochs)\n");
     terminal_writestring("crash   - make the machine freeze (fun cmd)\n\n");
+    terminal_writestring("setprompt - set the shell prompt (<user>, <os> placeholders; no arg prints current)\n\n");
 }
