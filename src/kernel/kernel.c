@@ -129,6 +129,8 @@ void init_mem(multiboot_info_t *mboot_ptr) {
     uint32_t bitmap_size = (max_ram_addr / 4096) / 8;
     pmm_mark_region_used(0x100000, (kernel_end_addr - 0x100000) + bitmap_size);
     pmm_mark_region_used(0x0, 4096);
+    // boot stack top is 0x90000 (loader.s), grows down: reserve 64 KB below it
+    pmm_mark_region_used(0x80000, 0x10000);
     KINFO("[PMM] Physical Memory Manager initialized by Zig.");
   }
   else {
