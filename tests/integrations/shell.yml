@@ -67,10 +67,10 @@ shell_interactions:
       expect: "Usage: setprompt"
 
     - command: "setprompt charlotte"
-      expect: "[charlotte@auri-os ~]$"
+      expect: "charlotte"
 
     - command: "setprompt tux auri-os"
-      expect: "[tux@auri-os ~]$"
+      expect: "tux"
 
     - command: "setprompt root auri-os"
-      expect: "[root@auri-os ~]$"
+      expect: "root"
