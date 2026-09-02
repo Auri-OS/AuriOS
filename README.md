@@ -17,7 +17,7 @@
 **A minimal x86 operating system kernel written in C and Assembly**
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.2.1-aqua.svg)](https://github.com/Auri-OS/AuriOS/releases)
+[![Version](https://img.shields.io/badge/version-0.2.2-aqua.svg)](https://github.com/Auri-OS/AuriOS/releases)
 [![Build](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
 
 [Features](#-features) • [Getting Started](#-getting-started) • [Installation](#-installation) • [Usage](#-usage) • [Documentation](#-documentation) • [Contributing](#-contributing)
@@ -68,7 +68,7 @@ Thank to all the contributors, you are the flame burning in our heart ❤️
 
 |                                           Profile                                           |                     GitHub                      |          Role           |
 | :-----------------------------------------------------------------------------------------: | :---------------------------------------------: | :---------------------: |
-|     <img src="https://github.com/im-nymii.png" width="80" height="80" alt="im-nymii" />     |      [nymii](https://github.com/im-nymii)       |  Founder & Maintainer   |
+|     <img src="https://github.com/nymiitechtips.png" width="80" height="80" alt="nymiitechtips" />     |      [nymii](https://github.com/nymiitechtips)       |  Founder & Maintainer   |
 |    <img src="https://github.com/llmaddie.png" width="80" height="80" alt="llmaddie 2" />    |      [Maddie](https://github.com/llmaddie)      | Co-Founder & Maintainer |
 |    <img src="https://github.com/pepedinho.png" width="80" height="80" alt="pepedinho" />    |    [pepedinho](https://github.com/pepedinho)    |      Co-Maintainer      |
 |  <img src="https://github.com/swtchcoder.png" width="80" height="80" alt="switchcodeur" />  |  [switchcodeur](https://github.com/swtchcoder)  |       Contributor       |
@@ -155,7 +155,27 @@ Execution targets:
 ```
 ## 📚 Usage
 
-Once AuriOS boots, you'll see the initialization sequence followed by an interactive shell. The shell supports basic commands and keyboard input.
+Once AuriOS boots, you'll see the initialization sequence followed by an interactive shell. The shell supports keyboard input, command history and tab-completion.
+
+### Available shell commands
+
+| Command | Description |
+| :------ | :---------- |
+| `help` | Show the list of commands |
+| `fetch` | Show information about AuriOS |
+| `clear` | Clear the terminal (also `CTRL + L`) |
+| `uptime` | Show uptime since boot (`-h` for options) |
+| `memdump` | Print the PMM bitmap to the log |
+| `memtest` | Allocate/free on the kernel heap (self-test) |
+| `mia` | Force a page fault for MMU testing |
+| `mmap` | Print current virtual memory mappings |
+| `peek` | Read and print memory at a hex address |
+| `poke` | Write a hex byte at a hex address |
+| `echo` | Repeat your input to the console |
+| `setprompt` | Set the shell prompt user/os (`setprompt <user> <os>`) |
+| `reboot` | Restart the machine |
+| `exit` | Shut the machine down (QEMU/Bochs) |
+| `crash` | Freeze the machine (fun command) |
 
 
 ## 📁 Project Structure
@@ -167,6 +187,20 @@ AuriOS/
 ├── src/
 │   ├── boot/
 │   │   └── loader.s
+│   ├── commands/
+│   │   ├── crash.c
+│   │   ├── echo.c
+│   │   ├── fetch.c
+│   │   ├── help.c
+│   │   ├── memdump.c
+│   │   ├── memtest.c
+│   │   ├── mia.c
+│   │   ├── peek.c
+│   │   ├── poke.c
+│   │   ├── poweroff.c
+│   │   ├── reboot.c
+│   │   ├── setprompt.c
+│   │   └── uptime.c
 │   ├── cpu/
 │   │   ├── gdt.c
 │   │   ├── gdt_flush.asm
@@ -184,6 +218,7 @@ AuriOS/
 │   ├── include/
 │   │   ├── ansi.h
 │   │   ├── colors.h
+│   │   ├── commands.h
 │   │   ├── fetch.h
 │   │   ├── font.h
 │   │   ├── framebuffer.h
@@ -252,27 +287,6 @@ Contributions are welcome! Whether you're fixing bugs, adding features, or impro
 5. Open a Pull Request
 
 Please read [Contributing Guidelines](https://auri-os.org/docs/contributing/) for details on our code of conduct and development process.
-
-## 🗺️ Roadmap
-
-### Current Version (v0.2.1)
-
-- [x] Basic kernel initialization
-- [x] GDT and IDT setup
-- [x] Keyboard driver
-- [x] Timer driver
-- [x] Interactive shell
-- [x] Memory management basics
-- [x] More shell commands
-
-### Planned Features
-
-- [ ] Virtual memory management
-- [ ] File system support (FAT32)
-- [ ] Multi-tasking and process scheduling
-- [ ] System calls interface
-- [ ] Extended driver support (ATA, VFS)
-- [ ] GUI framework
 
 ## 📜 License
 

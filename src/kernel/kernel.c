@@ -70,7 +70,7 @@ void animate_logo(void) {
     }
   }
 
-  const char *target_text = " Auri-Os - Kernel v0.2 ";
+  const char *target_text = " Auri-Os - Kernel v0.2.2 ";
   int text_len = strlen(target_text);
   int text_x = 28;
   int text_y = 17;
@@ -172,7 +172,7 @@ void kernel_main(uint32_t magic, multiboot_info_t *mboot_ptr) {
   }
 
 
-  terminal_writestring("AuriOS Kernel v0.2\n");
+  terminal_writestring("AuriOS Kernel v0.2.2\n");
   sleep(100);
   terminal_writestring("GDT initialized successfully\n");
   sleep(50);
