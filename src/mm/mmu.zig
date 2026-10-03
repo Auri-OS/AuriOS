@@ -226,26 +226,23 @@ export fn mmu_debug_poke(addr: usize, value: u8) void {
     serial_write_string("\r\n");
 }
 
-export fn mmu_handle_page_fault(error_code: u32) void {
+export fn mmu_handle_page_fault(error_code: u32) u8 {
     const fault_addr = mmu_get_fault_address();
 	
 	const present = (error_code & 1) != 0; // P : 1=protection
 	const write = (error_code & 2) != 0; //  W : 1=write
 
-	// Kernel heap spans from HEAP_START to the top of the 32-bit address space
 	const HEAP_START = 0xD0000000;
+	const HEAP_END = 0xD4000000;
 
-	if (!present) {
-		if (fault_addr >= HEAP_START) {
-			const frame = pmm_alloc_frame();
-			if (frame != 0) {
-				// heap pages are always kernel-only and writable, regardless
-				// of the access that triggered the fault
-				mmu_map_page(frame, fault_addr & 0xFFFFF000, true, false);
-				return;
-			}
+	if (!present and fault_addr >= HEAP_START and fault_addr < HEAP_END) {
+		const frame = pmm_alloc_frame();
+		if (frame != 0) {
+			// heap pages are always kernel-only and writable, regardless
+			// of the access that triggered the fault
+			mmu_map_page(frame, fault_addr & 0xFFFFF000, true, false);
+			return 1;
 		}
-
 	}
 
 	serial_write_string("\r\n");
@@ -260,7 +257,5 @@ export fn mmu_handle_page_fault(error_code: u32) void {
     serial_write_string("Reason           : ");
 	if(!present) serial_write_string("Page not present (OOM)") else serial_write_string("Protection violation");
 	if (write) serial_write_string(" on Write\r\n") else serial_write_string(" on READ\r\n");
-    while (true) {
-        asm volatile ("cli; hlt");
-    }
+	return 0;
 }
