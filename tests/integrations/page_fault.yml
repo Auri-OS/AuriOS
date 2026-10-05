@@ -1,0 +1,13 @@
+name: "Page Fault Handling"
+command: "qemu-system-i386 -cdrom output/AuriOS.iso -m 512M -display none -serial stdio"
+timeout_ms: 10000
+
+boot_sequence:
+  - "System ready."
+
+shell_interactions:
+  prompt: "auri-os"
+  tests:
+    - command: "mia"
+      expect: "EXCEPTION: Page Fault"
+      no_prompt: true

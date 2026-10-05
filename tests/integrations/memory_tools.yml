@@ -53,7 +53,3 @@ shell_interactions:
     - command: "poke 0xDEADBEEF 0xAURIOS"
       expect: "EXCEPTION: Page Fault"
       no_prompt: true
-
-    - command: "mia"
-      expect: "EXCEPTION: Page Fault"
-      no_prompt: true
