@@ -28,7 +28,7 @@
 
 ## 📖 About
 
-**AuriOS** is a simple, educational operating system kernel built from scratch for x86 architecture. It's designed to help understand the fundamentals of operating system development, including memory management, interrupt handling, and hardware interaction.
+**AuriOS** is a simple, educational and privacy based operating system kernel built from scratch for x86 architecture. It's designed to help understand the fundamentals of operating system development, including memory management, interrupt handling, and hardware interaction.
 
 This project demonstrates low-level system programming concepts and serves as a learning platform for OS development enthusiasts.
 
