@@ -1,121 +1,145 @@
 #include "../include/keyboard.h"
-#include "../include/isr.h"
 #include "../include/io.h"
 #include "../include/terminal.h"
 #include "../include/shell.h"
 #include "../include/log.h"
-#include "../include/pic.h"
 #include "../include/history.h"
+#include "../include/integer.h"
 
-static char scancode_to_ascii[128] = {
-    0, 0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 0,
-    0, 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n',
-    0, 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', '`',
-    0, '\\', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 0,
-    '*', 0, ' '
+static Keys keys_table[256] = {
+    // pressed
+    KEY_NOTHING, 
+    KEY_ESCAPE,
+    KEY_1,
+    KEY_2,
+    KEY_3,
+    KEY_4,
+    KEY_5,
+    KEY_6,
+    KEY_7,
+    KEY_8,
+    KEY_9,
+    KEY_0,
+    KEY_SUB,
+    KEY_EQ,
+    KEY_BACKSPACE,
+    KEY_TAB,
+    KEY_Q,
+    KEY_W,
+    KEY_E,
+    KEY_R,
+    KEY_T,
+    KEY_Y,
+    KEY_U,
+    KEY_I,
+    KEY_O,
+    KEY_P,
+    KEY_LBRACKET,
+    KEY_RBRACKET,
+    KEY_ENTER,
+    KEY_CONTROL,
+    KEY_A,
+    KEY_S,
+    KEY_D,
+    KEY_F,
+    KEY_G,
+    KEY_H,
+    KEY_J,
+    KEY_K,
+    KEY_L,
+    KEY_SEMICOLON,
+    KEY_SINGLE_QUOTE,
+    KEY_BACK_TICK,
+    KEY_SHIFT,
+    KEY_ANTISLASH,
+    KEY_Z,
+    KEY_X,
+    KEY_C,
+    KEY_V,
+    KEY_B,
+    KEY_N,
+    KEY_M,
+    KEY_COMMA,
+    KEY_DOT,
+    KEY_SLASH,
+    KEY_SHIFT,
+    KEY_NOTHING, // * on keypad
+    KEY_ALT,
+    KEY_SPACE,
+    KEY_CAPS_LOCK,
+    KEY_F1,
+    KEY_F2,
+    KEY_F3,
+    KEY_F4,
+    KEY_F5,
+    KEY_F6,
+    KEY_F7,
+    KEY_F8,
+    KEY_F9,
+    KEY_F10,
+    KEY_NOTHING, //NumberLock
+    KEY_NOTHING, // ScrollLock
+    KEY_NOTHING, // keypad 7
+    KEY_NOTHING, // keypad 8,
+    KEY_NOTHING, // keypad 9,
+    KEY_NOTHING, // Keypad -
+    KEY_NOTHING, // keypad 4,
+    KEY_NOTHING, // keypad 5,
+    KEY_NOTHING, // Keypad 6,
+    KEY_NOTHING, // keypad +
+    KEY_NOTHING, // Keypad 1
+    KEY_NOTHING, // keypad 2
+    KEY_NOTHING, // keypad 3
+    KEY_NOTHING, // keypad 0,
+    KEY_NOTHING, // keypad .
+    KEY_NOTHING, // Literaly nothing is written in osdev 
+    KEY_NOTHING, // Literaly nothing is written in osdev 
+    KEY_NOTHING, // Literaly nothing is written in osdev 
+    KEY_F11,
+    KEY_F12,
 };
+uint8_t extended = 0;
 
-static char scancode_to_ascii_shift[128] = {
-    0, 0, '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', 0,
-    0, 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', '\n',
-    0, 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '"', '~',
-    0, '|', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '<', '>', '?', 0,
-    '*', 0, ' '
-};
-
-static int shift_pressed = 0;
-static int ctrl_pressed = 0;
-static int extended = 0;
-
-void keyboard_callback(registers_t *regs)
-{
-    (void)regs;
+Key keyboard_get_current_key() {
+    Key k;
     uint8_t scancode = inb(0x60);
 
-	//extended-key
-	if (scancode == 0xE0) {
-		extended = 1;
-		return;
-	}
-	if (extended) {
-		extended = 0;
-        // Up captured
-		if (scancode == 0x48) {
-			shell_history(1);
-			return;
-		}
-		// Down captured
-		if (scancode == 0x50) {
-			shell_history(2);
-			return;
-		}
-        // Left captured
-        if (scancode == 0x4B) {
-            shell_buffer_pos_decrement();
-            return;
+    if (scancode == 0xe0) {
+        extended = 1;
+        k.key = KEY_NOTHING;
+        k.state = 2;
+        return k;
+    }
+    if (extended) {
+        extended = 0;
+        if (scancode == 0x48 || scancode == 0xc8) {
+            k.key = KEY_ARROW_UP;
+            k.state = scancode == 0x48 ? PRESSED : RELEASED;
+        } else if (scancode == 0x50 || scancode == 0xd0) {
+            k.key = KEY_ARROW_DOWN;
+            k.state = scancode == 0x50 ? PRESSED : RELEASED;
+        } else if (scancode == 0x4b || scancode == 0xcb) {
+            k.key = KEY_ARROW_LEFT;
+            k.state = scancode == 0x4b ? PRESSED : RELEASED;
+        } else if (scancode == 0x4d || scancode == 0xcd) {
+            k.key = KEY_ARROW_RIGHT;
+            k.state = scancode == 0x4d ? PRESSED : RELEASED;
+        } else if (scancode == 0x53 || scancode == 0xd3) {
+            k.key = KEY_DELETE;
+            k.state = scancode == 0x53 ? PRESSED : RELEASED;
+        } else {
+            k.key = KEY_NOTHING;
+            k.state = PRESSED; 
         }
-        // Right captured
-        if (scancode == 0x4D) {
-            shell_buffer_pos_increment();
-            return;
-        }
-	}
-	
-    // Shift captured
-    if (scancode == 0x2A || scancode == 0x36) {
-        shift_pressed = 1;
-        return;
+        return k;
     }
 
-    // Shift free
-    if (scancode == 0xAA || scancode == 0xB6) {
-        shift_pressed = 0;
-        return;
-    }
-    // Ctrl captured
-    if (scancode == 0x1D) {
-        ctrl_pressed = 1;
-        return;
-    }
+    k.key = keys_table[scancode & 0x7f];
+    k.state = (scancode & 0x80) ? 1 : 0;
 
-    // Ctrl free
-    if (scancode == 0x9D) {
-        ctrl_pressed = 0;
-        return;
-    }
-    
-    if (scancode & 0x80)
-        return;
-    
-    // Ctrl+L
-    if (ctrl_pressed && scancode == 0x26) {
-        shell_handle_key('\f');
-        return;
-    }
-
-    // Backspace
-    if (scancode == 0x0E) {
-        shell_handle_key('\b');
-        return;
-    }
-    char c ;
-
-    if (scancode == 0x0F) {
-        shell_handle_key('\t');
-        return;
-    }
-    
-    if (shift_pressed)
-        c = scancode_to_ascii_shift[scancode];
-    else
-        c = scancode_to_ascii[scancode];
-    if (c)
-        shell_handle_key(c);
+    return k;
 }
 
-void keyboard_init(void)
-{
-    irq_register_handler(1, keyboard_callback);
-    pic_unmask_irq(1);
+void keyboard_init(void) {
     KINFO("[KBD] PS/2 Keyboard driver active");
 }

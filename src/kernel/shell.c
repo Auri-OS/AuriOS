@@ -11,6 +11,10 @@
 #include "../include/timer.h"
 #include "../include/history.h"
 #include "../include/commands.h"
+#include "../include/isr.h"
+#include "../include/keymap.h"
+#include "../include/keyboard.h"
+#include "../include/pic.h"
 
 #define BUFFER_SIZE 256
 #define MAX_CMD_ARGS 16
@@ -25,9 +29,38 @@ static void shell_insert_completion(const char *text, int len, int add_space);
 
 static const char *command_list[] = {
     "help", "fetch", "clear", "uptime", "memdump", "memtest", "mia",
-    "mmap", "peek",  "poke",  "echo",  "reboot",  "exit",   "crash", "setprompt", NULL};
+    "mmap", "peek",  "poke",  "echo",  "reboot",  "exit",   "crash", "setprompt", "keyboard", NULL};
+
+static void shell_callback(registers_t *regs) {
+  (void)regs;
+
+  const char* p = keymap_parse(keyboard_get_current_key());
+
+  if (strcmp(p, "") == 0) return;
+
+  if (strcmp(p, "^[[A") == 0) 
+    shell_history(1);
+  else if (strcmp(p, "^[[B") == 0)
+    shell_history(2);
+  else if (strcmp(p, "^[[C") == 0)
+    shell_buffer_pos_increment();
+  else if (strcmp(p, "^[[D") == 0)
+    shell_buffer_pos_decrement();
+  else if (strcmp(p, "^[[E") == 0)
+    shell_home();
+  else if (strcmp(p, "^[[F") == 0)
+    shell_end();
+  else if (strcmp(p, "^[[2~") == 0)
+    shell_delete();
+  else if (strcmp(p, "^L") == 0)
+    shell_handle_key("\f");
+  else
+    shell_handle_key(p);
+}
 
 void shell_init(void) {
+  irq_register_handler(1, shell_callback);
+  pic_unmask_irq(1);
   memset(buffer, 0, BUFFER_SIZE);
   buffer_pos = 0;
   shell_render_prompt();
@@ -124,6 +157,8 @@ static void shell_execute(char *cmd) {
     memtest();
   } else if (strcmp(cmd_name, "setprompt") == 0) {
     setprompt(args, argc);
+  } else if (strcmp(cmd_name, "keyboard") == 0) {
+    keyboard(args, argc);
   } else {
     terminal_writestring("command not found: ");
     terminal_writestring(cmd_name);
@@ -207,19 +242,20 @@ static void shell_insert_completion(const char *text, int len, int add_space) {
   }
 }
 
-void shell_handle_key(char c) {
-  if (c == 0x0C) {
-    terminal_clear();
-    buffer_pos = 0;
-    shell_init();
-    return;
-  } if (c == '\n') {
+void shell_handle_key(const char* c) {
+  // if (c == 0x0C) {
+  //   terminal_clear();
+  //   buffer_pos = 0;
+  //   shell_init();
+  //   return;
+  // } 
+  if (strcmp(c, "\n") == 0) {
     terminal_putchar('\n');
     shell_execute(buffer);
     buffer[0] = '\0';
     buffer_pos = 0;
     shell_render_prompt();
-  } else if (c == '\b') {
+  } else if (strcmp(c, "\b") == 0) {
     if (buffer_pos > 0) {
       int len = (int) strlen(buffer);
       int tail = len - buffer_pos; 
@@ -231,7 +267,7 @@ void shell_handle_key(char c) {
       terminal_putchar(' ');
       terminal_move_cursor(-(tail + 1));
     }
-  } else if (c == '\t') {
+  } else if (strcmp(c, "\t") == 0) {
     command_completion();
   } else {
     int len = (int) strlen(buffer);
@@ -242,7 +278,7 @@ void shell_handle_key(char c) {
       for (int x = len; x > buffer_pos; x--)
         buffer[x] = buffer[x - 1];
 
-      buffer[buffer_pos] = c;
+      buffer[buffer_pos] = c[0];
       buffer[len + 1] = '\0';
       terminal_writestring(&buffer[buffer_pos]);
       buffer_pos++;
@@ -276,4 +312,23 @@ void shell_buffer_pos_increment(void) {
   if (buffer_pos >= (int) strlen(buffer)) return;
   buffer_pos++;
   terminal_move_cursor(1);
+}
+
+void shell_home(void) {
+  terminal_move_cursor(-buffer_pos);
+  buffer_pos = 0;
+}
+
+void shell_end(void) {
+  int offset = strlen(buffer) - buffer_pos;
+  buffer_pos += offset;
+  terminal_move_cursor(offset);
+}
+
+void shell_delete(void) {
+  if (buffer_pos + 1 > (int)strlen(buffer)) {
+    return;
+  }
+  shell_buffer_pos_increment();
+  shell_handle_key("\b");
 }

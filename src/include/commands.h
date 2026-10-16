@@ -18,5 +18,6 @@ void memdump(void *args, int argc);
 void peek(void *args, int argc);
 void poke(void *args, int argc);
 void setprompt(void *args, int argc);
+void keyboard(void *args, int argc);
 
 #endif

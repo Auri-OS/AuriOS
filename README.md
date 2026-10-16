@@ -176,6 +176,7 @@ Once AuriOS boots, you'll see the initialization sequence followed by an interac
 | `reboot` | Restart the machine |
 | `exit` | Shut the machine down (QEMU/Bochs) |
 | `crash` | Freeze the machine (fun command) |
+| `keyboard` | Change keyboard config (`keyboard <index>`) |
 
 
 ## 📁 Project Structure
@@ -192,6 +193,7 @@ AuriOS/
 │   │   ├── echo.c
 │   │   ├── fetch.c
 │   │   ├── help.c
+|   |   ├── keyboard_settings.c
 │   │   ├── memdump.c
 │   │   ├── memtest.c
 │   │   ├── mia.c
